@@ -1,0 +1,112 @@
+import React from "react";
+import {
+  StyleSheet,
+  View,
+  Text,
+  FlatList,
+} from "react-native";
+import { observer } from "mobx-react";
+import { useContext } from "react";
+import { StoreContext } from "../../../stores";
+import themeStyle from "../../../styles/theme.style";
+import { useNavigation } from "@react-navigation/native";
+import ProductItem from "./product-item/index";
+import * as Haptics from "expo-haptics";
+
+interface AllCategoriesListProps {
+  categoryList: any[];
+}
+
+const AllCategoriesList: React.FC<AllCategoriesListProps> = ({ categoryList }) => {
+  const navigation = useNavigation();
+  const { languageStore } = useContext(StoreContext);
+
+  const onItemSelect = (item, category) => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    navigation.navigate("meal", { product: item, category });
+  };
+
+  const renderCategorySection = ({ item: category }) => {
+    if (!category.products || category.products.length === 0) {
+      return null;
+    }
+
+    const categoryName = languageStore.selectedLang === "ar" 
+      ? category.nameAR 
+      : category.nameHE;
+
+    return (
+      <View style={styles.categorySection}>
+        <View style={styles.categoryHeader}>
+          <Text style={styles.categoryTitle}>{categoryName}</Text>
+          {category.description && (
+            <Text style={styles.categoryDescription}>
+              {languageStore.selectedLang === "ar" 
+                ? category.descriptionAR 
+                : category.descriptionHE}
+            </Text>
+          )}
+        </View>
+        <View style={styles.productsContainer}>
+          {category.products.map((product) => (
+            <ProductItem
+              key={product._id}
+              item={product}
+              onItemSelect={(item) => onItemSelect(item, category)}
+              onDeleteProduct={() => {}}
+              onEditProduct={() => {}}
+            />
+          ))}
+        </View>
+      </View>
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      <FlatList
+        data={categoryList}
+        keyExtractor={(item) => item._id}
+        renderItem={renderCategorySection}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.listContainer}
+      />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  listContainer: {
+    paddingBottom: 20,
+  },
+  categorySection: {
+    marginBottom: 24,
+  },
+  categoryHeader: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: "#f8f9fa",
+    marginBottom: 8,
+  },
+  categoryTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: themeStyle.GRAY_900,
+    textAlign: "right",
+    marginBottom: 4,
+  },
+  categoryDescription: {
+    fontSize: 14,
+    color: themeStyle.GRAY_600,
+    textAlign: "right",
+  },
+  productsContainer: {
+    paddingHorizontal: 8,
+  },
+});
+
+export default observer(AllCategoriesList); 

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "202867785400",
+    "project_id": "shoofi",
+    "storage_bucket": "shoofi.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:202867785400:android:5de48f627f468259f57e4d",
+        "android_client_info": {
+          "package_name": "com.shoofi.shopping"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgSPiZkmiuZf6yFJlmeKpmm7BCBaMaGd4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

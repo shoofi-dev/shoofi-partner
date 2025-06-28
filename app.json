@@ -1,0 +1,61 @@
+{
+  "expo": {
+    "name": "shoofi",
+    "slug": "shoofi",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-screen.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#FFFFFF"
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#ffffff",
+          "sounds": [
+            "./assets/sounds/buffalosound.wav",
+            "./assets/sounds/deliverysound.wav"
+          ]
+        }
+      ]
+    ],
+    "updates": {
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/635e3b9c-c23e-4347-a1d4-a97b516fb5d9"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "buildNumber": "1.0.0",
+      "supportsTablet": true,
+      "bundleIdentifier": "com.shoofi.shopping"
+    },
+    "android": {
+      "versionCode": 1,
+      "splash": {
+        "image": "./assets/splash-screen.png",
+        "backgroundColor": "#FFFFFF",
+        "resizeMode":"cover"
+      },
+      "package": "com.shoofi.shopping",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyD0CSVYW-UxSDEnderEtAB9YDmYYZLu8q8"
+        }
+      },
+      "permissions" : ["CAMERA"],
+      "googleServicesFile": "./google-services.json",
+      "useNextNotificationsApi": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "runtimeVersion": "1.0.2"
+  }
+}
