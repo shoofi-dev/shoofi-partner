@@ -19,6 +19,7 @@ type TProps = {
   isFlex?: boolean;
   fontSize?: number;
   color?: string;
+  bgColor?: string;
 };
 export default function InputText({
   onChange,
@@ -35,7 +36,8 @@ export default function InputText({
   onBlur,
   isFlex,
   fontSize,
-  color
+  color,
+  bgColor
 }: TProps) {
   const handleOnChange = (e) => {
     onChange && onChange(e.nativeEvent.text);
@@ -103,7 +105,7 @@ export default function InputText({
     onBlur={onBlur}
     textAlign="center"
     style={{
-      backgroundColor: 'transparent',
+      backgroundColor: bgColor || 'transparent',
       fontSize: 20,
       fontFamily: `${getCurrentLang()}-SemiBold`,
 

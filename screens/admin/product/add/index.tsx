@@ -6,6 +6,7 @@ import { observer } from "mobx-react";
 import { useState, useEffect, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import DropDown from "../../../../components/controls/dropdown";
+import MultiSelectDropdown from "../../../../components/controls/multi-select-dropdown";
 import themeStyle from "../../../../styles/theme.style";
 import { launchImageLibrary } from "react-native-image-picker";
 import { StoreContext } from "../../../../stores";
@@ -22,7 +23,7 @@ import { useAuth } from "../../../../hooks/useAuth";
 
 export type TProduct = {
   id?: string;
-  categoryId: string;
+  supportedCategoryIds: string[];
   nameAR: string;
   nameHE: string;
   img: any;
@@ -57,7 +58,7 @@ const AddProductScreen = ({ route }) => {
   const [isEditMode, setIdEditMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [categoryList, setCategoryList] = useState();
-  const [selectedCategoryId, setSelectedCategoryId] = useState();
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<TProduct>();
   const [image, setImage] = useState<Asset | null>(null);
   const [extrasList, setExtrasList] = useState([]);
@@ -66,7 +67,7 @@ const AddProductScreen = ({ route }) => {
 
   const initNewProduct = (editProductData) => {
     let defaultProductData = {
-      categoryId: "",
+      supportedCategoryIds: [],
       nameAR: "",
       nameHE: "",
       img: null,
@@ -107,7 +108,8 @@ const AddProductScreen = ({ route }) => {
     return (
       selectedProduct?.nameAR &&
       selectedProduct?.nameHE &&
-      selectedProduct?.categoryId
+      selectedProduct?.supportedCategoryIds &&
+      selectedProduct?.supportedCategoryIds.length > 0
       // selectedProduct?.descriptionAR &&
       // selectedProduct?.descriptionHE
     );
@@ -117,7 +119,8 @@ const AddProductScreen = ({ route }) => {
     return (
       (selectedProduct?.nameAR &&
         selectedProduct?.nameHE &&
-        selectedProduct?.categoryId &&
+        selectedProduct?.supportedCategoryIds &&
+        selectedProduct?.supportedCategoryIds.length > 0 &&
         image) ||
       (selectedProduct?.img &&
         selectedProduct?.descriptionAR &&
@@ -130,9 +133,16 @@ const AddProductScreen = ({ route }) => {
   useEffect(() => {
     if (product) {
       setIdEditMode(true);
-      setSelectedCategoryId(product.categoryId);
+      // Handle both old categoryId and new supportedCategoryIds
+      if (product.supportedCategoryIds) {
+        setSelectedCategoryIds(product.supportedCategoryIds);
+      } else if (product.categoryId) {
+        setSelectedCategoryIds([product.categoryId]);
+      }
       let tmpProduct = {
         ...product,
+        // Ensure supportedCategoryIds exists
+        supportedCategoryIds: product.supportedCategoryIds || (product.categoryId ? [product.categoryId] : [])
       };
       if (product.extras) {
         setSelectedExtras(product.extras);
@@ -145,7 +155,9 @@ const AddProductScreen = ({ route }) => {
 
   const getExtrasLit = async () => {
     const categories: any = await shoofiAdminStore.getstoresCategories();
-    const categoryExtras = categories.find((c: any) => c._id === storeDataStore.storeData.categoryId);
+    // Use the first selected category for extras, or fallback to store category
+    const firstCategoryId = selectedCategoryIds.length > 0 ? selectedCategoryIds[0] : storeDataStore.storeData.categoryId;
+    const categoryExtras = categories.find((c: any) => c._id === firstCategoryId);
     setExtrasList(categoryExtras?.extras);
     // setExtrasList(extrasListRes);
 
@@ -170,7 +182,7 @@ const AddProductScreen = ({ route }) => {
   };
   useEffect(() => {
     getExtrasLit();
-  }, []);
+  }, [selectedCategoryIds]);
 
   const updateExtraField = (extraName, field, value) => {
     // Allow decimal input by validating the string format
@@ -277,7 +289,7 @@ const AddProductScreen = ({ route }) => {
     try {
       if (
         selectedProduct &&
-        (isEditMode || image || selectedProduct.categoryId == "8")
+        (isEditMode || image || selectedProduct.supportedCategoryIds.length > 0)
       ) {
         // Convert string values to numbers before sending to API
         const processedProduct = {
@@ -315,10 +327,7 @@ const AddProductScreen = ({ route }) => {
 
   const getMenu = () => {
     const categories = menuStore.categories;
-    const mappedCategories = categories?.map((category, index) => {
-      if (categoryId && category.categoryId === categoryId) {
-        setSelectedCategoryId(index);
-      }
+    const mappedCategories = categories?.map((category) => {
       return {
         label:
           languageStore.selectedLang === "ar"
@@ -328,6 +337,11 @@ const AddProductScreen = ({ route }) => {
       };
     });
     setCategoryList(mappedCategories);
+    
+    // If categoryId is provided in route params, set it as selected
+    if (categoryId) {
+      setSelectedCategoryIds([categoryId]);
+    }
   };
 
   useEffect(() => {
@@ -359,6 +373,7 @@ const AddProductScreen = ({ route }) => {
         shadowRadius: 12,
         elevation: 6,
       }}>
+        <BackButton />
         {/* Header */}
         <Text style={{
           fontSize: 28,
@@ -373,12 +388,21 @@ const AddProductScreen = ({ route }) => {
         {/* Name Fields */}
         <View style={{ flexDirection: "row", marginBottom: 32 }}>
           <View style={{ flex: 1, marginRight: 5 }}>
+            <Text style={{
+              fontSize: 16,
+              marginBottom: 10,
+              color: themeStyle.TEXT_PRIMARY_COLOR,
+              textAlign: "right",
+            }}>
+              اسم المنتج (عربي)
+            </Text>
             <InputText
               onChange={(e) => handleInputChange(e, "nameAR")}
               label={t("name-ar")}
               value={selectedProduct?.nameAR}
               isPreviewMode={!userDetailsStore.isAdmin(ROLES.all)}
               color={themeStyle.TEXT_PRIMARY_COLOR}
+              bgColor={themeStyle.WHITE_COLOR}
             />
             {!selectedProduct?.nameAR && (
               <Text style={{ color: themeStyle.ERROR_COLOR }}>
@@ -387,12 +411,21 @@ const AddProductScreen = ({ route }) => {
             )}
           </View>
           <View style={{ flex: 1, marginLeft: 5 }}>
+            <Text style={{
+              fontSize: 16,
+              marginBottom: 10,
+              color: themeStyle.TEXT_PRIMARY_COLOR,
+              textAlign: "right",
+            }}>
+              اسم المنتج (عبراني)
+            </Text>
             <InputText
               onChange={(e) => handleInputChange(e, "nameHE")}
               label={t("name-he")}
               value={selectedProduct?.nameHE}
               isPreviewMode={!userDetailsStore.isAdmin(ROLES.all)}
               color={themeStyle.TEXT_PRIMARY_COLOR}
+              bgColor={themeStyle.WHITE_COLOR}
             />
             {!selectedProduct?.nameHE && (
               <Text style={{ color: themeStyle.ERROR_COLOR }}>
@@ -426,9 +459,9 @@ const AddProductScreen = ({ route }) => {
         </View>
 
         {/* Category Dropdown */}
-        <View style={{ marginBottom: 32 }}>
+        <View style={{ marginBottom: 32, zIndex: 20 }}>
           {categoryList && (
-            <View style={{ alignItems: "flex-start" }}>
+            <View style={{ alignItems: "flex-start", zIndex: 20 }}>
               <Text
                 style={{
                   fontSize: 16,
@@ -436,20 +469,23 @@ const AddProductScreen = ({ route }) => {
                   color: themeStyle.TEXT_PRIMARY_COLOR,
                 }}
               >
-                اختر القسم :
+                اختر الأقسام :
               </Text>
-              <View style={{ zIndex: 11 }}>
-                <DropDown
+              <View style={{  width: "100%", zIndex: 20 }}>
+                <MultiSelectDropdown
                   itemsList={categoryList}
-                  defaultValue={selectedCategoryId}
-                  onChangeFn={(e) => handleInputChange(e, "categoryId")}
-                  placeholder={"اختر القسم"}
+                  defaultValue={selectedCategoryIds}
+                  onChangeFn={(selectedItems) => {
+                    setSelectedCategoryIds(selectedItems);
+                    handleInputChange(selectedItems, "supportedCategoryIds");
+                  }}
+                  placeholder={"اختر الأقسام"}
                   disabled={!userDetailsStore.isAdmin(ROLES.all)}
                 />
               </View>
-              {!selectedProduct?.categoryId && (
+              {(!selectedProduct?.supportedCategoryIds || selectedProduct.supportedCategoryIds.length === 0) && (
                 <Text style={{ color: themeStyle.ERROR_COLOR }}>
-                  {t("invalid-categoryId")}
+                  {t("invalid-categoryIds")}
                 </Text>
               )}
             </View>
@@ -457,7 +493,15 @@ const AddProductScreen = ({ route }) => {
         </View>
 
         {/* Price Field */}
-        <View style={{ marginBottom: 32 }}>
+        <View style={{ marginBottom: 32, zIndex: 0, width: "20%" }}>
+          <Text style={{
+            fontSize: 16,
+            marginBottom: 10,
+            color: themeStyle.TEXT_PRIMARY_COLOR,
+            textAlign: "right",
+          }}>
+            السعر المتوسط
+          </Text>
           <InputText
             onChange={(e) => handleInputChange(e, "price")}
             label={t("medium-price")}
@@ -465,6 +509,7 @@ const AddProductScreen = ({ route }) => {
             keyboardType="numeric"
             isPreviewMode={!userDetailsStore.isAdmin(ROLES.all)}
             color={themeStyle.TEXT_PRIMARY_COLOR}
+            bgColor={themeStyle.WHITE_COLOR}
           />
           {selectedProduct?.price == undefined && (
             <Text style={{ color: themeStyle.ERROR_COLOR }}>
@@ -485,6 +530,14 @@ const AddProductScreen = ({ route }) => {
           {t("product-description")}
         </Text>
         <View style={{ marginBottom: 24 }}>
+          <Text style={{
+            fontSize: 16,
+            marginBottom: 10,
+            color: themeStyle.TEXT_PRIMARY_COLOR,
+            textAlign: "right",
+          }}>
+            وصف المنتج (عربي)
+          </Text>
           <TextInput
             onChange={(e) => {
               handleInputChange(e.nativeEvent.text, "descriptionAR");
@@ -517,6 +570,14 @@ const AddProductScreen = ({ route }) => {
           )}
         </View>
         <View style={{ marginBottom: 32 }}>
+          <Text style={{
+            fontSize: 16,
+            marginBottom: 10,
+            color: themeStyle.TEXT_PRIMARY_COLOR,
+            textAlign: "right",
+          }}>
+            وصف المنتج (عبراني)
+          </Text>
           <TextInput
             onChange={(e) => {
               handleInputChange(e.nativeEvent.text, "descriptionHE");
@@ -530,7 +591,7 @@ const AddProductScreen = ({ route }) => {
             underlineColorAndroid="transparent"
             numberOfLines={5}
             style={{
-              backgroundColor: "#f8f8f8",
+              backgroundColor: themeStyle.WHITE_COLOR,
               borderWidth: 1,
               borderColor: "#eee",
               borderRadius: 12,

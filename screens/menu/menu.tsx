@@ -27,7 +27,7 @@ import BackButton from "../../components/back-button";
 import Text from "../../components/controls/Text";
 import StorePlaceHolder from "../../components/placeholders/StorePlaceHolder";
 const HEADER_HEIGHT = 340;
-const SHIPPING_PICKER_CONTAINER_HEIGHT = 60;
+const SHIPPING_PICKER_CONTAINER_HEIGHT = 0;
 const STICKY_HEADER_HEIGHT = 90;
 const SCROLLABLE_PART_HEIGHT = HEADER_HEIGHT + SHIPPING_PICKER_CONTAINER_HEIGHT;
 const categoryHeaderHeight = 35;
@@ -80,34 +80,34 @@ const MenuScreen = () => {
 
 
     // Clear menu data when navigating back to prevent showing old store data
-    useFocusEffect(
-      useCallback(() => {
-        // Check if we're coming from stores-list via route params
-        const isFromStoresList = route.params?.fromStoresList;
+    // useFocusEffect(
+    //   useCallback(() => {
+    //     // Check if we're coming from stores-list via route params
+    //     const isFromStoresList = route.params?.fromStoresList;
         
-        console.log("isFromStoresList", !!isFromStoresList, "route params:", route.params);
+    //     console.log("isFromStoresList", !!isFromStoresList, "route params:", route.params);
         
-        if (isFromStoresList) {
-          // Clear store data first to prevent showing old data
-          menuStore.clearMenu();
+    //     if (isFromStoresList) {
+    //       // Clear store data first to prevent showing old data
+    //       menuStore.clearMenu();
           
-          // Clear local state when entering the screen to prevent showing old data
-          setCategoryList(null);
-          setSelectedCategory(null);
-          storeDataStore.storeData = null;
+    //       // Clear local state when entering the screen to prevent showing old data
+    //       setCategoryList(null);
+    //       setSelectedCategory(null);
+    //       storeDataStore.storeData = null;
           
-          // Clear the route params to prevent future resets
-          navigation.setParams({ fromStoresList: undefined });
-        }
+    //       // Clear the route params to prevent future resets
+    //       navigation.setParams({ fromStoresList: undefined });
+    //     }
         
-        return () => {
-          // Only clear menu data when leaving the screen if we came from stores-list
-          if (isFromStoresList) {
-            menuStore.clearMenu();
-          }
-        };
-      }, [menuStore, navigation, route.params])
-    );
+    //     return () => {
+    //       // Only clear menu data when leaving the screen if we came from stores-list
+    //       if (isFromStoresList) {
+    //         menuStore.clearMenu();
+    //       }
+    //     };
+    //   }, [menuStore, navigation, route.params])
+    // );
     
   const initMenu = async () => {
     await menuStore.getMenu();
@@ -294,7 +294,7 @@ const MenuScreen = () => {
         ]}
       >
         <StoreHeaderCard store={storeDataStore.storeData} />
-        <View style={styles.shippingPickerContainer}>
+        {/* <View style={styles.shippingPickerContainer}>
           <ShippingMethodPick
             onChange={handleShippingMethodChange}
             shippingMethodValue={cartStore.shippingMethod}
@@ -304,7 +304,7 @@ const MenuScreen = () => {
             distanceKm={availableDrivers?.distanceKm}
             driversLoading={driversLoading}
           />
-        </View>
+        </View> */}
       </Animated.View>
 
       <Animated.View

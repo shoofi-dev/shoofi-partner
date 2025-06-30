@@ -244,7 +244,7 @@ const Header = () => {
         ordersStore.setEditOrderData(null);
         cartStore.resetCart();
       }
-      navigation.navigate("homeScreen");
+      navigation.navigate("admin-dashboard");
     }
   };
 
@@ -268,13 +268,13 @@ const Header = () => {
     return null;
   }
 
-  const connectionStatus = {
-    [ReadyState.CONNECTING]: themeStyle.ORANGE_COLOR,
-    [ReadyState.OPEN]: themeStyle.SUCCESS_COLOR,
-    [ReadyState.CLOSING]: themeStyle.ERROR_COLOR,
-    [ReadyState.CLOSED]: themeStyle.ERROR_COLOR,
-    [ReadyState.UNINSTANTIATED]: themeStyle.ERROR_COLOR,
-  }[readyState];
+  // const connectionStatus = {
+  //   [ReadyState.CONNECTING]: themeStyle.ORANGE_COLOR,
+  //   [ReadyState.OPEN]: themeStyle.SUCCESS_COLOR,
+  //   [ReadyState.CLOSING]: themeStyle.ERROR_COLOR,
+  //   [ReadyState.CLOSED]: themeStyle.ERROR_COLOR,
+  //   [ReadyState.UNINSTANTIATED]: themeStyle.ERROR_COLOR,
+  // }[readyState];
 
   const onGoToNewDelivery = () => {
     navigation.navigate("book-delivery");
@@ -366,7 +366,7 @@ const Header = () => {
           )}
         </View>
       </Animated.View>
-      {userDetailsStore.isAdmin() && (
+      {/* {userDetailsStore.isAdmin() && (
         <View
           style={{
             ...styles.headerItem,
@@ -382,7 +382,7 @@ const Header = () => {
             style={{ color: connectionStatus }}
           />
         </View>
-      )}
+      )} */}
       <View style={{ position: "absolute", left: "18%", alignSelf: "center" }}>
         {userDetailsStore.isAdmin() &&
           ordersStore?.notViewdOrders?.length > 0 && (
@@ -435,29 +435,39 @@ const Header = () => {
             </Animated.View>
           )}
       </View>
-      {hideLogo.indexOf(navigation?.getCurrentRoute()?.name) == -1 && <View style={{}}>
-        <TouchableOpacity
-          style={[
-            {
+      {hideLogo.indexOf(navigation?.getCurrentRoute()?.name) == -1 && (
+        <View style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
+          justifyContent: 'center',
+          alignItems: 'center',
+
+          zIndex: -1
+
+        }}>
+          <TouchableOpacity
+            style={{
               height: "100%",
               alignItems: "center",
-              alignSelf:"center",
-              justifyContent:"center",
-            },
-          ]}
-          onPress={onLogoClick}
-        >
-          {/* <Icon
-            icon="buffalo_icon"
-            size={30}
-            style={{ color: theme.GRAY_700,  width:100 }}
-          /> */}
-          <Image
-            style={{ maxWidth: "45%", maxHeight: "60%" }}
-            source={require("../../../assets/icon4.png")}
-          />
-        </TouchableOpacity>
-      </View>}
+              justifyContent: "center",
+            }}
+            onPress={onLogoClick}
+          >
+            {/* <Icon
+              icon="buffalo_icon"
+              size={30}
+              style={{ color: theme.GRAY_700,  width:100 }}
+            /> */}
+            <Image
+              style={{ maxWidth: "20%", maxHeight: "60%" }}
+              source={require("../../../assets/icon4.png")}
+            />
+          </TouchableOpacity>
+        </View>
+      )}
       {userDetailsStore.isAdmin() && adminCustomerStore?.userDetails && (
         <View
           style={{
@@ -504,7 +514,7 @@ const Header = () => {
             /> */}
         </View>
       )}
-      {userDetailsStore.isAdmin() && (
+      {/* {userDetailsStore.isAdmin() && (
         <TouchableOpacity
           style={{
             ...styles.headerItem,
@@ -522,8 +532,8 @@ const Header = () => {
             style={{ color: themeStyle.PRIMARY_COLOR }}
           />
         </TouchableOpacity>
-      )}
-      <Animated.View
+      )} */}
+      {/* <Animated.View
         style={[
           styles.headerItem,
           animatedStyle,
@@ -550,7 +560,7 @@ const Header = () => {
             </Text>
           </View>
         </TouchableOpacity>
-      </Animated.View>
+      </Animated.View> */}
     </View>
   );
 };

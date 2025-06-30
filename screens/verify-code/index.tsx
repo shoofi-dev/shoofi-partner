@@ -163,7 +163,7 @@ const VerifyCodeScreen = ({ route }) => {
           await authStore.updateUserToken(response.data.token);
           await AsyncStorage.removeItem("@storage_verifyCode");
           if (response.data.fullName) {
-            //DeviceEventEmitter.emit(`PREPARE_APP`);
+            DeviceEventEmitter.emit(`PREPARE_APP`);
             console.log(
               "XXXXXXXXXXA4",
               authStore.verifyCodeToken.startsWith("11")
@@ -177,7 +177,7 @@ const VerifyCodeScreen = ({ route }) => {
                 if (cartStore.getProductsCount() > 0) {
                   navigation.navigate("cart");
                 } else {
-                  navigation.navigate("homeScreen");
+                  navigation.navigate("admin-dashboard");
                 }
               });
           } else {
@@ -197,7 +197,7 @@ const VerifyCodeScreen = ({ route }) => {
   };
 
   const handleLogoPress = () => {
-    navigation.navigate("homeScreen");
+    navigation.navigate("admin-dashboard");
   };
 
   return (

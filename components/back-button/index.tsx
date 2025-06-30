@@ -35,7 +35,7 @@ export default function BackButton({ goTo, onClick, color = themeStyle.BLACK_COL
       (prevRoute.name === "verify-code" ||
         prevRoute.name === "insert-customer-name")
     ) {
-      navigation.navigate("homeScreen");
+      navigation.navigate("admin-dashboard");
       return;
     }
     if (goTo) {

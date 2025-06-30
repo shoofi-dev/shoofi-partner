@@ -59,12 +59,11 @@ const StockManagementScreen = ({ route }) => {
   
     }
   };
-
   if (!categoryList) {
     return null;
   }
   return (
-    <View style={{ marginTop: 20 }}>
+    <View style={{ marginTop: 20,  }}>
       <Text
         style={{
           marginTop: 10,
@@ -72,8 +71,6 @@ const StockManagementScreen = ({ route }) => {
           textAlign: "center",
           borderWidth: 1,
           padding: 10,
-          color: themeStyle.WHITE_COLOR,
-          borderColor: themeStyle.WHITE_COLOR
         }}
       >
         {t("ادارة المخزون")}
@@ -100,6 +97,7 @@ const StockManagementScreen = ({ route }) => {
                 </View>
             </View>
           )}
+          
       <ScrollView horizontal={true} style={{ marginTop: 25 }}>
         <View
           style={{
@@ -110,7 +108,6 @@ const StockManagementScreen = ({ route }) => {
         >
   
           {categoryList.map((category, index) => {
-            if (categoriesToShow.indexOf(category.categoryId) > -1)
               return (
                 <View
                   style={{

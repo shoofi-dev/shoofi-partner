@@ -44,31 +44,31 @@ const DashboardScreen = () => {
           key: "orders",
           role: undefined,
         },
-        {
-          title: "قائمة الارساليات",
-          icon: "delivery-active",
-          key: "delivery-list",
-          role: undefined,
-        },
+        // {
+        //   title: "قائمة الارساليات",
+        //   icon: "delivery-active",
+        //   key: "delivery-list",
+        //   role: undefined,
+        // },
         // {
         //   title: "book-delivery",
         //   icon: "delivery-active",
         //   key: "book-delivery",
         //   role: undefined,
         // },
-        {
-          title: "new-order",
-          icon: "shopping-bag-plus",
-          key: "new-order",
-          role: undefined,
-          bgColor: [
-            "rgba(167,121,72, 0.6)",
-            "rgba(167,121,72, 0.5)",
-            "rgba(167,121,72, 0.4)",
-            "rgba(167,121,72, 0.4)",
-            "rgba(167,121,72, 0.6)",
-          ],
-        },
+        // {
+        //   title: "new-order",
+        //   icon: "shopping-bag-plus",
+        //   key: "new-order",
+        //   role: undefined,
+        //   bgColor: [
+        //     "rgba(167,121,72, 0.6)",
+        //     "rgba(167,121,72, 0.5)",
+        //     "rgba(167,121,72, 0.4)",
+        //     "rgba(167,121,72, 0.4)",
+        //     "rgba(167,121,72, 0.6)",
+        //   ],
+        // },
         {
           title: "stock-management",
           icon: "list2",
@@ -81,12 +81,12 @@ const DashboardScreen = () => {
           key: "store-management",
           role: undefined,
         },
-        {
-          title: "calander",
-          icon: "calendar",
-          key: "calander",
-          role: ROLES.all,
-        },
+        // {
+        //   title: "calander",
+        //   icon: "calendar",
+        //   key: "calander",
+        //   role: ROLES.all,
+        // },
         {
           title: "menu",
           icon: "orders-icon",
@@ -196,12 +196,12 @@ const DashboardScreen = () => {
 
   const deletAccount = () => {
     authStore.deleteAccount();
-    navigation.navigate("homeScreen");
+    navigation.navigate("login");
   };
   const onLogOut = () => {
     authStore.logOut();
     userDetailsStore.resetUser();
-    navigation.navigate("homeScreen");
+    navigation.navigate("login");
   };
   const onGoToOrdersList = () => {
     if (userDetailsStore.isAdmin()) {

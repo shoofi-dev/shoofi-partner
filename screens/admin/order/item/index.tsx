@@ -184,7 +184,7 @@ const gerRefundAmount = (order: any) => {
             <Text
               style={{
                 fontSize: 20,
-                // fontFamily: `${getCurrentLang()}-American-bold`,
+                // fontFamily: `${getCurrentLang()}-Bold`,
 
                 color: themeStyle.SUCCESS_COLOR,
               }}
@@ -386,7 +386,7 @@ const gerRefundAmount = (order: any) => {
          
                   <Image
                     style={{ width: "100%", height: "100%" }}
-                    source={{ uri: `${cdnUrl}${meal.img[0].uri}` }}
+                    source={{ uri: `${cdnUrl}${meal?.img[0]?.uri}` }}
                     resizeMode="contain"
                   />
                 </View>

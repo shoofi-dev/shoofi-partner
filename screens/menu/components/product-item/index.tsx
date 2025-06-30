@@ -36,17 +36,15 @@ export type TProps = {
   item: any;
   onItemSelect: (item: any) => void;
   onDeleteProduct: (item: any) => void;
-  onEditProduct: (item: any) => void;
 };
 
 const ProductItem = ({
   item,
   onItemSelect,
   onDeleteProduct,
-  onEditProduct,
 }: TProps) => {
   const { t } = useTranslation();
-
+  const navigation = useNavigation(); 
   const {
     userDetailsStore,
     languageStore,
@@ -56,6 +54,10 @@ const ProductItem = ({
   } = useContext(StoreContext);
   const { deviceType } = _useDeviceType();
 
+  const onEditProduct = (item: any) => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    navigation.navigate("admin-add-product", { product: item });
+  };
   // Memoize expensive calculations
   const isDisabled = useMemo(() => {
     return !userDetailsStore.isAdmin() && item.count == 0;
@@ -108,7 +110,7 @@ const ProductItem = ({
   }, [onItemSelect, item]);
 
   return (
-    <TouchableOpacity style={{}} onPress={handleItemPress}>
+    <TouchableOpacity style={{}} >
       <View style={styles.rowCard}>
       {/* Product Image on the right */}
       <View style={styles.rowImageWrapper}>
@@ -132,7 +134,47 @@ const ProductItem = ({
         </View>
       )}
       </View>
+      <View
+              style={{
+                flexDirection: "row",
+                flex: 1,
+                width: "100%",
+                justifyContent: "flex-end",
+                marginBottom: 10,
+              }}
+            >
+              <View style={{ flexBasis: "20%", marginRight: 10 }}>
+                <Button
+                  bgColor={themeStyle.WARNING_COLOR}
+                  text={"تعديل"}
+                  fontSize={16}
+                  onClickFn={() => onEditProduct(item)}
+                  textPadding={0}
+                  marginH={0}
+                  textColor={themeStyle.WHITE_COLOR}
+                  icon="cart_icon"
+                  iconSize={15}
+                  iconMargin={5}
+                  padding={10}
 
+                />
+              </View>
+              <View style={{ flexBasis: "20%", marginRight: 10 }}>
+                <Button
+                  bgColor={"red"}
+                  text={t("delete")}
+                  fontSize={16}
+                  onClickFn={() => onDeleteProduct(item)}
+                  textPadding={0}
+                  marginH={0}
+                  textColor={themeStyle.WHITE_COLOR}
+                  icon="cart_icon"
+                  iconSize={15}
+                  iconMargin={5}
+                  padding={10}
+                />
+              </View>
+            </View>
       <DashedLine
         style={{ position: "absolute", bottom: 0, left: 0, right: 0 }}
         dashThickness={1}

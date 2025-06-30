@@ -18,7 +18,7 @@ const LanguageScreen = ({ route }) => {
   const onChangeLanguage = (lng) => {
     languageStore.changeLang(lng);
     if(isFromTerms){
-      navigation.navigate("homeScreen");
+      navigation.navigate("admin-dashboard");
     }else{
       navigation.goBack();
     }

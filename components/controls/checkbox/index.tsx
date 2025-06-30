@@ -281,12 +281,19 @@ export default function CheckBox({
             height: 25,
             width: 25,
             borderRadius: 5,
-            padding: 5,
-            backgroundColor: themeStyle.SECONDARY_COLOR,
+            backgroundColor: themeStyle.SUCCESS_COLOR,
+            borderWidth: 1,
           }}
         ></View>
       ) : (
-        <View></View>
+        <View
+        style={{
+          height: 25,
+          width: 25,
+          borderRadius: 5,
+          borderWidth: 1,
+        }}
+        ></View>
       )}
     </TouchableOpacity>
   </View>

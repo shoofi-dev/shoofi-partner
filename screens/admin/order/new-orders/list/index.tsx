@@ -360,7 +360,7 @@ const NewOrdersListScreen = ({ route }) => {
             <Text
               style={{
                 fontSize: 36,
-                fontFamily: `${getCurrentLang()}-American-bold`,
+                fontFamily: `${getCurrentLang()}-Bold`,
 
                 color: themeStyle.SUCCESS_COLOR,
               }}
@@ -584,7 +584,7 @@ const NewOrdersListScreen = ({ route }) => {
                 >
                   <TouchableOpacity
                     onPress={() =>
-                      handleShowImage(`${cdnUrl}${meal.img[0].uri}`)
+                      handleShowImage(`${cdnUrl}${meal?.img[0]?.uri}`)    
                     }
                   >
                     <CustomFastImage
@@ -595,10 +595,10 @@ const NewOrdersListScreen = ({ route }) => {
                         borderRadius: 20,
                       }}
                       source={{
-                        uri: `${cdnUrl}${meal.img[0].uri}`,
+                        uri: `${cdnUrl}${meal?.img[0]?.uri}`,
                       }}
                       resizeMode="contain"
-                      cacheKey={`${APP_NAME}_${meal.img[0].uri
+                      cacheKey={`${APP_NAME}_${meal?.img[0]?.uri
                         .split(/[\\/]/)
                         .pop()}`}
                     />
@@ -642,24 +642,7 @@ const NewOrdersListScreen = ({ route }) => {
                   fontSize={(v) => v}
                 />
               </View>
-              {isShowSize(item.item_id) && (
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    marginBottom: 10,
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: themeStyle.FONT_SIZE_LG,
-                    }}
-                  >
-                    {t("size")} : {t(item.size)}
-                  </Text>
-                </View>
-              )}
+ 
               <View
                 style={{
                   flexDirection: "row",
@@ -794,7 +777,6 @@ const NewOrdersListScreen = ({ route }) => {
       navigation.navigate("cart");
     }, 500);
   };
-
   return (
     <View>
       {isLoading && (
@@ -1066,6 +1048,7 @@ const NewOrdersListScreen = ({ route }) => {
                             )
                           }
                           textColor={themeStyle.WHITE_COLOR}
+                          bgColor={themeStyle.SUCCESS_COLOR}
                           fontFamily={`${getCurrentLang()}-Bold`}
                           borderRadious={19}
                           disabled={

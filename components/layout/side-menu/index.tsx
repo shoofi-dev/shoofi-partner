@@ -80,11 +80,11 @@ const SideMenu = () => {
 
   const deletAccount = () => {
     authStore.deleteAccount();
-    navigation.navigate("homeScreen");
+    navigation.navigate("login");
   };
   const onLogOut = () => {
     authStore.logOut();
-    navigation.navigate("homeScreen");
+    navigation.navigate("login");
   };
   const onGoToOrdersList = () => {
     navigation.navigate("orders-status");

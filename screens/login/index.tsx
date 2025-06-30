@@ -83,7 +83,7 @@ const LoginScreen = () => {
       const isBlocked = await ifUserBlocked();
       if (isBlocked) {
         setTimeout(() => {
-          navigation.navigate("homeScreen");
+          navigation.navigate("admin-dashboard");
         }, 5000);
       }
 
@@ -141,7 +141,7 @@ const LoginScreen = () => {
   };
 
   const handleLogoPress = () => {
-    navigation.navigate("homeScreen");
+    navigation.navigate("login");
   };
 
   const handleConfirmActionAnswer = (answer: string) => {

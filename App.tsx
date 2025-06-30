@@ -88,7 +88,7 @@ let customARFonts = {
   "ar-SemiBold": require(`./assets/fonts/ar/Medium.ttf`),
   // "ar-Arslan": require(`./assets/fonts/ar/Arslan.ttf`),
   // "ar-American": require(`./assets/fonts/ar/American-Typewriter-Light.ttf`),
-  // "ar-American-bold": require(`./assets/fonts/ar/American-Typewriter-Bold.ttf`),
+  // "ar-Bold": require(`./assets/fonts/ar/American-Typewriter-Bold.ttf`),
   "ar-GS-Black-Bold": require(`./assets/fonts/ar/GESSUniqueBold-Bold.otf`),
 
   "he-Black": require(`./assets/fonts/he/Black.ttf`),
@@ -100,7 +100,7 @@ let customARFonts = {
   "he-SemiBold": require(`./assets/fonts/he/SemiBold.ttf`),
   // "he-Arslan": require(`./assets/fonts/ar/Arslan.ttf`),
   "he-American": require(`./assets/fonts/he/American-Typewriter-Light.ttf`),
-  // "he-American-bold": require(`./assets/fonts/ar/American-Typewriter-Bold.ttf`),
+  // "he-Bold": require(`./assets/fonts/ar/American-Typewriter-Bold.ttf`),
    "he-GS-Black-Bold": require(`./assets/fonts/ar/GESSUniqueBold-Bold.otf`),
 
   "Poppins-Regular": require(`./assets/fonts/shared/Poppins-Regular.ttf`),
@@ -322,6 +322,7 @@ const App = () => {
   };
 
   const printNotPrinted = async () => {
+    
     setIsPrinting(true);
     try {
       ordersStore

@@ -76,7 +76,7 @@ const InsertCustomerNameScreen = ({route}) => {
               ) {
                 navigation.navigate("cart");
               } else {
-                navigation.navigate("homeScreen");
+                navigation.navigate("admin-dashboard");
               }
             }
           });

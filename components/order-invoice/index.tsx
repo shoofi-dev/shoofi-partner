@@ -11,6 +11,27 @@ import InvoiceOrderItems from "./invoice-order-items";
 import { PAYMENT_METHODS, SHIPPING_METHODS } from "../../consts/shared";
 import { StoreContext } from "../../stores";
 import getPizzaCount from "../../helpers/get-pizza-count";
+import Icon from "../icon";
+
+const getIconByShippingMethod = (method) => {
+  switch (method) {
+    case "TAKEAWAY":
+      return <Icon icon="cart" size={80} color="black" />;
+    case "DELIVERY":
+      return <Icon icon="delivery" size={80} color="black" />;
+    case "TABLE":
+      return <Icon icon="table" size={80} color="black" />;
+  }
+};
+
+const getIconByPaymentMethod = (method) => {
+  switch (method) {
+    case "CASH":
+      return <Icon icon="shekel" size={80} color="black" />;
+    case "CREDIT_CARD":
+      return <Icon icon="credit-card" size={80} color="black" />;
+  }   
+};
 
 const OrderInvoiceCMP = ({ invoiceOrder }) => {
   const { storeDataStore } = useContext(StoreContext);
@@ -29,7 +50,7 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
   return (
     invoiceOrder && (
       <View style={{ width: "100%" }}>
-        <View style={{ height: 150, width: "70%", alignSelf: "center" }}>
+        <View style={{ height: 158, width: "100%", alignSelf: "center", marginBottom: 10 }}>
           <Image
             style={{
               width: "100%",
@@ -37,7 +58,7 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
               alignSelf: "center",
               resizeMode: "contain",
             }}
-            source={require("../../assets/icon4.png")}
+            source={require("../../assets/icon5.png")}
           />
         </View>
         <View style={{ marginTop: 0 }}>
@@ -51,16 +72,37 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
               {invoiceOrder.customerDetails.phone}
             </Text>
           </View>
+
           <View
             style={{
               marginTop: 5,
               borderWidth: 5,
-              borderRadius: 30,
               padding: 5,
+              alignItems: "center",
+           
+              flexDirection: "row",
+              justifyContent: "space-evenly",
+            }}
+          >
+            {getIconByPaymentMethod(invoiceOrder.order.payment_method)} 
+             {getIconByShippingMethod(invoiceOrder.order.receipt_method)}
+
+          </View>
+          <View
+            style={{
+              marginTop: 10,
+              borderWidth: 5,
+              padding: 5,
+              flexDirection: "row",
+              justifyContent: "space-evenly",
+              alignItems: "center",
             }}
           >
             <Text style={{ fontSize: 45, textAlign: "center" }}>
-              {invoiceOrder.order.receipt_method}
+              {i18n.t('order-sent-date')}
+            </Text>
+            <Text style={{ fontSize: 65, textAlign: "center" }}>
+              {moment(invoiceOrder.datetime).format("HH:mm")}
             </Text>
           </View>
           <View
@@ -73,10 +115,10 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
               alignItems: "center",
             }}
           >
-            {/* <Text style={{ fontSize: 90, textAlign: "center" }}>
-              {i18n.t(moment(invoiceOrder.orderDate).format("dddd"))}
-            </Text> */}
-            <Text style={{ fontSize: 90, textAlign: "center" }}>
+            <Text style={{ fontSize: 45, textAlign: "center" }}>
+              {i18n.t('collect-date')}
+            </Text>
+            <Text style={{ fontSize: 65, textAlign: "center" }}>
               {moment(invoiceOrder.orderDate).format("HH:mm")}
             </Text>
           </View>
@@ -96,7 +138,7 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
             {moment(invoiceOrder.orderDate).format("DD/MM")}
           </Text>
         </View> */}
-        {invoiceOrder.order?.payment_method &&
+        {/* {invoiceOrder.order?.payment_method &&
           invoiceOrder?.ccPaymentRefData?.data?.StatusCode == 1 && (
             <View
               style={{
@@ -112,14 +154,14 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
                 بطاقة - مدفوع
               </Text>
             </View>
-          )}
+          )} */}
 
         <View style={{ borderWidth: 5, marginTop: 15, padding: 10 }}>
           <View
             style={{
-              flexDirection: "row",
               alignItems: "center",
-              justifyContent: "space-between",
+              flexDirection: "row",
+              justifyContent: "space-evenly",
             }}
           >
             <View>
@@ -179,26 +221,7 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
           </View> */}
         </View>
 
-        <View style={{ borderWidth: 5, marginTop: 15, padding: 10 }}>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <View>
-              <Text style={{ fontSize: 45, textAlign: "center" }}>
-                {i18n.t("pizza-count")}
-              </Text>
-            </View>
-            <View style={{}}>
-              <Text style={{ fontSize: 45, textAlign: "center" }}>
-                {getPizzaCount(invoiceOrder?.order?.items)}
-              </Text>
-            </View>
-          </View>
-        </View>
+     
 
         <View
           style={{
@@ -257,7 +280,7 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
                   {i18n.t("scan-barcode")}
                 </Text>
               </View>
-              <View style={{ marginTop: 0 }}>
+              <View style={{ marginTop: 0,  }}>
                 <Image
                   source={{ uri: invoiceOrder?.order?.geo_positioning?.qrURI }}
                   style={{ width: 350, height: 350 }}
@@ -265,6 +288,7 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
               </View>
             </View>
           )}
+
 
         {invoiceOrder?.order?.locationText && (
           <View
@@ -288,24 +312,6 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
           </View>
         )}
 
-        <View
-          style={{
-            marginTop: 20,
-            height: 50,
-            width: "50%",
-            alignSelf: "center",
-          }}
-        >
-          <Image
-            style={{
-              width: "100%",
-              height: "100%",
-              alignSelf: "center",
-              resizeMode: "contain",
-            }}
-            source={require("../../assets/copyright-logo.png")}
-          />
-        </View>
       </View>
     )
   );

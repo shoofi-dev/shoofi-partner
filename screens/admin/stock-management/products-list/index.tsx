@@ -53,6 +53,7 @@ const StockProductsList = ({ products, category, onLoadingChange }) => {
   };
 
   const updateProductIsInStoreByCategory = async (isInStoreValue: boolean) => {
+    console.log("isInStoreValue",isInStoreValue)
     onLoadingChange(true);
     let body = {
       isInStore: isInStoreValue,
@@ -101,7 +102,6 @@ const StockProductsList = ({ products, category, onLoadingChange }) => {
   }
 
   const isAtLeastOneProductInStore = isAtLeastOneProductInStoreCheck();
-
   return (
     <View style={{ flexDirection: "row", height: "100%" }}>
       <View style={{ marginHorizontal: 20, minWidth: 400 }}>
@@ -110,12 +110,10 @@ const StockProductsList = ({ products, category, onLoadingChange }) => {
             style={{
               textAlign: "center",
               fontSize: 28,
-              color: themeStyle.WHITE_COLOR,
               fontWeight: "bold",
               borderWidth: 1,
               padding: 10,
               borderRadius: 20,
-              borderColor: themeStyle.WHITE_COLOR
               
             }}
           >
@@ -130,7 +128,6 @@ const StockProductsList = ({ products, category, onLoadingChange }) => {
             <Button
               onClickFn={() => goBack()}
               text={t("back-to-menu")}
-              textColor={themeStyle.WHITE_COLOR}
               fontSize={24}
             />
           </View>}
@@ -144,7 +141,6 @@ const StockProductsList = ({ products, category, onLoadingChange }) => {
                 }
                 fontSize={17}
                 onClickFn={()=>{updateProductIsInStoreByCategory(!isAtLeastOneProductInStore)}}
-                textColor={themeStyle.WHITE_COLOR}
                 fontFamily={`${getCurrentLang()}-Bold`}
                 borderRadious={19}
               />
@@ -166,7 +162,7 @@ const StockProductsList = ({ products, category, onLoadingChange }) => {
                   >
                     <View style={{}}>
                       <Text
-                        style={{ textAlign: "left", fontSize: 24, color: themeStyle.WHITE_COLOR }}
+                        style={{ textAlign: "left", fontSize: 24,  }}
                         type="number"
                       >
                         {languageStore.selectedLang === "ar"

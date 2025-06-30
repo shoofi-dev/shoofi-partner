@@ -167,7 +167,7 @@ export default function PickImagedDialog({
                   color: "white",
                   alignItems: "center",
                   fontSize: 20,
-                  fontFamily: `${getCurrentLang()}-American-bold`,
+                  fontFamily: `${getCurrentLang()}-Bold`,
                 }}
               >
                 ₪ {storeDataStore.storeData.image_price}

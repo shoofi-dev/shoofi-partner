@@ -396,7 +396,7 @@ const styles = StyleSheet.create({
   cartCount: {
     position: "absolute",
     top: Platform.OS === "ios" ? 10 : 11,
-    fontFamily:`${getCurrentLang()}-American-bold`,
+    fontFamily:`${getCurrentLang()}-Bold`,
     color: themeStyle.TEXT_PRIMARY_COLOR,
     fontSize: 15,
     alignSelf:"center",

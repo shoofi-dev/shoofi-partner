@@ -67,6 +67,7 @@ class OrdersStore {
       isNotViewd
     ).then((res) => {
       // const orderedList = orderBy(res.orders, ["created_at"], ["desc"]);
+      console.log("res", res)
       const tmpOrders = res.data || res;
       runInAction(() => {
         if (!isNotPrinted) {

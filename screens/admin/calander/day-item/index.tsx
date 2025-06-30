@@ -250,7 +250,7 @@ const OrderDayItem = ({ data }: TProps) => {
                   <View style={{ width: "100%" }}>
                     <Text
                       style={{
-                        fontFamily: `${getCurrentLang()}-American-bold`,
+                        fontFamily: `${getCurrentLang()}-Bold`,
                         fontSize: 20,
                         textAlign: "left",
                       }}
@@ -274,7 +274,7 @@ const OrderDayItem = ({ data }: TProps) => {
                               </Text>
                               <Text
                                 style={{
-                                  fontFamily: `${getCurrentLang()}-American-bold`,
+                                  fontFamily: `${getCurrentLang()}-Bold`,
                                   color: themeStyle.WHITE_COLOR,
                                   marginTop: 5,
                                 }}

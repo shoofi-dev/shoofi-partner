@@ -86,7 +86,7 @@ export const CCDataCMP = ({
             style={{
               fontSize: 17,
               color: themeStyle.TEXT_PRIMARY_COLOR,
-              fontFamily: `${getCurrentLang()}-American-bold`,
+              fontFamily: `${getCurrentLang()}-Bold`,
               
             }}
           >{`**** **** **** ${ccData?.last4Digits}`}</Text>

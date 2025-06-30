@@ -340,7 +340,7 @@ const ProductCarousleItem = ({
               color: "white",
               alignItems: "center",
               fontSize: 24,
-              fontFamily: `${getCurrentLang()}-American-bold`,
+              fontFamily: `${getCurrentLang()}-Bold`,
             }}
           >
             ₪ {getPriceBySize(item) || item.price}

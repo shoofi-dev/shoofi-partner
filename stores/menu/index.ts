@@ -203,6 +203,7 @@ class MenuStore {
       if (foundedMeal) {
         return;
       }
+      console.log("category", category.products?.length)
       foundedMeal = category.products.find((product) => product._id === mealId);
     });
     return foundedMeal || {};
@@ -316,7 +317,7 @@ class MenuStore {
       product?._id && formData.append("productId", product?._id);
     }
 
-    product.categoryId && formData.append("categoryId", product.categoryId);
+    product.supportedCategoryIds && formData.append("supportedCategoryIds", JSON.stringify(product.supportedCategoryIds));
 
     formData.append("descriptionAR", product.descriptionAR);
     formData.append("descriptionHE", product.descriptionHE);
@@ -370,19 +371,19 @@ class MenuStore {
   }
 
   // Clear all menu data when switching stores
-  clearMenu = () => {
-    runInAction(() => {
-      this.menu = null;
-      this.categories = null;
-      this.meals = null;
-      this.dictionary = null;
-      this.homeSlides = null;
-      this.imagesUrl = [];
-      this.categoriesImages = [];
-      this.selectedCategoryId = null;
-      this.isLoading = false;
-    });
-  }
+  // clearMenu = () => {
+  //   runInAction(() => {
+  //     this.menu = null;
+  //     this.categories = null;
+  //     this.meals = null;
+  //     this.dictionary = null;
+  //     this.homeSlides = null;
+  //     this.imagesUrl = [];
+  //     this.categoriesImages = [];
+  //     this.selectedCategoryId = null;
+  //     this.isLoading = false;
+  //   });
+  // }
 
   createExtraFromServer = (extra) => {
     // No explicit create endpoint found; using ADMIN_GET_EXTRAS_API with POST as fallback

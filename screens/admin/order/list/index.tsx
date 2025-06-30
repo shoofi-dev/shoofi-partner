@@ -583,7 +583,7 @@ const OrdersListScreen = ({ route }) => {
             <Text
               style={{
                 fontSize: themeStyle.FONT_SIZE_3XL,
-                //fontFamily: `${getCurrentLang()}-American-bold`,
+                //fontFamily: `${getCurrentLang()}-Bold`,
 
                 color: themeStyle.SUCCESS_COLOR,
               }}
@@ -881,7 +881,7 @@ const OrdersListScreen = ({ route }) => {
                 >
                   <TouchableOpacity
                     onPress={() =>
-                      handleShowImage(`${cdnUrl}${meal.img[0].uri}`)
+                      handleShowImage(`${cdnUrl}${meal?.img[0]?.uri}`)
                     }
                   >
                     <CustomFastImage
@@ -892,10 +892,10 @@ const OrdersListScreen = ({ route }) => {
                         borderRadius: 20,
                       }}
                       source={{
-                        uri: `${cdnUrl}${meal.img[0].uri}`,
+                        uri: `${cdnUrl}${meal?.img[0]?.uri}`,
                       }}
                       resizeMode="contain"
-                      cacheKey={`${APP_NAME}_${meal.img[0].uri
+                      cacheKey={`${APP_NAME}_${meal?.img[0]?.uri
                         .split(/[\\/]/)
                         .pop()}`}
                     />
@@ -1258,7 +1258,7 @@ const OrdersListScreen = ({ route }) => {
         </View>
       </View>
       <View style={{ left: 15, zIndex: 1, position: "absolute", top: 10, }}>
-        <BackButton goTo={"homeScreen"} />
+        <BackButton goTo={"admin-dashboard"} />
       </View>
       <ScrollView
         style={{
@@ -1334,7 +1334,7 @@ const OrdersListScreen = ({ route }) => {
               <Text
                 style={{
                   fontSize: themeStyle.FONT_SIZE_XL,
-                  //fontFamily: `${getCurrentLang()}-American-bold`,
+                  //fontFamily: `${getCurrentLang()}-Bold`,
                   color: isSelectedDay
                     ? themeStyle.TEXT_PRIMARY_COLOR
                     : themeStyle.TEXT_PRIMARY_COLOR,
@@ -1712,7 +1712,7 @@ const OrdersListScreen = ({ route }) => {
                             <Icon
                               icon="delivery-active"
                               size={80}
-                              style={{ color: "#a77948" }}
+                              style={{ color: themeStyle.PRIMARY_COLOR }}
                             />
                             {/* <Button
                               text={"اطلب ارسالية"}

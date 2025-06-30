@@ -1,4 +1,4 @@
-package com.shoofi.shopping.newarchitecture;
+package com.shoofi.partners.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
@@ -20,9 +20,9 @@ import com.facebook.react.fabric.EmptyReactNativeConfig;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.shoofi.shopping.BuildConfig;
-import com.shoofi.shopping.newarchitecture.components.MainComponentsRegistry;
-import com.shoofi.shopping.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+import com.shoofi.partners.BuildConfig;
+import com.shoofi.partners.newarchitecture.components.MainComponentsRegistry;
+import com.shoofi.partners.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;
 import java.util.List;
 

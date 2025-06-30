@@ -35,6 +35,7 @@ type TProps = {
   borderColor?: string;
   borderWidthNumber?: number;
   transformIconAnimate?: any;
+  padding?: number;
 };
 export default function Button({
   onClickFn,
@@ -63,6 +64,7 @@ export default function Button({
   borderColor,
   borderWidthNumber,
   transformIconAnimate,
+  padding,
 }: TProps) {
   const onBtnClick = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -119,8 +121,9 @@ export default function Button({
           borderColor: borderColor ? borderColor : themeStyle.GRAY_30,
           justifyContent: "center",
           alignItems: "center",
-          padding: 15,
+          padding: padding !== undefined ? padding : 15,
           backgroundColor: bgColor || themeStyle.PRIMARY_COLOR,
+          opacity: disabled ? 0.3 : 1,
         }}
         disabled={disabled}
         onPress={onBtnClick}

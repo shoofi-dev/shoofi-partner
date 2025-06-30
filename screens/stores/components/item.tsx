@@ -31,7 +31,7 @@ const StoreItem = ({ storeItem }: TProps) => {
     try {
       // setIsLoading(true);
       // Clear the menu cache first to prevent showing old store data
-      menuStore.clearMenu();
+      //menuStore.clearMenu();
       await shoofiAdminStore.setStoreDBName(store.appName);
       // await menuStore.getMenu();
       // await storeDataStore.getStoreData();

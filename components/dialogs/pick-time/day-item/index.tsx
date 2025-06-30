@@ -589,7 +589,7 @@ const OrderDayItem = ({
                 <Text
                   style={{
                     fontSize: 18,
-                    fontFamily: `${getCurrentLang()}-American-bold`,
+                    fontFamily: `${getCurrentLang()}-Bold`,
                     color:themeStyle.SECONDARY_COLOR
                   }}
                 >
@@ -691,7 +691,7 @@ const OrderDayItem = ({
                   color: "#a9753e",
                   fontFamily:
                     index === activeSlide
-                      ? `${getCurrentLang()}-American-bold`
+                      ? `${getCurrentLang()}-Bold`
                       : `${getCurrentLang()}-American`,
                   //opacity: index === activeSlide ? 1 : 1,
                    opacity: checkIsDisabledHour(index) ? 0.7 : 1,

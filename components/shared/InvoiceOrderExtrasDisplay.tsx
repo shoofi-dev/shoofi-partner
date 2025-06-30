@@ -6,17 +6,17 @@ import Icon from "../icon";
 import themeStyle from "../../styles/theme.style";
 import { getCurrentLang } from "../../translations/i18n";
 
-const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
+const InvoiceOrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
   const { languageStore } = useContext(StoreContext);
   const getToppingIcon = (area: any) => {
     console.log("area", area);
     switch (area.id) {
       case "full":
-        return <Icon icon="pizza-full" size={30} color="black" />;
+        return <Icon icon="pizza-full" size={60} color="black" />;
       case "half1":
-        return <Icon icon="pizza-right" size={30} color="black" />;
+        return <Icon icon="pizza-right" size={60} color="black" />;
       case "half2":
-        return <Icon icon="pizza-right" size={30} color="black" />;
+        return <Icon icon="pizza-left" size={60} color="black" />;
       default:
         return null;
     }
@@ -76,12 +76,39 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
 
       if (!hasValues) return null;
 
+      // Collect all pizza-topping selections from this group
+      const allGroupToppingSelections = [];
+      groupExtrasWithoutHeader.forEach((extra: any) => {
+        if (extra.type === "pizza-topping") {
+          const value = selectedExtras?.[extra.id];
+          if (!value) return;
+          Object.entries(value).forEach(([toppingId, areaData]) => {
+            const topping = extra.options.find((o) => o.id === toppingId);
+            if (!topping) return;
+            const typedAreaData = areaData as { areaId: string; isFree: boolean };
+            allGroupToppingSelections.push({
+              areaId: typedAreaData.areaId,
+              topping,
+              areaData: typedAreaData,
+              extra,
+            });
+          });
+        }
+      });
+
+      // Group pizza-toppings by areaId
+      const groupedByArea = allGroupToppingSelections.reduce((acc, curr) => {
+        if (!acc[curr.areaId]) acc[curr.areaId] = [];
+        acc[curr.areaId].push(curr);
+        return acc;
+      }, {} as Record<string, Array<{ topping: any; areaData: { areaId: string; isFree: boolean }; extra: any }>>);
+
       return (
         <View key={groupId} style={{ marginBottom: 10 }}>
           {/* Group Header */}
           {groupHeader && (
             <Text style={{ 
-              fontSize: fontSize(themeStyle.FONT_SIZE_LG), 
+              fontSize: 55, 
               fontWeight: "bold",
               marginBottom: 5,
               fontFamily: `${getCurrentLang()}-Bold`,
@@ -90,92 +117,131 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
             </Text>
           )}
           
-          {/* Group Extras */}
-          {groupExtrasWithoutHeader.map((extra: any) => {
-            const value = selectedExtras?.[extra.id];
-            if (
-              value === undefined ||
-              value === null ||
-              value === "" ||
-              (Array.isArray(value) && value.length === 0)
-            )
+          {/* Non-pizza-topping extras */}
+          {groupExtrasWithoutHeader
+            .filter((extra: any) => extra.type !== "pizza-topping")
+            .map((extra: any) => {
+              const value = selectedExtras?.[extra.id];
+              if (
+                value === undefined ||
+                value === null ||
+                value === "" ||
+                (Array.isArray(value) && value.length === 0)
+              )
+                return null;
+
+              // Single choice
+              if (extra.type === "single") {
+                const opt = extra.options.find((o: any) => o.id === value);
+                return (
+                  <View
+                    key={extra.id}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginBottom: 2,
+                      marginLeft: groupHeader ? 10 : 0,
+                    }}
+                  >
+                    {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: 45, color: "#888" }}>
+                      {languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}:{" "}
+                    </Text>}
+                    <Text style={{ fontSize: 45, color: "#333" }}>
+                      {languageStore.selectedLang === "ar" ? opt?.nameAR : opt?.nameHE}
+                      {opt?.price ? ` (+₪${opt.price})` : ""}
+                    </Text>
+                  </View>
+                );
+              }
+
+              // Multi select
+              if (extra.type === "multi") {
+                const opts = extra.options.filter((o: any) => value.includes(o.id));
+                console.log("extra", extra);
+                return (
+                  <View
+                    key={extra.id}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginBottom: 2,
+                      marginLeft: groupHeader ? 10 : 0,
+                    }}
+                  >
+                    {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: 45, color: "#888" }}>
+                      {languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}:{" "}
+                    </Text>}
+                    <Text style={{ fontSize: 45, color: "#333" }}>
+                      {opts
+                        .map((o: any) => `${languageStore.selectedLang === "ar"
+                          ? o.nameAR
+                          : o.nameHE}${o.price ? ` (+₪${o.price})` : ""}`)
+                        .join(", ")}
+                    </Text>
+                  </View>
+                );
+              }
+
+              // Counter
+              if (extra.type === "counter") {
+                return (
+                  <View
+                    key={extra.id}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginBottom: 2,
+                      marginLeft: groupHeader ? 10 : 0,
+                    }}
+                  >
+                    {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: 45, color: "#888" }}>
+                      {languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}:{" "}
+                    </Text>}
+                    <Text style={{ fontSize: 45, color: "#333" }}>
+                      {value}x{extra.price ? ` (+₪${extra.price})` : ""}
+                    </Text>
+                  </View>
+                );
+              }
+
               return null;
+            })}
 
-            // Single choice
-            if (extra.type === "single") {
-              const opt = extra.options.find((o: any) => o.id === value);
-              return (
-                <View
-                  key={extra.id}
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    marginBottom: 2,
-                    marginLeft: groupHeader ? 10 : 0,
-                  }}
-                >
-                  {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: fontSize(themeStyle.FONT_SIZE_MD), color: "#888" }}>
-                    {languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}:{" "}
-                  </Text>}
-                  <Text style={{ fontSize: fontSize(themeStyle.FONT_SIZE_MD), color: "#333" }}>
-                    {languageStore.selectedLang === "ar" ? opt?.nameAR : opt?.nameHE}
-                    {opt?.price ? ` (+₪${opt.price})` : ""}
-                  </Text>
+          {/* Pizza-toppings grouped by area */}
+          {Object.entries(groupedByArea).map(([areaId, toppings]: [string, Array<{ topping: any; areaData: { areaId: string; isFree: boolean }; extra: any }>]) => {
+            const area = toppings[0]?.extra.options[0]?.areaOptions?.find(
+              (a) => a.id === areaId
+            );
+            return (
+              <View key={areaId} style={{ marginBottom: 15, marginLeft: groupHeader ? 10 : 0 }}>
+                <View style={{ alignItems: "center", marginBottom: 15 }}>
+                  <View style={{ marginRight: 5 }}>{getToppingIcon(area)}</View>
+                  {toppings.map(({ topping, areaData }, idx) => (
+                    <View
+                      key={topping.id + idx}
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        marginRight: 10,
+                      }}
+                    >
+                      <Text style={{ fontSize: 45, color: "#333" }}>
+                        {languageStore.selectedLang === "ar"
+                          ? topping.nameAR
+                          : topping.nameHE}
+                        {!areaData.isFree &&
+                          (() => {
+                            const areaOption = topping.areaOptions?.find(
+                              (opt) => opt.id === areaData.areaId
+                            );
+                            return areaOption ? ` (+₪${areaOption.price || 0})` : "";
+                          })()}
+                      </Text>
+                    </View>
+                  ))}
                 </View>
-              );
-            }
-
-            // Multi select
-            if (extra.type === "multi") {
-              const opts = extra.options.filter((o: any) => value.includes(o.id));
-              console.log("extra", extra);
-              return (
-                <View
-                  key={extra.id}
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    marginBottom: 2,
-                    marginLeft: groupHeader ? 10 : 0,
-                  }}
-                >
-                  {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: fontSize(themeStyle.FONT_SIZE_MD), color: "#888" }}>
-                    {languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}:{" "}
-                  </Text>}
-                  <Text style={{ fontSize: fontSize(themeStyle.FONT_SIZE_MD), color: "#333" }}>
-                    {opts
-                      .map((o: any) => `${languageStore.selectedLang === "ar"
-                        ? o.nameAR
-                        : o.nameHE}${o.price ? ` (+₪${o.price})` : ""}`)
-                      .join(", ")}
-                  </Text>
-                </View>
-              );
-            }
-
-            // Counter
-            if (extra.type === "counter") {
-              return (
-                <View
-                  key={extra.id}
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    marginBottom: 2,
-                    marginLeft: groupHeader ? 10 : 0,
-                  }}
-                >
-                  {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: fontSize(themeStyle.FONT_SIZE_MD), color: "#888" }}>
-                    {languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}:{" "}
-                  </Text>}
-                  <Text style={{ fontSize: fontSize(themeStyle.FONT_SIZE_MD), color: "#333" }}>
-                    {value}x{extra.price ? ` (+₪${extra.price})` : ""}
-                  </Text>
-                </View>
-              );
-            }
-
-            return null;
+              </View>
+            );
           })}
         </View>
       );
@@ -211,10 +277,10 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
               marginBottom: 2,
             }}
           >
-            {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: fontSize(themeStyle.FONT_SIZE_MD), color: "#888" }}>
+              {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: 45, color: "#888" }}>
               {languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}:{" "}
             </Text>}
-            <Text style={{ fontSize: fontSize(themeStyle.FONT_SIZE_MD), color: "#333" }}>
+            <Text style={{ fontSize: 45, color: "#333" }}>
               {languageStore.selectedLang === "ar" ? opt?.nameAR : opt?.nameHE}
               {opt?.price ? ` (+₪${opt.price})` : ""}
             </Text>
@@ -235,10 +301,10 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
               marginBottom: 2,
             }}
           >
-            {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: fontSize(14), color: "#888" }}>
+            {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: 45, color: "#888" }}>
               {languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}:{" "}
             </Text>}
-            <Text style={{ fontSize: fontSize(14), color: "#333" }}>
+            <Text style={{ fontSize: 45, color: "#333" }}>
               {opts
                 .map((o) => `${languageStore.selectedLang === "ar"
                   ? o.nameAR
@@ -260,10 +326,10 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
               marginBottom: 2,
             }}
           >
-            {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: fontSize(14), color: "#888" }}>
+              {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: 45, color: "#888" }}>
               {languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}:{" "}
             </Text>}
-            <Text style={{ fontSize: fontSize(14), color: "#333" }}>
+            <Text style={{ fontSize: 45, color: "#333" }}>
               {value}x{extra.price ? ` (+₪${extra.price})` : ""}
             </Text>
           </View>
@@ -292,9 +358,9 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
         <View key={areaId} style={{ marginBottom: 15 }}>
           <View
             style={{
-              flexDirection: "row",
               alignItems: "center",
-              marginBottom: 8,
+              marginBottom: 15,
+             
             }}
           >
             <View style={{ marginRight: 5 }}>{getToppingIcon(area)}</View>
@@ -310,7 +376,7 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
               >
                 <Text
                   style={{
-                    fontSize: fontSize(themeStyle.FONT_SIZE_MD),
+                    fontSize: 45,
                     color: "#333",
                   }}
                 >
@@ -342,4 +408,4 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
   );
 };
 
-export default OrderExtrasDisplay;
+export default InvoiceOrderExtrasDisplay;

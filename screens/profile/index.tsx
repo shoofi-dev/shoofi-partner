@@ -127,7 +127,7 @@ const ProfileScreen = () => {
       case "logout":
         authStore.logOut();
         userDetailsStore.resetUser();
-        navigation.navigate("homeScreen");
+        navigation.navigate("login");
         break;
     }
   };

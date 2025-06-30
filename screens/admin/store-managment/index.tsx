@@ -17,6 +17,16 @@ import _useWebSocketUrl from "../../../hooks/use-web-socket-url";
 
 const categoriesToShow = [1, 2, 3, 4, 5, 6, 7];
 
+const daysOfWeek = [
+  { key: "sunday", label: "الأحد" },
+  { key: "monday", label: "الاثنين" },
+  { key: "tuesday", label: "الثلاثاء" },
+  { key: "wednesday", label: "الأربعاء" },
+  { key: "thursday", label: "الخميس" },
+  { key: "friday", label: "الجمعة" },
+  { key: "saturday", label: "السبت" },
+];
+
 const StoreManagementScreen = ({ route }) => {
   const { t } = useTranslation();
   const [storeData, setStoreData] = useState(null);
@@ -30,6 +40,20 @@ const StoreManagementScreen = ({ route }) => {
       [key]: value,
     };
     setStoreData(tmpStoreDate);
+  };
+
+  const handleOpenHoursChange = (dayKey: string, field: string, value: any) => {
+    const tmpStoreData = {
+      ...storeData,
+      openHours: {
+        ...storeData.openHours,
+        [dayKey]: {
+          ...storeData.openHours[dayKey],
+          [field]: value,
+        },
+      },
+    };
+    setStoreData(tmpStoreData);
   };
 
   const { webScoketURL } = _useWebSocketUrl();
@@ -60,15 +84,15 @@ const StoreManagementScreen = ({ route }) => {
   };
 
   const getDateFromHourMinute = (time) => {
-    const [h, m] = time.split(":");
+    const [h, m] = time?.split(":") || ["00", "00"];
     const ms = new Date().setHours(h, m);
     const date = new Date(ms);
     return date;
   };
 
-  const onChange = (selectedDate, key) => {
+  const onChange = (selectedDate, dayKey, timeField) => {
     const currentDate = selectedDate;
-    handleInputChange(moment(currentDate).format("HH:mm"), key);
+    handleOpenHoursChange(dayKey, timeField, moment(currentDate).format("HH:mm"));
   };
 
   if (!storeData) {
@@ -137,28 +161,7 @@ const StoreManagementScreen = ({ route }) => {
 
       <ScrollView style={{ marginTop: 25, width: "100%", marginBottom: 40 }}>
         <View style={{ width: "100%" }}>
-          {/* <View style={{ marginTop: 30 }}>
-            <View
-              style={{
-                flexDirection: "row",
-                marginBottom: 20,
-                alignItems: "center",
-              }}
-            >
-              <View style={{}}>
-                <Text style={{ textAlign: "right", fontSize: 24, color: themeStyle.TEXT_PRIMARY_COLOR }}>
-                  * {t("المحل مفتوح")} :
-                </Text>
-              </View>
-              <View style={{ marginLeft: 20 }}>
-                <CheckBox
-                  onChange={(e) => handleInputChange(e, "alwaysOpen")}
-                  value={storeData.alwaysOpen}
-                />
-              </View>
-            </View>
-          </View> */}
-                   <View style={{ marginTop: 30 }}>
+          <View style={{ marginTop: 30 }}>
             <View
               style={{
                 flexDirection: "row",
@@ -198,101 +201,97 @@ const StoreManagementScreen = ({ route }) => {
                 </Text>
               </View>
               <View style={{ marginLeft: 20, marginTop: 20 }}>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    marginBottom: 10,
-                    alignItems: "center",
-                  }}
-                >
-                  <View style={{}}>
-                    <Text style={{ textAlign: "right", fontSize: 24, color: themeStyle.TEXT_PRIMARY_COLOR }}>
-                      - {t("من الساعة")}
-                    </Text>
-                  </View>
-                  <View style={{ marginLeft: 20, width: "100%" }}>
-                    <DateTimePicker
-                      testID="dateTimePicker"
-                      value={getDateFromHourMinute(storeData.start)}
-                      mode={"time"}
-                      is24Hour={true}
-                      onChange={(event: any, selectedDate: any) => {
-                        onChange(selectedDate, "start");
+                {daysOfWeek.map((day, index) => (
+                  <View key={day.key} style={{ marginBottom: 20 }}>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        marginBottom: 10,
+                        alignItems: "center",
                       }}
-                      minuteInterval={30}
-                      locale={"en_IL"}
-           
-                      themeVariant="dark"
-                    />
+                    >
+                      <View style={{}}>
+                        <Text style={{ textAlign: "right", fontSize: 20, color: themeStyle.TEXT_PRIMARY_COLOR }}>
+                          {day.label} :
+                        </Text>
+                      </View>
+                      <View style={{ marginLeft: 20 }}>
+                        <CheckBox
+                          onChange={(e) => handleOpenHoursChange(day.key, "isOpen", e)}
+                          value={storeData.openHours?.[day.key]?.isOpen || false}
+                        />
+                      </View>
+                    </View>
+                    {storeData.openHours?.[day.key]?.isOpen && (
+                      <View style={{ marginLeft: 30 }}>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            marginBottom: 10,
+                            alignItems: "center",
+                          }}
+                        >
+                          <View style={{}}>
+                            <Text style={{ textAlign: "right", fontSize: 18, color: themeStyle.TEXT_PRIMARY_COLOR }}>
+                              - {t("من الساعة")}
+                            </Text>
+                          </View>
+                          <View style={{ marginLeft: 20, width: "100%" }}>
+                            <DateTimePicker
+                              testID={`dateTimePicker-${day.key}-start`}
+                              value={getDateFromHourMinute(storeData.openHours?.[day.key]?.start)}
+                              mode={"time"}
+                              is24Hour={true}
+                              onChange={(event: any, selectedDate: any) => {
+                                onChange(selectedDate, day.key, "start");
+                              }}
+                              minuteInterval={30}
+                              locale={"en_IL"}
+                          
+                            />
+                          </View>
+                        </View>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                          }}
+                        >
+                          <View style={{}}>
+                            <Text style={{ textAlign: "right", fontSize: 18, color: themeStyle.TEXT_PRIMARY_COLOR }}>
+                              - {t("حتي الساعة")}
+                            </Text>
+                          </View>
+                          <View style={{ marginLeft: 20, width: "100%" }}>
+                            <DateTimePicker
+                              testID={`dateTimePicker-${day.key}-end`}
+                              value={getDateFromHourMinute(storeData.openHours?.[day.key]?.end)}
+                              mode={"time"}
+                              is24Hour={true}
+                              onChange={(event: any, selectedDate: any) => {
+                                onChange(selectedDate, day.key, "end");
+                              }}
+                              minuteInterval={30}
+                              locale={"en_IL"}
+                            />
+                          </View>
+                        </View>
+                      </View>
+                    )}
+                    {index < daysOfWeek.length - 1 && (
+                      <DashedLine
+                        dashLength={3}
+                        dashThickness={1}
+                        dashGap={3}
+                        dashColor={themeStyle.SECONDARY_COLOR}
+                        style={{ marginTop: 10 }}
+                      />
+                    )}
                   </View>
-                </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                  }}
-                >
-                  <View style={{}}>
-                    <Text style={{ textAlign: "right", fontSize: 24, color: themeStyle.TEXT_PRIMARY_COLOR }}>
-                      - {t("حتي الساعة")}
-                    </Text>
-                  </View>
-                  <View style={{ marginLeft: 20, width: "100%" }}>
-                    <DateTimePicker
-                      testID="dateTimePicker"
-                      value={getDateFromHourMinute(storeData.end)}
-                      mode={"time"}
-                      is24Hour={true}
-                      onChange={(event: any, selectedDate: any) => {
-                        onChange(selectedDate, "end");
-                      }}
-                      minuteInterval={30}
-                      locale={"en_IL"}
-                      themeVariant="dark"
-
-                    />
-                  </View>
-                </View>
+                ))}
               </View>
             </View>
           </View>
-          {/* <DashedLine
-            dashLength={5}
-            dashThickness={1}
-            dashGap={5}
-            dashColor={themeStyle.SECONDARY_COLOR}
-            style={{ marginTop: 15 }}
-          />
-          <View style={{ marginTop: 30 }}>
-            <View
-              style={{
-                flexDirection: "row",
-                marginBottom: 20,
-                alignItems: "center",
-              }}
-            >
-              <View style={{}}>
-                <Text style={{ textAlign: "right", fontSize: 24, color: themeStyle.TEXT_PRIMARY_COLOR }}>
-                  * {t("يمكن الطلب حتي الساعة")} :
-                </Text>
-              </View>
-              <View style={{ marginLeft: 20, width: "100%" }}>
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  value={getDateFromHourMinute(storeData.orderNowEndTime)}
-                  mode={"time"}
-                  is24Hour={true}
-                  onChange={(event: any, selectedDate: any) => {
-                    onChange(selectedDate, "orderNowEndTime");
-                  }}
-                  minuteInterval={30}
-                  locale={"en_IL"}
-                  themeVariant="dark"
-
-                />
-              </View>
-            </View>
-          </View> */}
           <DashedLine
             dashLength={5}
             dashThickness={1}
@@ -408,57 +407,6 @@ const StoreManagementScreen = ({ route }) => {
             dashColor={themeStyle.SECONDARY_COLOR}
             style={{ marginTop: 15 }}
           />
-          {/* <View style={{ marginTop: 30, width: "100%", marginBottom: 20 }}>
-            <View style={{}}>
-              <Text style={{ textAlign: "right", fontSize: 26, color: themeStyle.TEXT_PRIMARY_COLOR }}>
-                * شركة التوصيل:
-              </Text>
-            </View>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-
-              alignItems: "center",
-            }}
-          >
-            <View style={{}}>
-              <Text style={{ textAlign: "right", fontSize: 24, color: themeStyle.TEXT_PRIMARY_COLOR }}>
-                - {t("رقم الهاتف")} :
-              </Text>
-            </View>
-            <View style={{ marginTop: -25, width: 200, marginLeft: 25 }}>
-              <InputText
-                onChange={(e) => handleInputChange(e, "order_company_number")}
-                label={t("")}
-                value={storeData?.order_company_number?.toString()}
-                keyboardType="numeric"
-                variant="default"
-              />
-            </View>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              marginTop: 30,
-              alignItems: "center",
-            }}
-          >
-            <View style={{}}>
-              <Text style={{ textAlign: "right", fontSize: 24, color: themeStyle.TEXT_PRIMARY_COLOR }}>
-                - {t("سعر الارسالية")} :
-              </Text>
-            </View>
-            <View style={{ marginTop: -25, width: 100, marginLeft: 25 }}>
-              <InputText
-                onChange={(e) => handleInputChange(Number(e), "delivery_price")}
-                label={t("")}
-                value={storeData?.delivery_price?.toString()}
-                keyboardType="numeric"
-                variant="default"
-              />
-            </View>
-          </View> */}
         </View>
       </ScrollView>
     </View>
