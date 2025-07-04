@@ -5,18 +5,20 @@ import { StoreContext } from "../../stores";
 import Icon from "../icon";
 import themeStyle from "../../styles/theme.style";
 import { getCurrentLang } from "../../translations/i18n";
+import { useResponsive } from "../../hooks/useResponsive";
 
 const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
   const { languageStore } = useContext(StoreContext);
+  const { isTablet, scale, } = useResponsive();
   const getToppingIcon = (area: any) => {
     console.log("area", area);
     switch (area.id) {
       case "full":
-        return <Icon icon="pizza-full" size={30} color="black" />;
+        return <Icon icon="pizza-full" size={isTablet ? 30 : 20} color="black" />;
       case "half1":
-        return <Icon icon="pizza-right" size={30} color="black" />;
+        return <Icon icon="pizza-right" size={isTablet ? 30 : 20} color="black" />;
       case "half2":
-        return <Icon icon="pizza-right" size={30} color="black" />;
+        return <Icon icon="pizza-right" size={isTablet ? 30 : 20} color="black" />;
       default:
         return null;
     }
@@ -81,7 +83,7 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
           {/* Group Header */}
           {groupHeader && (
             <Text style={{ 
-              fontSize: fontSize(themeStyle.FONT_SIZE_LG), 
+              fontSize: (isTablet ? themeStyle.FONT_SIZE_LG : themeStyle.FONT_SIZE_MD), 
               fontWeight: "bold",
               marginBottom: 5,
               fontFamily: `${getCurrentLang()}-Bold`,
@@ -114,10 +116,10 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
                     marginLeft: groupHeader ? 10 : 0,
                   }}
                 >
-                  {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: fontSize(themeStyle.FONT_SIZE_MD), color: "#888" }}>
+                  {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: (isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_SM), color: "#888" }}>
                     {languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}:{" "}
                   </Text>}
-                  <Text style={{ fontSize: fontSize(themeStyle.FONT_SIZE_MD), color: "#333" }}>
+                  <Text style={{ fontSize: (isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_SM), color: "#333" }}>
                     {languageStore.selectedLang === "ar" ? opt?.nameAR : opt?.nameHE}
                     {opt?.price ? ` (+₪${opt.price})` : ""}
                   </Text>
@@ -139,10 +141,10 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
                     marginLeft: groupHeader ? 10 : 0,
                   }}
                 >
-                  {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: fontSize(themeStyle.FONT_SIZE_MD), color: "#888" }}>
+                  {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: (isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_SM), color: "#888" }}>
                     {languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}:{" "}
                   </Text>}
-                  <Text style={{ fontSize: fontSize(themeStyle.FONT_SIZE_MD), color: "#333" }}>
+                  <Text style={{ fontSize: (isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_SM), color: "#333" }}>
                     {opts
                       .map((o: any) => `${languageStore.selectedLang === "ar"
                         ? o.nameAR
@@ -165,10 +167,10 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
                     marginLeft: groupHeader ? 10 : 0,
                   }}
                 >
-                  {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: fontSize(themeStyle.FONT_SIZE_MD), color: "#888" }}>
+                  {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: (isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_SM), color: "#888" }}>
                     {languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}:{" "}
                   </Text>}
-                  <Text style={{ fontSize: fontSize(themeStyle.FONT_SIZE_MD), color: "#333" }}>
+                  <Text style={{ fontSize: (isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_SM), color: "#333" }}>
                     {value}x{extra.price ? ` (+₪${extra.price})` : ""}
                   </Text>
                 </View>
@@ -211,10 +213,10 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
               marginBottom: 2,
             }}
           >
-            {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: fontSize(themeStyle.FONT_SIZE_MD), color: "#888" }}>
+            {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: (isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_SM), color: "#888" }}>
               {languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}:{" "}
             </Text>}
-            <Text style={{ fontSize: fontSize(themeStyle.FONT_SIZE_MD), color: "#333" }}>
+            <Text style={{ fontSize: (isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_SM), color: "#333" }}>
               {languageStore.selectedLang === "ar" ? opt?.nameAR : opt?.nameHE}
               {opt?.price ? ` (+₪${opt.price})` : ""}
             </Text>
@@ -235,10 +237,10 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
               marginBottom: 2,
             }}
           >
-            {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: fontSize(14), color: "#888" }}>
+            {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: (isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_SM), color: "#888" }}>
               {languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}:{" "}
             </Text>}
-            <Text style={{ fontSize: fontSize(14), color: "#333" }}>
+            <Text style={{ fontSize: (isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_SM), color: "#333" }}>
               {opts
                 .map((o) => `${languageStore.selectedLang === "ar"
                   ? o.nameAR
@@ -260,10 +262,10 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
               marginBottom: 2,
             }}
           >
-            {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: fontSize(14), color: "#888" }}>
+            {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: (isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_SM), color: "#888" }}>
               {languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}:{" "}
             </Text>}
-            <Text style={{ fontSize: fontSize(14), color: "#333" }}>
+            <Text style={{ fontSize: (isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_SM), color: "#333" }}>
               {value}x{extra.price ? ` (+₪${extra.price})` : ""}
             </Text>
           </View>
@@ -310,7 +312,7 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
               >
                 <Text
                   style={{
-                    fontSize: fontSize(themeStyle.FONT_SIZE_MD),
+                    fontSize: (isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_SM),
                     color: "#333",
                   }}
                 >

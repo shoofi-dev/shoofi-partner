@@ -11,13 +11,13 @@ import Text from "../../../../components/controls/Text";
 import BirthdayCakes from "../../../menu/components/product-item/birthday-cakes";
 import Button from "../../../../components/controls/button/button";
 import { getCurrentLang } from "../../../../translations/i18n";
-
+import { useResponsive } from "../../../../hooks/useResponsive";
 const StockProductsList = ({ products, category, onLoadingChange }) => {
   const { t } = useTranslation();
   const { languageStore, menuStore, storeDataStore } = useContext(StoreContext);
   const [productsList, setProductsList] = useState(null);
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
-
+  const { isTablet } = useResponsive();
   useEffect(() => {
     if (category.categoryId == "5") {
       const filterdBirthday = filterBirthday();
@@ -104,15 +104,15 @@ const StockProductsList = ({ products, category, onLoadingChange }) => {
   const isAtLeastOneProductInStore = isAtLeastOneProductInStoreCheck();
   return (
     <View style={{ flexDirection: "row", height: "100%" }}>
-      <View style={{ marginHorizontal: 20, minWidth: 400 }}>
+      <View style={{ marginHorizontal: 20, minWidth: isTablet ? 400 : 150 }}>
         <View>
           <Text
             style={{
               textAlign: "center",
-              fontSize: 28,
+              fontSize: isTablet ? 28 : 16,
               fontWeight: "bold",
               borderWidth: 1,
-              padding: 10,
+              padding: isTablet ? 10 : 5,
               borderRadius: 20,
               
             }}
@@ -128,21 +128,22 @@ const StockProductsList = ({ products, category, onLoadingChange }) => {
             <Button
               onClickFn={() => goBack()}
               text={t("back-to-menu")}
-              fontSize={24}
+              fontSize={isTablet ? 24 : 16}
             />
           </View>}
 
-            <View style={{ width: 200, marginBottom: 15, alignSelf: "center" }}>
+            <View style={{ width: isTablet ? 200 : 100, marginBottom: 15, alignSelf: "center" }}>
               <Button
                 text={
                   isAtLeastOneProductInStore
                     ? t("disable-all-products")
                     : t("enable-all-products")
                 }
-                fontSize={17}
+                fontSize={isTablet ? 17 : 12}
                 onClickFn={()=>{updateProductIsInStoreByCategory(!isAtLeastOneProductInStore)}}
                 fontFamily={`${getCurrentLang()}-Bold`}
                 borderRadious={19}
+                padding={isTablet ? 10 : 5}
               />
             </View>
 
@@ -162,7 +163,7 @@ const StockProductsList = ({ products, category, onLoadingChange }) => {
                   >
                     <View style={{}}>
                       <Text
-                        style={{ textAlign: "left", fontSize: 24,  }}
+                        style={{ textAlign: "left", fontSize: isTablet ? 24 : 16,  }}
                         type="number"
                       >
                         {languageStore.selectedLang === "ar"
@@ -194,7 +195,7 @@ const StockProductsList = ({ products, category, onLoadingChange }) => {
                             }}
                           >
                             <Text
-                              style={{ fontSize: 22, marginLeft: 10 }}
+                              style={{ fontSize: isTablet ? 22 : 16, marginLeft: 10 }}
                               type="number"
                             >
                               - {t(taste.label)}

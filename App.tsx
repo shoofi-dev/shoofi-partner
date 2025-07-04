@@ -259,31 +259,31 @@ const App = () => {
     }
   }, [userDetailsStore.userDetails]);
 
-  const listenToNewOrder = async () => {
-    if (
-      (lastJsonMessage && lastJsonMessage.type === "new order") ||
-      (lastJsonMessage && lastJsonMessage.type === "order viewed updated")
-    ) {
-      console.log("listenToNewOrder")
-      await ordersStore.getNotViewdOrders(userDetailsStore.isAdmin(ROLES.all));
-    }
-    if (
-      lastJsonMessage &&
-      (lastJsonMessage.type === "order viewed updated" ||
-        lastJsonMessage.type === "print not printed") &&
-      userDetailsStore.isAdmin()
-    ) {
-      if (userDetailsStore.isAdmin(ROLES.all) && userDetailsStore.isAdmin(ROLES.print) && !isPrinting) {
-        printNotPrinted();
-      }
-      if (
-        !storeDataStore.repeatNotificationInterval &&
-        lastJsonMessage.type !== "print not printed"
-      ) {
-        repeatNotification();
-      }
-    }
-  };
+  // const listenToNewOrder = async () => {
+  //   if (
+  //     (lastJsonMessage && lastJsonMessage.type === "new order") ||
+  //     (lastJsonMessage && lastJsonMessage.type === "order viewed updated")
+  //   ) {
+  //     console.log("listenToNewOrder")
+  //     await ordersStore.getNotViewdOrders(userDetailsStore.isAdmin(ROLES.all));
+  //   }
+  //   if (
+  //     lastJsonMessage &&
+  //     (lastJsonMessage.type === "order viewed updated" ||
+  //       lastJsonMessage.type === "print not printed") &&
+  //     userDetailsStore.isAdmin()
+  //   ) {
+  //     if (userDetailsStore.isAdmin(ROLES.all) && userDetailsStore.isAdmin(ROLES.print) && !isPrinting) {
+  //       printNotPrinted();
+  //     }
+  //     if (
+  //       !storeDataStore.repeatNotificationInterval &&
+  //       lastJsonMessage.type !== "print not printed"
+  //     ) {
+  //       repeatNotification();
+  //     }
+  //   }
+  // };
 
   const getInvoiceSP = async (queue) => {
     const SPs = [];
@@ -380,9 +380,9 @@ const App = () => {
     }
   }, [printOrdersQueue]);
 
-  useEffect(() => {
-    listenToNewOrder();
-  }, [lastJsonMessage, userDetailsStore.userDetails]);
+  // useEffect(() => {
+  //   listenToNewOrder();
+  // }, [lastJsonMessage, userDetailsStore.userDetails]);
 
   const initPrinter = async () => {
     await EscPosPrinter.init({
@@ -433,27 +433,27 @@ const App = () => {
     return () => clearInterval(interval);
   }, [appIsReady, userDetailsStore.userDetails?.phone, currentAppState]);
 
-  useEffect(() => {
-    if (
-      currentAppState === "active" &&
-      userDetailsStore.isAdmin() &&
-      appIsReady
-    ) {
-      if (ordersStore.notViewdOrders?.length > 0) {
-        if (!storeDataStore.repeatNotificationInterval) {
-          repeatNotification();
-        }
-      } else {
-        clearInterval(storeDataStore.repeatNotificationInterval);
-        storeDataStore.setRepeatNotificationInterval(null);
-      }
-    }
-  }, [
-    ordersStore.notViewdOrders,
-    appIsReady,
-    userDetailsStore.userDetails?.phone,
-    currentAppState,
-  ]);
+  // useEffect(() => {
+  //   if (
+  //     currentAppState === "active" &&
+  //     userDetailsStore.isAdmin() &&
+  //     appIsReady
+  //   ) {
+  //     if (ordersStore.notViewdOrders?.length > 0) {
+  //       if (!storeDataStore.repeatNotificationInterval) {
+  //         repeatNotification();
+  //       }
+  //     } else {
+  //       clearInterval(storeDataStore.repeatNotificationInterval);
+  //       storeDataStore.setRepeatNotificationInterval(null);
+  //     }
+  //   }
+  // }, [
+  //   ordersStore.notViewdOrders,
+  //   appIsReady,
+  //   userDetailsStore.userDetails?.phone,
+  //   currentAppState,
+  // ]);
 
   useEffect(() => {
     if (!I18nManager.isRTL) {

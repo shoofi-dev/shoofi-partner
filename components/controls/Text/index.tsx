@@ -10,7 +10,7 @@ import { getCurrentLang } from '../../../translations/i18n';
 import themeStyle from '../../../styles/theme.style';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const scale = Math.min(SCREEN_WIDTH / 375, 1.2); // cap at 1.2 (or 1.3, tweak as needed)
+const scale = Math.min(SCREEN_WIDTH / 375, 1.4); // cap at 1.2 (or 1.3, tweak as needed)
 
 const normalizeFontSize = (size: number): number => {
   if (typeof size !== 'number') return 14; // fallback

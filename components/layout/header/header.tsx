@@ -22,7 +22,7 @@ import { useTranslation } from "react-i18next";
 import Button from "../../controls/button/button";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import _useWebSocketUrl from "../../../hooks/use-web-socket-url";
-
+import { useResponsive } from "../../../hooks/useResponsive";
 export const hideHHeaderScreens = [
   "login",
   "verify-code",
@@ -66,7 +66,7 @@ const Header = () => {
   const [cartItemsLenght, setCartItemsLength] = useState();
   const [bgColor, setBgColor] = useState(themeStyle.PRIMARY_COLOR);
   const anim = useRef(new Animated.Value(1));
-
+  const { isTablet } = useResponsive();
   const shake = useCallback(() => {
     // makes the sequence loop
     Animated.loop(
@@ -462,7 +462,7 @@ const Header = () => {
               style={{ color: theme.GRAY_700,  width:100 }}
             /> */}
             <Image
-              style={{ maxWidth: "20%", maxHeight: "60%" }}
+              style={{ maxWidth: isTablet ? "20%" : "30%", maxHeight: isTablet ? "60%" : "50%" }}
               source={require("../../../assets/icon4.png")}
             />
           </TouchableOpacity>

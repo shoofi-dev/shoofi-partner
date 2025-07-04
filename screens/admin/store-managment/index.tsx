@@ -14,7 +14,7 @@ import themeStyle from "../../../styles/theme.style";
 import InputText from "../../../components/controls/input";
 import Button from "../../../components/controls/button/button";
 import _useWebSocketUrl from "../../../hooks/use-web-socket-url";
-
+import { useResponsive } from "../../../hooks/useResponsive";
 const categoriesToShow = [1, 2, 3, 4, 5, 6, 7];
 
 const daysOfWeek = [
@@ -30,7 +30,7 @@ const daysOfWeek = [
 const StoreManagementScreen = ({ route }) => {
   const { t } = useTranslation();
   const [storeData, setStoreData] = useState(null);
-
+  const { isTablet } = useResponsive();
   const { storeDataStore, userDetailsStore } = useContext(StoreContext);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -102,7 +102,7 @@ const StoreManagementScreen = ({ route }) => {
   return (
     <View
       style={{
-        marginTop: 20,
+        marginTop: isTablet ? 20 : 10,
         width: "100%",
         paddingHorizontal: 20,
         height: "100%",
@@ -141,7 +141,7 @@ const StoreManagementScreen = ({ route }) => {
         <View>
           <Text
             style={{
-              fontSize: 30,
+              fontSize: isTablet ? 30 : 20,
               textAlign: "center",
               color: themeStyle.TEXT_PRIMARY_COLOR
             }}
@@ -149,17 +149,18 @@ const StoreManagementScreen = ({ route }) => {
             {t("ادارة المحل")}
           </Text>
         </View>
-        <View style={{ width: 200, position: "absolute", right: 10 }}>
+        <View style={{ width: isTablet ? 200 : 100, position: "absolute", right: 10 }}>
           <Button
             text={t("save")}
-            fontSize={20}
+            fontSize={isTablet ? 20 : 16}
             onClickFn={onSave}
             isLoading={isLoading}
+            padding={isTablet ? 10 : 5}
           />
         </View>
       </View>
 
-      <ScrollView style={{ marginTop: 25, width: "100%", marginBottom: 40 }}>
+      <ScrollView style={{ marginTop: isTablet ? 25 : 10, width: "100%", marginBottom: isTablet ? 40 : 20 }}>
         <View style={{ width: "100%" }}>
           <View style={{ marginTop: 30 }}>
             <View
@@ -170,7 +171,7 @@ const StoreManagementScreen = ({ route }) => {
               }}
             >
               <View style={{}}>
-                <Text style={{ textAlign: "right", fontSize: 24, color: themeStyle.TEXT_PRIMARY_COLOR }}>
+                <Text style={{ textAlign: "right", fontSize: isTablet ? 24 : 16, color: themeStyle.TEXT_PRIMARY_COLOR }}>
                   * {t("المحل مفتوح")} :
                 </Text>
               </View>
@@ -196,7 +197,7 @@ const StoreManagementScreen = ({ route }) => {
               }}
             >
               <View style={{}}>
-                <Text style={{ textAlign: "right", fontSize: 24, color: themeStyle.TEXT_PRIMARY_COLOR }}>
+                <Text style={{ textAlign: "right", fontSize: isTablet ? 24 : 16, color: themeStyle.TEXT_PRIMARY_COLOR }}>
                   * {t("ساعات العمل")} :
                 </Text>
               </View>
@@ -211,7 +212,7 @@ const StoreManagementScreen = ({ route }) => {
                       }}
                     >
                       <View style={{}}>
-                        <Text style={{ textAlign: "right", fontSize: 20, color: themeStyle.TEXT_PRIMARY_COLOR }}>
+                        <Text style={{ textAlign: "right", fontSize: isTablet ? 20 : 16, color: themeStyle.TEXT_PRIMARY_COLOR }}>
                           {day.label} :
                         </Text>
                       </View>
@@ -232,7 +233,7 @@ const StoreManagementScreen = ({ route }) => {
                           }}
                         >
                           <View style={{}}>
-                            <Text style={{ textAlign: "right", fontSize: 18, color: themeStyle.TEXT_PRIMARY_COLOR }}>
+                            <Text style={{ textAlign: "right", fontSize: isTablet ? 18 : 16, color: themeStyle.TEXT_PRIMARY_COLOR }}>
                               - {t("من الساعة")}
                             </Text>
                           </View>
@@ -258,7 +259,7 @@ const StoreManagementScreen = ({ route }) => {
                           }}
                         >
                           <View style={{}}>
-                            <Text style={{ textAlign: "right", fontSize: 18, color: themeStyle.TEXT_PRIMARY_COLOR }}>
+                            <Text style={{ textAlign: "right", fontSize: isTablet ? 18 : 16, color: themeStyle.TEXT_PRIMARY_COLOR }}>
                               - {t("حتي الساعة")}
                             </Text>
                           </View>
@@ -301,7 +302,7 @@ const StoreManagementScreen = ({ route }) => {
           />
           <View style={{ marginTop: 30, width: "100%", marginBottom: 20 }}>
             <View style={{ marginBottom: 20 }}>
-              <Text style={{ textAlign: "right", fontSize: 26, color: themeStyle.TEXT_PRIMARY_COLOR }}>
+              <Text style={{ textAlign: "right", fontSize: isTablet ? 26 : 16, color: themeStyle.TEXT_PRIMARY_COLOR }}>
                 * طريقة الدفع :
               </Text>
             </View>
@@ -314,7 +315,7 @@ const StoreManagementScreen = ({ route }) => {
                 }}
               >
                 <View style={{}}>
-                  <Text style={{ textAlign: "right", fontSize: 24, color: themeStyle.TEXT_PRIMARY_COLOR }}>
+                  <Text style={{ textAlign: "right", fontSize: isTablet ? 24 : 16, color: themeStyle.TEXT_PRIMARY_COLOR }}>
                     - {t("بطاقة الاعتماد")}
                   </Text>
                 </View>
@@ -332,7 +333,7 @@ const StoreManagementScreen = ({ route }) => {
                 }}
               >
                 <View style={{}}>
-                  <Text style={{ textAlign: "right", fontSize: 24, color: themeStyle.TEXT_PRIMARY_COLOR }}>
+                  <Text style={{ textAlign: "right", fontSize: isTablet ? 24 : 16, color: themeStyle.TEXT_PRIMARY_COLOR }}>
                     - {t("نقدي")}
                   </Text>
                 </View>
@@ -354,7 +355,7 @@ const StoreManagementScreen = ({ route }) => {
           />
           <View style={{ marginTop: 30, width: "100%", marginBottom: 20 }}>
             <View style={{ marginBottom: 20 }}>
-              <Text style={{ textAlign: "right", fontSize: 26, color: themeStyle.TEXT_PRIMARY_COLOR }}>
+              <Text style={{ textAlign: "right", fontSize: isTablet ? 26 : 16, color: themeStyle.TEXT_PRIMARY_COLOR }}>
                 * طريقة الاستلام :
               </Text>
             </View>
@@ -367,7 +368,7 @@ const StoreManagementScreen = ({ route }) => {
                 }}
               >
                 <View style={{}}>
-                  <Text style={{ textAlign: "right", fontSize: 24, color: themeStyle.TEXT_PRIMARY_COLOR }}>
+                  <Text style={{ textAlign: "right", fontSize: isTablet ? 24 : 16, color: themeStyle.TEXT_PRIMARY_COLOR }}>
                     - {t("استلام")}
                   </Text>
                 </View>
@@ -385,7 +386,7 @@ const StoreManagementScreen = ({ route }) => {
                 }}
               >
                 <View style={{}}>
-                  <Text style={{ textAlign: "right", fontSize: 24, color: themeStyle.TEXT_PRIMARY_COLOR }}>
+                  <Text style={{ textAlign: "right", fontSize: isTablet ? 24 : 16, color: themeStyle.TEXT_PRIMARY_COLOR }}>
                     - {t("ارسالية")}
                   </Text>
                 </View>

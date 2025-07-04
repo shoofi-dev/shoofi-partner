@@ -14,14 +14,14 @@ import DashedLine from "react-native-dashed-line";
 import Text from "../../../components/controls/Text";
 import themeStyle from "../../../styles/theme.style";
 import _useWebSocketUrl from "../../../hooks/use-web-socket-url";
-
+import { useResponsive } from "../../../hooks/useResponsive";
 const categoriesToShow = [1, 2, 3, 4, 5, 6, 7];
 
 const StockManagementScreen = ({ route }) => {
   const { t } = useTranslation();
   const [categoryList, setCategoryList] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-
+  const { isTablet } = useResponsive();
   const { menuStore, languageStore, userDetailsStore } =
     useContext(StoreContext);
 
@@ -67,7 +67,7 @@ const StockManagementScreen = ({ route }) => {
       <Text
         style={{
           marginTop: 10,
-          fontSize: 30,
+          fontSize: isTablet ? 30 : 20,
           textAlign: "center",
           borderWidth: 1,
           padding: 10,

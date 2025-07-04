@@ -45,6 +45,7 @@ import isShowSize from "../../../../../helpers/is-show-size";
 import _useWebSocketUrl from "../../../../../hooks/use-web-socket-url";
 import CustomFastImage from "../../../../../components/custom-fast-image";
 import OrderExtrasDisplay from "../../../../../components/shared/OrderExtrasDisplay";
+import { useResponsive } from "../../../../../hooks/useResponsive";
 
 //1 -SENT 3 -COMPLETE 2-READY 4-CANCELLED 5-REJECTED
 export const inProgressStatuses = ["1"];
@@ -85,6 +86,7 @@ const NewOrdersListScreen = ({ route }) => {
   } = useContext(StoreContext);
   const [ordersList, setOrdersList] = useState([]);
   const [isLoading, setIsloading] = useState(false);
+  const { isTablet, scale, fontSize } = useResponsive();
 
   const [activeEditNote, setActiveEditNote] = useState(null);
   const [enableNoteList, setEnableNoteList] = useState([]);
@@ -391,7 +393,7 @@ const NewOrdersListScreen = ({ route }) => {
         <View
           style={{
             justifyContent: "space-between",
-            flexBasis: "40%",
+            flexBasis: "45%",
           }}
         >
           {true && (
@@ -609,7 +611,7 @@ const NewOrdersListScreen = ({ route }) => {
             <View
               style={{
                 alignItems: "flex-start",
-                marginLeft: 50,
+                marginLeft: "5%",
                 flexDirection: "column",
                 width: "70%",
               }}
@@ -652,7 +654,7 @@ const NewOrdersListScreen = ({ route }) => {
               >
                 <Text
                   style={{
-                    fontSize: themeStyle.FONT_SIZE_LG,
+                    fontSize: themeStyle.FONT_SIZE_MD,
                   }}
                 >
                   {t("count")} : {item.qty}
@@ -660,7 +662,7 @@ const NewOrdersListScreen = ({ route }) => {
                 <View style={{ marginHorizontal: 15 }}>
                   <Text
                     style={{
-                      fontSize: themeStyle.FONT_SIZE_LG,
+                      fontSize: themeStyle.FONT_SIZE_MD,
                     }}
                   >
                     |
@@ -669,7 +671,7 @@ const NewOrdersListScreen = ({ route }) => {
 
                 <Text
                   style={{
-                    fontSize: themeStyle.FONT_SIZE_LG,
+                    fontSize: themeStyle.FONT_SIZE_MD,
                   }}
                 >
                   {t("price")} : ₪{item.price * item.qty}
@@ -685,7 +687,7 @@ const NewOrdersListScreen = ({ route }) => {
                 >
                   <Text
                     style={{
-                      fontSize: themeStyle.FONT_SIZE_LG,
+                      fontSize: themeStyle.FONT_SIZE_MD,
                       fontFamily: `${getCurrentLang()}-SemiBold`,
                     }}
                   >
@@ -693,7 +695,7 @@ const NewOrdersListScreen = ({ route }) => {
                   </Text>
                   <Text
                     style={{
-                      fontSize: themeStyle.FONT_SIZE_LG,
+                      fontSize: themeStyle.FONT_SIZE_MD,
                       fontFamily: `${getCurrentLang()}-SemiBold`,
                       textAlign: "left",
                       marginVertical: 5,
@@ -927,7 +929,7 @@ const NewOrdersListScreen = ({ route }) => {
                           >
                             <Icon
                               icon="delivery-active"
-                              size={80}
+                              size={isTablet ? 80 : 50} 
                               style={{ color: themeStyle.PRIMARY_COLOR }}
                             />
                           </View>
@@ -989,7 +991,9 @@ const NewOrdersListScreen = ({ route }) => {
                               width: "100%",
 
                               alignItems: "center",
-                              justifyContent: "center",
+                              justifyContent: isTablet ? "center" : "flex-start",
+                              flexWrap: "wrap", 
+                              alignSelf: "center",
                             }}
                           >
                             {deliveryTime.map((time) => {
@@ -999,12 +1003,13 @@ const NewOrdersListScreen = ({ route }) => {
                                     updateSelectedTime(order._id, time.value)
                                   }
                                   style={{
-                                    width: 60,
+                                    width: isTablet ? 60 : 40,
                                     borderWidth: 1,
-                                    height: 60,
+                                    height: isTablet ? 60 : 40,
                                     alignItems: "center",
                                     justifyContent: "center",
-                                    marginRight: 20,
+                                    marginRight: isTablet ? 20 : 10,
+                                    marginBottom: isTablet ? 0 : 10,
                                     borderColor: themeStyle.TEXT_PRIMARY_COLOR,
                                     backgroundColor:
                                       selectedTime[order._id] === time.label
@@ -1014,7 +1019,7 @@ const NewOrdersListScreen = ({ route }) => {
                                 >
                                   <Text
                                     style={{
-                                      fontSize: themeStyle.FONT_SIZE_XL,
+                                      fontSize: isTablet ? themeStyle.FONT_SIZE_XL : themeStyle.FONT_SIZE_SM,
                                       color:
                                         selectedTime[order._id] == time.value
                                           ? themeStyle.WHITE_COLOR
@@ -1039,7 +1044,7 @@ const NewOrdersListScreen = ({ route }) => {
                       >
                         <Button
                           text={t("approve")}
-                          fontSize={themeStyle.FONT_SIZE_XL}
+                          fontSize={isTablet ? themeStyle.FONT_SIZE_XL : themeStyle.FONT_SIZE_SM}
                           onClickFn={() =>
                             updateViewedOrder(
                               order,
@@ -1090,17 +1095,17 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   dateRawText: {
-    fontSize: themeStyle.FONT_SIZE_LG,
+    fontSize: themeStyle.FONT_SIZE_SM,
     fontFamily: `${getCurrentLang()}-SemiBold`,
     color: themeStyle.TEXT_PRIMARY_COLOR,
   },
   totalPriceText: {
-    fontSize: themeStyle.FONT_SIZE_LG,
+    fontSize: themeStyle.FONT_SIZE_SM,
     fontFamily: `${getCurrentLang()}-SemiBold`,
     marginBottom: 15,
   },
   dateText: {
-    fontSize: themeStyle.FONT_SIZE_LG,
+    fontSize: themeStyle.FONT_SIZE_SM,
     fontFamily: `${getCurrentLang()}-Bold`,
     marginBottom: 15,
 

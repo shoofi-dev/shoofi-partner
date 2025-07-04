@@ -50,6 +50,7 @@ import sortPizzaExtras from "../../../../helpers/sort-pizza-extras";
 import _useWebSocketUrl from "../../../../hooks/use-web-socket-url";
 import CustomFastImage from "../../../../components/custom-fast-image";
 import OrderExtrasDisplay from "../../../../components/shared/OrderExtrasDisplay";
+import { useResponsive } from "../../../../hooks/useResponsive";
 
 //1 -SENT 3 -COMPLETE 2-READY 4-CANCELLED 5-REJECTED
 export const inProgressStatuses = ["1"];
@@ -63,7 +64,8 @@ export const deliveredStatuses = ["11"];
 const OrdersListScreen = ({ route }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
-
+  const { isTablet, scale, fontSize } = useResponsive();
+  const styles = createStyles(isTablet);
   const {
     menuStore,
     ordersStore,
@@ -537,7 +539,7 @@ const OrdersListScreen = ({ route }) => {
           <TouchableOpacity onPress={() => toggleExpand(order, index)}>
             <Icon
               icon="circle-down"
-              size={30}
+              size={isTablet ? 30 : 20}
               style={{ color: themeStyle.TEXT_PRIMARY_COLOR }}
             />
           </TouchableOpacity>
@@ -582,7 +584,7 @@ const OrdersListScreen = ({ route }) => {
             )}
             <Text
               style={{
-                fontSize: themeStyle.FONT_SIZE_3XL,
+                fontSize: isTablet ? themeStyle.FONT_SIZE_3XL : themeStyle.FONT_SIZE_XL,    
                 //fontFamily: `${getCurrentLang()}-Bold`,
 
                 color: themeStyle.SUCCESS_COLOR,
@@ -628,7 +630,7 @@ const OrdersListScreen = ({ route }) => {
                 <View style={{ flexDirection: "row" }}>
                   <Text
                     style={{
-                      fontSize: themeStyle.FONT_SIZE_XL,
+                      fontSize: isTablet ? themeStyle.FONT_SIZE_XL : themeStyle.FONT_SIZE_SM ,
                       backgroundColor:
                         oOrder.payment_method === PAYMENT_METHODS.creditCard
                           ? "yellow"
@@ -730,12 +732,13 @@ const OrdersListScreen = ({ route }) => {
                   <View style={{}}>
                     <Button
                       text={getNextStatusTextByStatus(order)}
-                      fontSize={17}
+                      fontSize={isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_XS}
                       onClickFn={() => updateOrderStatus(order)}
                       bgColor={getNextColorTextByStatus(order.status)}
                       textColor={themeStyle.WHITE_COLOR}
                       fontFamily={`${getCurrentLang()}-Bold`}
                       borderRadious={19}
+                      padding={isTablet ? 10 : 5}
                     />
                   </View>
                 </View>
@@ -744,13 +747,14 @@ const OrdersListScreen = ({ route }) => {
             <View style={{ flexBasis: "45%" }}>
               <Button
                 text={"طباعة"}
-                fontSize={17}
+                fontSize={isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_XS}
                 onClickFn={() => printOrder(order)}
                 bgColor={themeStyle.GRAY_700}
                 textColor={themeStyle.WHITE_COLOR}
                 fontFamily={`${getCurrentLang()}-Bold`}
                 borderRadious={19}
                 icon={"printer"}
+                padding={isTablet ? 10 : 5}
               />
             </View>
           </View>
@@ -767,12 +771,13 @@ const OrdersListScreen = ({ route }) => {
                   <View style={{}}>
                     <Button
                       text={getPrevStatusTextByStatus(order.status)}
-                      fontSize={17}
+                      fontSize={isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_XS}
                       onClickFn={() => updateOrderToPrevStatus(order)}
                       bgColor={getPrevColorTextByStatus(order.status)}
                       textColor={themeStyle.WHITE_COLOR}
                       fontFamily={`${getCurrentLang()}-Bold`}
                       borderRadious={19}
+                      padding={isTablet ? 10 : 5} 
                     />
                   </View>
                 </View>
@@ -789,6 +794,7 @@ const OrdersListScreen = ({ route }) => {
                       bgColor={themeStyle.ERROR_COLOR}
                       fontFamily={`${getCurrentLang()}-Bold`}
                       borderRadious={19}
+                      padding={isTablet ? 10 : 5}   
                     />
                   </View>
                 </View>
@@ -906,7 +912,7 @@ const OrdersListScreen = ({ route }) => {
             <View
               style={{
                 alignItems: "flex-start",
-                marginLeft: 50,
+                marginLeft: isTablet ? 50 : 20,
                 flexDirection: "column",
                 width: "70%",
               }}
@@ -924,7 +930,7 @@ const OrdersListScreen = ({ route }) => {
               >
                 <Text
                   style={{
-                    fontSize: themeStyle.FONT_SIZE_XL,
+                    fontSize: isTablet ? themeStyle.FONT_SIZE_XL : themeStyle.FONT_SIZE_SM,
                   }}
                 >
                   {languageStore.selectedLang === "ar"
@@ -939,24 +945,7 @@ const OrdersListScreen = ({ route }) => {
                   fontSize={(v) => v}
                 />
               </View>
-              {isShowSize(item.item_id) && (
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    marginBottom: 10,
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: themeStyle.FONT_SIZE_XL,
-                    }}
-                  >
-                    {t("size")} : {t(item.size)}
-                  </Text>
-                </View>
-              )}
+
 
               <View
                 style={{
@@ -968,7 +957,7 @@ const OrdersListScreen = ({ route }) => {
               >
                 <Text
                   style={{
-                    fontSize: themeStyle.FONT_SIZE_XL,
+                    fontSize: isTablet ? themeStyle.FONT_SIZE_XL : themeStyle.FONT_SIZE_SM,
                   }}
                 >
                   {t("count")} : {item.qty}
@@ -976,7 +965,7 @@ const OrdersListScreen = ({ route }) => {
                 <View style={{ marginHorizontal: 15 }}>
                   <Text
                     style={{
-                      fontSize: themeStyle.FONT_SIZE_XL,
+                      fontSize: isTablet ? themeStyle.FONT_SIZE_XL : themeStyle.FONT_SIZE_SM,
                     }}
                   >
                     |
@@ -985,7 +974,7 @@ const OrdersListScreen = ({ route }) => {
 
                 <Text
                   style={{
-                    fontSize: themeStyle.FONT_SIZE_XL,
+                    fontSize: isTablet ? themeStyle.FONT_SIZE_XL : themeStyle.FONT_SIZE_SM,
                   }}
                 >
                   {t("price")} : ₪{item.price * item.qty}
@@ -1001,7 +990,7 @@ const OrdersListScreen = ({ route }) => {
                 >
                   <Text
                     style={{
-                      fontSize: themeStyle.FONT_SIZE_XL,
+                      fontSize: isTablet ? themeStyle.FONT_SIZE_XL : themeStyle.FONT_SIZE_SM,
                       fontFamily: `${getCurrentLang()}-SemiBold`,
                     }}
                   >
@@ -1009,7 +998,7 @@ const OrdersListScreen = ({ route }) => {
                   </Text>
                   <Text
                     style={{
-                      fontSize: themeStyle.FONT_SIZE_XL,
+                      fontSize: isTablet ? themeStyle.FONT_SIZE_XL : themeStyle.FONT_SIZE_SM,
                       fontFamily: `${getCurrentLang()}-SemiBold`,
                       textAlign: "left",
                       marginVertical: 5,
@@ -1227,11 +1216,12 @@ const OrdersListScreen = ({ route }) => {
               flexDirection: "row",
               alignSelf: "center",
               alignItems: "center",
+              justifyContent: "center",
             }}
           >
             <Text
               style={{
-                fontSize: themeStyle.FONT_SIZE_3XL,
+                fontSize: isTablet ? themeStyle.FONT_SIZE_3XL : themeStyle.FONT_SIZE_XL,
                 fontFamily: `${getCurrentLang()}-SemiBold`,
                 color: themeStyle.TEXT_PRIMARY_COLOR,
               }}
@@ -1246,7 +1236,7 @@ const OrdersListScreen = ({ route }) => {
             >
               <Icon
                 icon="loop2"
-                size={24}
+                size={isTablet ? 24 : 16}
                 style={{
                   right: 0,
                   top: 8,
@@ -1263,9 +1253,9 @@ const OrdersListScreen = ({ route }) => {
       <ScrollView
         style={{
           height: 0,
-          marginLeft: 10,
-          marginHorizontal: 10,
-          marginTop: 10,
+          marginLeft: isTablet ? 10 : 5,
+          marginHorizontal: isTablet ? 10 : 5 ,
+          marginTop: isTablet ? 10 : 5,
         }}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
@@ -1350,19 +1340,19 @@ const OrdersListScreen = ({ route }) => {
         style={{
           flexDirection: "row",
           marginBottom: 5,
-          marginHorizontal: 20,
+          marginHorizontal: isTablet ? 20 : 5,
           justifyContent: "space-evenly",
           marginTop: 20,
         }}
       >
-        <View style={{ width: 150 }}>
+        <View style={{ width: isTablet ? 150 : 100  }}>
           <View>
             <View
               style={{
                 position: "absolute",
                 backgroundColor: themeStyle.SECONDARY_COLOR,
-                height: 30,
-                width: 30,
+                height: isTablet ? 30 : 20,
+                width: isTablet ? 30 : 20,
                 zIndex: 10,
                 top: -10,
                 borderRadius: 20,
@@ -1370,11 +1360,11 @@ const OrdersListScreen = ({ route }) => {
                 justifyContent: "center",
               }}
             >
-              <Text style={{ fontSize: themeStyle.FONT_SIZE_XL,color:themeStyle.WHITE_COLOR }}>{getStatusCountById("1")}</Text>
+              <Text style={{ fontSize: isTablet ? themeStyle.FONT_SIZE_XL : themeStyle.FONT_SIZE_SM ,color:themeStyle.WHITE_COLOR }}>{getStatusCountById("1")}</Text>
             </View>
             <Button
               text={t("in-progress")}
-              fontSize={17}
+              fontSize={isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_XS}
               onClickFn={() => handleSelectedStatus("1")}
               bgColor={selectedStatus === "1" ? themeStyle.PRIMARY_COLOR : themeStyle.WHITE_COLOR}
               borderColor={selectedStatus === "1" ? themeStyle.PRIMARY_COLOR : themeStyle.GRAY_30}
@@ -1386,6 +1376,7 @@ const OrdersListScreen = ({ route }) => {
               }
               fontFamily={`${getCurrentLang()}-Bold`}
               borderRadious={19}
+              padding={isTablet ? 10 : 5}
             />
           </View>
         </View>
@@ -1403,7 +1394,7 @@ const OrdersListScreen = ({ route }) => {
               justifyContent: "center",
             }}
           >
-            <Text style={{ fontSize: themeStyle.FONT_SIZE_XL,color:themeStyle.WHITE_COLOR }}>{getStatusCountById("3")}</Text>
+            <Text style={{ fontSize: isTablet ? themeStyle.FONT_SIZE_XL : themeStyle.FONT_SIZE_SM,color:themeStyle.WHITE_COLOR }}>{getStatusCountById("3")}</Text>
           </View>
           <Button
             text={t("ارسالية")}
@@ -1421,13 +1412,13 @@ const OrdersListScreen = ({ route }) => {
             borderRadious={19}
           />
         </View> */}
-        <View style={{ width: 150 }}>
+        <View style={{ width: isTablet ? 150 : 100 }}>
           <View
             style={{
               position: "absolute",
               backgroundColor: themeStyle.SECONDARY_COLOR,
-              height: 30,
-              width: 30,
+              height: isTablet ? 30 : 20,
+              width: isTablet ? 30 : 20,
               zIndex: 10,
               top: -10,
               borderRadius: 20,
@@ -1435,11 +1426,11 @@ const OrdersListScreen = ({ route }) => {
               justifyContent: "center",
             }}
           >
-            <Text style={{ fontSize: themeStyle.FONT_SIZE_XL,color:themeStyle.WHITE_COLOR }}>{getStatusCountById("2")}</Text>
+            <Text style={{ fontSize: isTablet ? themeStyle.FONT_SIZE_XL : themeStyle.FONT_SIZE_SM,color:themeStyle.WHITE_COLOR }}>{getStatusCountById("2")}</Text>
           </View>
           <Button
             text={t("ready")}
-            fontSize={17}
+            fontSize={isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_XS}
             onClickFn={() => handleSelectedStatus("2")}
             bgColor={selectedStatus === "2" ? themeStyle.PRIMARY_COLOR : themeStyle.WHITE_COLOR}
             borderColor={selectedStatus === "2" ? themeStyle.PRIMARY_COLOR : themeStyle.GRAY_30}
@@ -1451,15 +1442,16 @@ const OrdersListScreen = ({ route }) => {
             }
             fontFamily={`${getCurrentLang()}-Bold`}
             borderRadious={19}
+            padding={isTablet ? 10 : 5}
           />
         </View>
-        <View style={{ width: 150 }}>
+        <View style={{ width: isTablet ? 150 : 100 }}>
           <View
             style={{
               position: "absolute",
               backgroundColor: themeStyle.SECONDARY_COLOR,
-              height: 30,
-              width: 30,
+              height: isTablet ? 30 : 20,
+              width: isTablet ? 30 : 20,
               zIndex: 10,
               top: -10,
               borderRadius: 20,
@@ -1467,11 +1459,11 @@ const OrdersListScreen = ({ route }) => {
               justifyContent: "center",
             }}
           >
-            <Text style={{ fontSize: themeStyle.FONT_SIZE_XL,color:themeStyle.WHITE_COLOR }}>{getStatusCountById("10")}</Text>
+            <Text style={{ fontSize: isTablet ? themeStyle.FONT_SIZE_XL : themeStyle.FONT_SIZE_SM ,color:themeStyle.WHITE_COLOR }}>{getStatusCountById("10")}</Text>
           </View>
           <Button
             text={t("استلمت")}
-            fontSize={17}
+            fontSize={isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_XS}
             onClickFn={() => handleSelectedStatus("10")}
             bgColor={selectedStatus === "10" ? themeStyle.PRIMARY_COLOR : themeStyle.WHITE_COLOR}
             borderColor={selectedStatus === "10" ? themeStyle.PRIMARY_COLOR : themeStyle.GRAY_30}
@@ -1483,15 +1475,16 @@ const OrdersListScreen = ({ route }) => {
             }
             fontFamily={`${getCurrentLang()}-Bold`}
             borderRadious={19}
+            padding={isTablet ? 10 : 5}
           />
         </View>
-        <View style={{ width: 150 }}>
+        <View style={{ width: isTablet ? 150 : 100 }}>
           <View
             style={{
               position: "absolute",
               backgroundColor: themeStyle.SECONDARY_COLOR,
-              height: 30,
-              width: 30,
+              height: isTablet ? 30 : 20,
+              width: isTablet ? 30 : 20,
               zIndex: 10,
               top: -10,
               borderRadius: 20,
@@ -1499,11 +1492,11 @@ const OrdersListScreen = ({ route }) => {
               justifyContent: "center",
             }}
           >
-            <Text style={{ fontSize: themeStyle.FONT_SIZE_XL,color:themeStyle.WHITE_COLOR }}>{getStatusCountById("4")}</Text>
+            <Text style={{ fontSize: isTablet ? themeStyle.FONT_SIZE_XL : themeStyle.FONT_SIZE_SM,color:themeStyle.WHITE_COLOR }}>{getStatusCountById("4")}</Text>
           </View>
           <Button
             text={t("canceled")}
-            fontSize={17}
+            fontSize={isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_XS}
             onClickFn={() => handleSelectedStatus("4")}
             bgColor={selectedStatus === "4" ? themeStyle.PRIMARY_COLOR : themeStyle.WHITE_COLOR}
             borderColor={selectedStatus === "4" ? themeStyle.PRIMARY_COLOR : themeStyle.GRAY_30}
@@ -1515,7 +1508,8 @@ const OrdersListScreen = ({ route }) => {
             }
             fontFamily={`${getCurrentLang()}-Bold`}
             borderRadious={19}
-          />
+            padding={isTablet ? 10 : 5}
+            />
         </View>
       </View>
 
@@ -1529,7 +1523,7 @@ const OrdersListScreen = ({ route }) => {
                 height: "100%",
               }}
             >
-              <Text style={{ fontSize: themeStyle.FONT_SIZE_XL, color: themeStyle.WHITE_COLOR }}>
+              <Text style={{ fontSize: isTablet ? themeStyle.FONT_SIZE_XL : themeStyle.FONT_SIZE_SM, color: themeStyle.WHITE_COLOR }}>
                 {t("لا يوجد طلبيات")}
               </Text>
             </View>
@@ -1621,7 +1615,7 @@ const OrdersListScreen = ({ route }) => {
                         <View
                           style={{
                             marginRight: 10,
-                            width: 200,
+                            width: isTablet ? 200 : 100,
                             justifyContent: "center",
                           }}
                         >
@@ -1630,7 +1624,7 @@ const OrdersListScreen = ({ route }) => {
                               text={
                                 order?.note ? "تعديل الملاحظة" : "اضف ملاحظة"
                               }
-                              fontSize={themeStyle.FONT_SIZE_MD}
+                              fontSize={isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_SM}
                               onClickFn={() =>
                                 updateActiveEditNote(order, index)
                               }
@@ -1638,42 +1632,45 @@ const OrdersListScreen = ({ route }) => {
                               textColor={themeStyle.TEXT_PRIMARY_COLOR}
                               fontFamily={`${getCurrentLang()}-Bold`}
                               borderRadious={19}
+                              padding={isTablet ? 10 : 5}
                             />
                           )}
                           {activeEditNote == order.orderId && (
                             <Button
                               text={"حفظ الملاحظة"}
-                              fontSize={17}
+                              fontSize={isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_SM}
                               onClickFn={() => saveOrderNote(order)}
                               bgColor={themeStyle.ORANGE_COLOR}
                               textColor={themeStyle.TEXT_PRIMARY_COLOR}
                               fontFamily={`${getCurrentLang()}-Bold`}
                               borderRadious={19}
+                              padding={isTablet ? 10 : 5}
                             />
                           )}
                           {activeEditNote == order.orderId && (
                             <View style={{ marginTop: 10 }}>
                               <Button
                                 text={"اغلاق"}
-                                fontSize={themeStyle.FONT_SIZE_MD}
+                                fontSize={isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_SM}
                                 onClickFn={() => updateActiveEditNote(null)}
                                 bgColor={themeStyle.ERROR_COLOR}
                                 textColor={themeStyle.WHITE_COLOR}
                                 fontFamily={`${getCurrentLang()}-Bold`}
-                                borderRadious={19}
+                                borderRadious={19}    
+                                padding={isTablet ? 10 : 5}
                               />
                             </View>
                           )}
                         </View>
                         {activeEditNote == null && (
                           <View style={{ width: "40%", flexDirection: "row" }}>
-                            <Text style={{ fontSize: themeStyle.FONT_SIZE_MD, textAlign: "left" }}>
+                            <Text style={{ fontSize: isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_SM, textAlign: "left" }}>
                               {order.note}
                             </Text>
                           </View>
                         )}
                         {activeEditNote == order.orderId && (
-                          <View style={{ width: "40%" }}>
+                          <View style={{ width: isTablet ? "40%" : "50%" }}>
                             <TextInput
                               onChange={(e) => {
                                 setOrderNoteText(e.nativeEvent.text);
@@ -1704,14 +1701,14 @@ const OrdersListScreen = ({ route }) => {
                             style={{
                               flexDirection: "column",
                               justifyContent: "flex-end",
-                              width: "30%",
+                              width: isTablet ? "30%" : "30%",
                               padding: 20,
                               alignItems: "center",
                             }}
                           >
                             <Icon
                               icon="delivery-active"
-                              size={80}
+                              size={isTablet ? 80 : 50}
                               style={{ color: themeStyle.PRIMARY_COLOR }}
                             />
                             {/* <Button
@@ -1756,7 +1753,7 @@ const OrdersListScreen = ({ route }) => {
 };
 export default observer(OrdersListScreen);
 
-const styles = StyleSheet.create({
+const createStyles = (isTablet) => StyleSheet.create({
   container: {
     width: "100%",
     height: "100%",
@@ -1765,23 +1762,23 @@ const styles = StyleSheet.create({
     backgroundColor: themeStyle.GRAY_80,
     borderRadius: 10,
     marginBottom: 15,
-    marginHorizontal: 20,
+    marginHorizontal: isTablet ? 20 : 5,
     paddingTop: 15,
     paddingHorizontal: 10,
     paddingBottom: 20,
   },
   dateRawText: {
-    fontSize: themeStyle.FONT_SIZE_XL,
+    fontSize: isTablet ? themeStyle.FONT_SIZE_XL : themeStyle.FONT_SIZE_SM,
     fontFamily: `${getCurrentLang()}-SemiBold`,
     color: themeStyle.TEXT_PRIMARY_COLOR,
   },
   totalPriceText: {
-    fontSize: themeStyle.FONT_SIZE_XL,
+    fontSize: isTablet ? themeStyle.FONT_SIZE_XL : themeStyle.FONT_SIZE_SM,
     fontFamily: `${getCurrentLang()}-SemiBold`,
     marginBottom: 15,
   },
   dateText: {
-    fontSize: themeStyle.FONT_SIZE_XL,
+    fontSize: isTablet ? themeStyle.FONT_SIZE_XL : themeStyle.FONT_SIZE_SM,
     fontFamily: `${getCurrentLang()}-Bold`,
     marginBottom: 15,
 
@@ -1795,3 +1792,4 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
 });
+

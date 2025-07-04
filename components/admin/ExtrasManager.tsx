@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import themeStyle from "../../styles/theme.style";
 import Icon from "../icon";
 import ExtraEditModal from "./ExtraEditModal";
-
+import { useResponsive } from "../../hooks/useResponsive";
 export type ExtraType = "single" | "multi" | "counter" | "pizza-topping" | "weight";
 export type AreaOption = { id: string; name: string; price: number };
 export type Option = { 
@@ -75,7 +75,7 @@ const ExtrasManager: React.FC<ExtrasManagerProps> = ({
   const [editingExtra, setEditingExtra] = useState<Extra | null>(null);
   const [showGroupModal, setShowGroupModal] = useState(false);
   const [editingGroup, setEditingGroup] = useState<ExtraGroup | null>(null);
-
+  const { isTablet } = useResponsive();   
   // Add or update an extra for this product
   const handleSaveExtra = (extra: Extra) => {
     const exists = assignedExtras.find((e) => e.id === extra.id);
@@ -454,8 +454,8 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: themeStyle.GRAY_100,
     borderRadius: 12,
-    padding: 16,
-    marginBottom: 24,
+    padding: 10,
+    marginBottom: 10,
   },
   header: {
     flexDirection: "row",
@@ -464,7 +464,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   title: {
-    fontSize: themeStyle.FONT_SIZE_XL,
+    fontSize: themeStyle.FONT_SIZE_MD,
     fontWeight: "bold",
     color: themeStyle.TEXT_PRIMARY_COLOR,
     textAlign: "right",
@@ -492,12 +492,12 @@ const styles = StyleSheet.create({
   },
   addButtonText: {
     marginLeft: 4,
-    fontSize: themeStyle.FONT_SIZE_MD,
+    fontSize: themeStyle.FONT_SIZE_SM,
   },
   buttonText: {
     color: "white",
     marginLeft: 4,
-    fontSize: themeStyle.FONT_SIZE_MD,
+    fontSize: themeStyle.FONT_SIZE_SM,
   },
   searchContainer: {
     marginBottom: 16,
@@ -520,7 +520,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   globalExtraButtonText: {
-    fontSize: themeStyle.FONT_SIZE_MD,
+    fontSize: themeStyle.FONT_SIZE_SM,
     textAlign: "center",
   },
   extraTypeLabel: {
@@ -552,13 +552,13 @@ const styles = StyleSheet.create({
     borderBottomColor: themeStyle.GRAY_300,
   },
   groupTitle: {
-    fontSize: themeStyle.FONT_SIZE_LG,
+    fontSize: themeStyle.FONT_SIZE_MD,
     fontWeight: "bold",
     color: themeStyle.TEXT_PRIMARY_COLOR,
     textAlign: "right",
   },
   freeCountText: {
-    fontSize: themeStyle.FONT_SIZE_MD,
+    fontSize: themeStyle.FONT_SIZE_SM,
     color: themeStyle.GRAY_600,
     marginTop: 2,
     textAlign: "right",
@@ -573,7 +573,7 @@ const styles = StyleSheet.create({
   },
   editGroupButtonText: {
     color: themeStyle.WARNING_COLOR,
-    fontSize: themeStyle.FONT_SIZE_MD,
+    fontSize: themeStyle.FONT_SIZE_SM,
   },
   deleteGroupButton: {
     paddingHorizontal: 8,
@@ -581,7 +581,7 @@ const styles = StyleSheet.create({
   },
   deleteGroupButtonText: {
     color: themeStyle.ERROR_COLOR,
-    fontSize: themeStyle.FONT_SIZE_MD,
+    fontSize: themeStyle.FONT_SIZE_SM,
   },
   groupContent: {
     padding: 12,
@@ -607,13 +607,13 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   extraTitle: {
-    fontSize: themeStyle.FONT_SIZE_LG,
+    fontSize: themeStyle.FONT_SIZE_MD,
     fontWeight: "bold",
     color: themeStyle.TEXT_PRIMARY_COLOR,
     textAlign: "left",
   },
   extraType: {
-    fontSize: themeStyle.FONT_SIZE_MD,
+    fontSize: themeStyle.FONT_SIZE_SM,
     color: themeStyle.TEXT_PRIMARY_COLOR,
     marginTop: 2,
     textAlign: "left",
@@ -649,7 +649,7 @@ const styles = StyleSheet.create({
   },
   defaultIndicator: {
     color: themeStyle.PRIMARY_COLOR,
-    fontSize: 12,
+    fontSize: 10,
   },
   areaOptionsGrid: {
     flexDirection: "row",
@@ -669,7 +669,7 @@ const styles = StyleSheet.create({
     borderTopColor: themeStyle.GRAY_300,
   },
   weightText: {
-    fontSize: 12,
+    fontSize: 10,
     color: themeStyle.GRAY_600,
     textAlign: "right",
     marginBottom: 2,

@@ -20,7 +20,7 @@ import type { Asset } from "react-native-image-picker";
 import ExtrasManager, { type Extra } from "../../../../components/admin/ExtrasManager";
 import { API_URL } from "../../../../config";
 import { useAuth } from "../../../../hooks/useAuth";
-
+import { useResponsive } from "../../../../hooks/useResponsive";
 export type TProduct = {
   id?: string;
   supportedCategoryIds: string[];
@@ -50,7 +50,7 @@ const AddProductScreen = ({ route }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const { categoryId, product } = route.params;
-
+  const { isTablet } = useResponsive();
   const { menuStore, languageStore, userDetailsStore, storeDataStore, shoofiAdminStore } =
     useContext(StoreContext);
 
@@ -363,10 +363,10 @@ const AddProductScreen = ({ route }) => {
   return (
     <ScrollView style={{ flex: 1,  }}>
       <View style={{
-        margin: 18,
+        margin: isTablet ? 18 : 10,
         backgroundColor: themeStyle.GRAY_600,
-        borderRadius: 18,
-        padding: 20,
+        borderRadius: isTablet ? 18 : 10,
+        padding: isTablet ? 20 : 10,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 6 },
         shadowOpacity: 0.10,
@@ -376,20 +376,20 @@ const AddProductScreen = ({ route }) => {
         <BackButton />
         {/* Header */}
         <Text style={{
-          fontSize: 28,
+          fontSize: isTablet ? 28 : 16,
           fontWeight: "bold",
           color: themeStyle.TEXT_PRIMARY_COLOR,
           textAlign: "center",
-          marginBottom: 32,
+          marginBottom: isTablet ? 32 : 10,
         }}>
           {t("add-product")}
         </Text>
 
         {/* Name Fields */}
-        <View style={{ flexDirection: "row", marginBottom: 32 }}>
+        <View style={{ flexDirection: "row", marginBottom: isTablet ? 32 : 10 }}>
           <View style={{ flex: 1, marginRight: 5 }}>
             <Text style={{
-              fontSize: 16,
+              fontSize: isTablet ? 16 : 12,
               marginBottom: 10,
               color: themeStyle.TEXT_PRIMARY_COLOR,
               textAlign: "right",
@@ -412,7 +412,7 @@ const AddProductScreen = ({ route }) => {
           </View>
           <View style={{ flex: 1, marginLeft: 5 }}>
             <Text style={{
-              fontSize: 16,
+              fontSize: isTablet ? 16 : 12,
               marginBottom: 10,
               color: themeStyle.TEXT_PRIMARY_COLOR,
               textAlign: "right",
@@ -449,7 +449,7 @@ const AddProductScreen = ({ route }) => {
           />
           <Text
             style={{
-              fontSize: 20,
+              fontSize: isTablet ? 20 : 16,
               marginLeft: 10,
               color: themeStyle.TEXT_PRIMARY_COLOR,
             }}
@@ -459,12 +459,12 @@ const AddProductScreen = ({ route }) => {
         </View>
 
         {/* Category Dropdown */}
-        <View style={{ marginBottom: 32, zIndex: 20 }}>
+        <View style={{ marginBottom: isTablet ? 32 : 10, zIndex: 20 }}>
           {categoryList && (
             <View style={{ alignItems: "flex-start", zIndex: 20 }}>
               <Text
                 style={{
-                  fontSize: 16,
+                  fontSize: isTablet ? 16 : 12,
                   marginBottom: 10,
                   color: themeStyle.TEXT_PRIMARY_COLOR,
                 }}
@@ -495,12 +495,12 @@ const AddProductScreen = ({ route }) => {
         {/* Price Field */}
         <View style={{ marginBottom: 32, zIndex: 0, width: "20%" }}>
           <Text style={{
-            fontSize: 16,
+            fontSize: isTablet ? 16 : 12,
             marginBottom: 10,
             color: themeStyle.TEXT_PRIMARY_COLOR,
             textAlign: "right",
           }}>
-            السعر المتوسط
+            السعر 
           </Text>
           <InputText
             onChange={(e) => handleInputChange(e, "price")}
