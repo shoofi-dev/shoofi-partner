@@ -202,7 +202,7 @@ class OrdersStore {
         }
         break;
       case ORDER_STATUS.WAITING_FOR_DRIVER:
-        await this.updateOrderStatusServer(ORDER_STATUS.COMPLETED, order._id, shouldSendSms);
+        await this.updateOrderStatusServer(ORDER_STATUS.PICKED_UP_BY_DRIVER, order._id, shouldSendSms);
         break;
       case ORDER_STATUS.COMPLETED:
         if (order.order.receipt_method == SHIPPING_METHODS.shipping) {

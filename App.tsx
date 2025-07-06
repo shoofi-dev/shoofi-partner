@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useContext, useRef } from "react";
 import "./translations/i18n";
 import { Asset } from "expo-asset";
-import * as Notifications from "expo-notifications";
+// import * as Notifications from "expo-notifications";
 import { captureRef } from "react-native-view-shot";
 import EscPosPrinter, {
   getPrinterSeriesByName,
@@ -56,7 +56,6 @@ import "moment/locale/he"; // without this line it didn't work
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import i18n, { setTranslations } from "./translations/i18n";
 import {
-  registerForPushNotificationsAsync,
   schedulePushNotification,
 } from "./utils/notification";
 import { testPrint } from "./helpers/printer/print";
@@ -72,6 +71,7 @@ import NewAddressBasedEventDialog from "./components/dialogs/new-address-based-e
 import { couponsStore } from "./stores/coupons";
 import { creditCardsStore } from "./stores/creditCards";
 import { deliveryDriverStore } from "./stores/delivery-driver";
+import useNotifications from "./hooks/use-notifications";
 // import { cacheImage } from "./components/custom-fast-image";
 
 moment.locale("en");
@@ -149,8 +149,6 @@ const App = () => {
   const [isExtraLoadFinished, setIsExtraLoadFinished] = useState(false);
   const [isFontReady, setIsFontReady] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
-  const [expoPushToken, setExpoPushToken] = useState("123");
-  const [notification, setNotification] = useState(null);
   const [invoiceOrder, setInvoiceOrder] = useState(null);
   const [printer, setPrinter] = useState(null);
   const [printOrdersQueue, setPrintOrdersQueue] = useState([]);
@@ -159,44 +157,58 @@ const App = () => {
     h: 0,
   });
 
-  const notificationListener = useRef(null);
-  const responseListener = useRef(null);
   const [isOpenInternetConnectionDialog, setIsOpenInternetConnectionDialog] =
     useState(false);
   const [isOpenUpdateVersionDialog, setIsOpenUpdateVersionDialog] =
     useState(false);
 
-    const { webScoketURL } = _useWebSocketUrl();
+  // Use the notifications hook
+  const {
+    notifications,
+    stats,
+    unreadCount,
+    unviewedOrdersCount,
+    totalUnreadCount,
+    isLoading: notificationsLoading,
+    error: notificationsError,
+    markAsRead,
+    markAllAsRead,
+    deleteNotification,
+    refreshNotifications,
+    connectionStatus: notificationsConnectionStatus,
+  } = useNotifications();
 
-  const { readyState, sendJsonMessage, lastJsonMessage } = useWebSocket(
-    webScoketURL,
-    {
-      share: true,
-      onOpen: (data) => {
-         console.log("connected", data);
-      },
-      onClose: () => {
-        console.log("closed websocket");
-      },
-      shouldReconnect: (closeEvent) => true,
-      queryParams: { customerId: userDetailsStore.userDetails?.customerId },
-    }
-  );
+  // const { webScoketURL } = _useWebSocketUrl();
 
-  useEffect(() => {
-    if (userDetailsStore.userDetails?.customerId) {
-      // WebSocket will automatically connect once the customerId is available
-      console.log("WebSocket connection established.");
-    }
-  }, [userDetailsStore.userDetails?.customerId, webScoketURL]);
+  // const { readyState, sendJsonMessage, lastJsonMessage } = useWebSocket(
+  //   webScoketURL,
+  //   {
+  //     share: true,
+  //     onOpen: (data) => {
+  //        console.log("connected", data);
+  //     },
+  //     onClose: () => {
+  //       console.log("closed websocket");
+  //     },
+  //     shouldReconnect: (closeEvent) => true,
+  //     queryParams: { customerId: userDetailsStore.userDetails?.customerId },
+  //   }
+  // );
 
-  const connectionStatus = {
-    [ReadyState.CONNECTING]: "Connecting",
-    [ReadyState.OPEN]: "Open",
-    [ReadyState.CLOSING]: "Closing",
-    [ReadyState.CLOSED]: "Closed",
-    [ReadyState.UNINSTANTIATED]: "Uninstantiated",
-  }[readyState];
+  // useEffect(() => {
+  //   if (userDetailsStore.userDetails?.customerId) {
+  //     // WebSocket will automatically connect once the customerId is available
+  //     console.log("WebSocket connection established.");
+  //   }
+  // }, [userDetailsStore.userDetails?.customerId, webScoketURL]);
+
+  // const connectionStatus = {
+  //   [ReadyState.CONNECTING]: "Connecting",
+  //   [ReadyState.OPEN]: "Open",
+  //   [ReadyState.CLOSING]: "Closing",
+  //   [ReadyState.CLOSED]: "Closed",
+  //   [ReadyState.UNINSTANTIATED]: "Uninstantiated",
+  // }[readyState];
 
   const repeatNotification = () => {
       schedulePushNotification({
@@ -215,49 +227,9 @@ const App = () => {
     storeDataStore.setRepeatNotificationInterval(tmpRepeatNotificationInterval);
   };
 
-  useEffect(() => {
-    const subscription = Notifications.addNotificationResponseReceivedListener(
-      (response) => {
-        clearInterval(storeDataStore.repeatNotificationInterval);
-        storeDataStore.setRepeatNotificationInterval(null);
-      }
-    );
-    return () => subscription.remove();
-  }, [storeDataStore.repeatNotificationInterval]);
+  // Notification response handling is now managed by the useNotifications hook
 
-  useEffect(() => {
-    if (userDetailsStore.isAdmin() || authStore.isLoggedIn() && userDetailsStore.userDetails) {
-      registerForPushNotificationsAsync().then((token) => {
-        axiosInstance
-          .post(
-            `${CUSTOMER_API.CONTROLLER}/${CUSTOMER_API.UPDATE_CUSTOMER_NOTIFIVATION_TOKEN}`,
-            { notificationToken: token },
-            {
-              headers: { "Content-Type": "application/json", "app-name": userDetailsStore.isDriver() ? 'delivery-company' : APP_NAME }
-            }
-          )
-          .then(function (response) {
-            return setExpoPushToken(token);
-          })
-          .catch(function (error) {});
-      });
-
-      notificationListener.current =
-        Notifications.addNotificationReceivedListener((notification) => {
-          setNotification(notification);
-        });
-
-      responseListener.current =
-        Notifications.addNotificationResponseReceivedListener((response) => {});
-
-      return () => {
-        Notifications.removeNotificationSubscription(
-          notificationListener.current
-        );
-        Notifications.removeNotificationSubscription(responseListener.current);
-      };
-    }
-  }, [userDetailsStore.userDetails]);
+  // Notification handling is now managed by the useNotifications hook
 
   // const listenToNewOrder = async () => {
   //   if (
@@ -415,23 +387,23 @@ const App = () => {
   }, [appIsReady, userDetailsStore.userDetails?.phone, currentAppState]);
 
   // print not printied backup
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (
-        currentAppState === "active" &&
-        authStore.isLoggedIn() &&
-        userDetailsStore.isAdmin() &&
-        appIsReady
-      ) {
-        if (userDetailsStore.isAdmin(ROLES.all) && userDetailsStore.isAdmin(ROLES.print) && !isPrinting) {
-          initPrinter();
-          printNotPrinted();
-        }
-        ordersStore.getNotViewdOrders(userDetailsStore.isAdmin(ROLES.all));
-      }
-    }, 60 * 1000);
-    return () => clearInterval(interval);
-  }, [appIsReady, userDetailsStore.userDetails?.phone, currentAppState]);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     if (
+  //       currentAppState === "active" &&
+  //       authStore.isLoggedIn() &&
+  //       userDetailsStore.isAdmin() &&
+  //       appIsReady
+  //     ) {
+  //       if (userDetailsStore.isAdmin(ROLES.all) && userDetailsStore.isAdmin(ROLES.print) && !isPrinting) {
+  //         initPrinter();
+  //         printNotPrinted();
+  //       }
+  //       ordersStore.getNotViewdOrders(userDetailsStore.isAdmin(ROLES.all));
+  //     }
+  //   }, 60 * 1000);
+  //   return () => clearInterval(interval);
+  // }, [appIsReady, userDetailsStore.userDetails?.phone, currentAppState]);
 
   // useEffect(() => {
   //   if (
@@ -858,7 +830,22 @@ const App = () => {
             addressStore: addressStore,
             couponsStore: couponsStore,
             creditCardsStore: creditCardsStore,
-            deliveryDriverStore: deliveryDriverStore
+            deliveryDriverStore: deliveryDriverStore,
+            // Notifications data from the hook
+            notifications: {
+              notifications,
+              stats,
+              unreadCount,
+              unviewedOrdersCount,
+              totalUnreadCount,
+              isLoading: notificationsLoading,
+              error: notificationsError,
+              markAsRead,
+              markAllAsRead,
+              deleteNotification,
+              refreshNotifications,
+              connectionStatus: notificationsConnectionStatus,
+            }
           }}
         >
           <View style={{ height: "100%" }}>

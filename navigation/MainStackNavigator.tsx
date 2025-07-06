@@ -49,6 +49,7 @@ import DeliveryDriverDashboard from "../screens/delivery-driver";
 import DeliveryDriverOrderDetails from "../screens/delivery-driver/order-details";
 import DeliveryDriverProfile from "../screens/delivery-driver/profile";
 import DeliveryDriverNotifications from "../screens/delivery-driver/notifications";
+import PaymentDashboard from "../screens/admin/payments";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -157,6 +158,9 @@ export const MainStackNavigator = () => {
       <Stack.Screen name="delivery-driver-order-details" component={DeliveryDriverOrderDetails} initialParams={{ orderId: null }} />
       <Stack.Screen name="delivery-driver-profile" component={DeliveryDriverProfile} />
       <Stack.Screen name="delivery-driver-notifications" component={DeliveryDriverNotifications} />
+      
+      {/* Payment Screens */}
+      <Stack.Screen name="payments" component={PaymentDashboard} />
     </Stack.Navigator>
   );
 };

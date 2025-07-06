@@ -203,7 +203,6 @@ class MenuStore {
       if (foundedMeal) {
         return;
       }
-      console.log("category", category.products?.length)
       foundedMeal = category.products.find((product) => product._id === mealId);
     });
     return foundedMeal || {};

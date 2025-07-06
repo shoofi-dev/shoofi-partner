@@ -23,6 +23,7 @@ import Button from "../../controls/button/button";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import _useWebSocketUrl from "../../../hooks/use-web-socket-url";
 import { useResponsive } from "../../../hooks/useResponsive";
+import useNotifications from "../../../hooks/use-notifications";
 export const hideHHeaderScreens = [
   "login",
   "verify-code",
@@ -63,10 +64,26 @@ const Header = () => {
     ordersStore,
     shoofiAdminStore
   } = useContext(StoreContext);
-  const [cartItemsLenght, setCartItemsLength] = useState();
+  const [cartItemsLenght, setCartItemsLength] = useState<number | undefined>();
   const [bgColor, setBgColor] = useState(themeStyle.PRIMARY_COLOR);
   const anim = useRef(new Animated.Value(1));
   const { isTablet } = useResponsive();
+
+  // Use the notifications hook
+  const {
+    notifications,
+    stats,
+    unreadCount,
+    unviewedOrdersCount,
+    totalUnreadCount,
+    isLoading: notificationsLoading,
+    error: notificationsError,
+    markAsRead,
+    markAllAsRead,
+    deleteNotification,
+    refreshNotifications,
+    connectionStatus: notificationsConnectionStatus,
+  } = useNotifications();
   const shake = useCallback(() => {
     // makes the sequence loop
     Animated.loop(
@@ -96,10 +113,10 @@ const Header = () => {
   }, []);
 
   useEffect(() => {
-    if (storeDataStore.repeatNotificationInterval) {
+    if (totalUnreadCount > 0) {
       shake();
     }
-  }, [storeDataStore.repeatNotificationInterval]);
+  }, [totalUnreadCount]);
 
   const animProfile = useRef(new Animated.Value(-80));
   const animProfileSlide = () => {
@@ -117,8 +134,8 @@ const Header = () => {
   }, []);
 
   const handleBellClick = () => {
-    clearInterval(storeDataStore.repeatNotificationInterval);
-    storeDataStore.setRepeatNotificationInterval(null);
+    // Mark all notifications as read when bell is clicked
+    markAllAsRead();
     navigation.navigate("admin-new-orders");
   };
 
@@ -143,12 +160,12 @@ const Header = () => {
   }, [cartStore.cartItems.length]);
 
   const [rotateAnimation, setRotateAnimation] = useState(new Animated.Value(0));
-  const { webScoketURL } = _useWebSocketUrl();
+  // const { webScoketURL } = _useWebSocketUrl();
 
-  const { readyState } = useWebSocket(webScoketURL, {
-    share: true,
-    shouldReconnect: (closeEvent) => true,
-  });
+  // const { readyState } = useWebSocket(webScoketURL, {
+  //   share: true,
+  //   shouldReconnect: (closeEvent) => true,
+  // });
 
   const handleAnimation = () => {
     // @ts-ignore
@@ -384,56 +401,54 @@ const Header = () => {
         </View>
       )} */}
       <View style={{ position: "absolute", left: "18%", alignSelf: "center" }}>
-        {userDetailsStore.isAdmin() &&
-          ordersStore?.notViewdOrders?.length > 0 && (
-            <Animated.View
-              style={{
-                transform: [
-                  {
-                    scale:
-                      (storeDataStore.repeatNotificationInterval &&
-                        anim.current) ||
-                      (ordersStore?.notViewdOrders?.length > 0 ? 1 : 0),
-                  },
-                ],
-              }}
+        {userDetailsStore.isAdmin() && totalUnreadCount > 0 && (
+          <Animated.View
+            style={{
+              transform: [
+                {
+                  scale:
+                    (totalUnreadCount > 0 && anim.current) ||
+                    (totalUnreadCount > 0 ? 1 : 0),
+                },
+              ],
+            }}
+          >
+            <TouchableOpacity
+              onPress={handleBellClick}
+              style={[
+                styles.buttonContainer,
+                { opacity: isHideProfile() ? 0 : 1, paddingRight: 0 },
+              ]}
             >
-              <TouchableOpacity
-                onPress={handleBellClick}
+              <Icon
+                icon="bell"
+                size={35}
+                style={{ color: theme.ERROR_COLOR }}
+              />
+              <View
                 style={[
-                  styles.buttonContainer,
-                  { opacity: isHideProfile() ? 0 : 1, paddingRight: 0 },
+                  styles.bell,
+                  {
+                    borderWidth: 1,
+                    borderRadius: 40,
+                    width: 30,
+                    height: 30,
+                    left: -5,
+                    overflow: "hidden",
+                    borderColor: "black",
+                    top: -2,
+                    backgroundColor: themeStyle.TEXT_PRIMARY_COLOR,
+                    alignItems: "center",
+                  },
                 ]}
               >
-                <Icon
-                  icon="bell"
-                  size={35}
-                  style={{ color: theme.ERROR_COLOR }}
-                />
-                <View
-                  style={[
-                    styles.bell,
-                    {
-                      borderWidth: 1,
-                      borderRadius: 40,
-                      width: 30,
-                      height: 30,
-                      left: -5,
-                      overflow: "hidden",
-                      borderColor: "black",
-                      top: -2,
-                      backgroundColor: themeStyle.TEXT_PRIMARY_COLOR,
-                      alignItems: "center",
-                    },
-                  ]}
-                >
-                  <Text style={{ fontSize: 20, color: themeStyle.WHITE_COLOR }}>
-                    {ordersStore?.notViewdOrders?.length}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </Animated.View>
-          )}
+                <Text style={{ fontSize: 20, color: themeStyle.WHITE_COLOR }}>
+                  {totalUnreadCount}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </Animated.View>
+        )}
       </View>
       {hideLogo.indexOf(navigation?.getCurrentRoute()?.name) == -1 && (
         <View style={{

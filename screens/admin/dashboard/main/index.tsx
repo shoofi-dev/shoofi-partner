@@ -81,6 +81,12 @@ const DashboardScreen = () => {
           key: "store-management",
           role: undefined,
         },
+        {
+          title: "payments",
+          icon: "money",
+          key: "payments",
+          role: undefined,
+        },
         // {
         //   title: "calander",
         //   icon: "calendar",
@@ -187,6 +193,9 @@ const DashboardScreen = () => {
         break;
       case "store-management":
         navigation.navigate("store-management");
+        break;
+      case "payments":
+        navigation.navigate("payments");
         break;
       case "products-order":
         navigation.navigate("products-order");

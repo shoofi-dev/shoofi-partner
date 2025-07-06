@@ -34,5 +34,19 @@ export const StoreContext = createContext({
     addressStore: addressStore,
     couponsStore: couponsStore,
     creditCardsStore: creditCardsStore,
-    deliveryDriverStore: deliveryDriverStore
+    deliveryDriverStore: deliveryDriverStore,
+    notifications: {
+      notifications: [],
+      stats: { total: 0, unread: 0, read: 0, byType: {} },
+      unreadCount: 0,
+      unviewedOrdersCount: 0,
+      totalUnreadCount: 0,
+      isLoading: false,
+      error: null,
+      markAsRead: async (notificationId: string) => {},
+      markAllAsRead: async () => {},
+      deleteNotification: async (notificationId: string) => {},
+      refreshNotifications: async () => {},
+      connectionStatus: 'Unknown'
+    }
 });

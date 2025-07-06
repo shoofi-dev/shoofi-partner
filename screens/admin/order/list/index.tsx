@@ -254,27 +254,27 @@ const OrdersListScreen = ({ route }) => {
       );
     }
   };
-  const { webScoketURL } = _useWebSocketUrl();
+  // const { webScoketURL } = _useWebSocketUrl();
 
-  const { lastJsonMessage } = useWebSocket(webScoketURL, {
-    share: true,
-    shouldReconnect: (closeEvent) => true,
-  });
+  // const { lastJsonMessage } = useWebSocket(webScoketURL, {
+  //   share: true,
+  //   shouldReconnect: (closeEvent) => true,
+  // });
 
-  useEffect(() => {
-    if (lastJsonMessage && lastJsonMessage.type === "delivery delay") {
-      schedulePushNotificationDeliveryDelay({
-        data: {
-          orderId: 1,
-        },
-      });
-    }
-    if (lastJsonMessage && lastJsonMessage.type !== "delivery delay") {
-      setOrdersList([]);
-      getOrders(1);
-      setPageNumber(1);
-    }
-  }, [lastJsonMessage]);
+  // useEffect(() => {
+  //   if (lastJsonMessage && lastJsonMessage.type === "delivery delay") {
+  //     schedulePushNotificationDeliveryDelay({
+  //       data: {
+  //         orderId: 1,
+  //       },
+  //     });
+  //   }
+  //   if (lastJsonMessage && lastJsonMessage.type !== "delivery delay") {
+  //     setOrdersList([]);
+  //     getOrders(1);
+  //     setPageNumber(1);
+  //   }
+  // }, [lastJsonMessage]);
 
   const { currentAppState } = _useAppCurrentState();
   useEffect(() => {
