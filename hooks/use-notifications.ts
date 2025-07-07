@@ -159,6 +159,32 @@ const useNotifications = (): UseNotificationsReturn => {
         // Refresh unviewed orders count when an order is marked as viewed or new order arrives
         console.log('Received unviewed_orders_updated message, refreshing count');
         fetchUnviewedOrdersCount();
+      } else if (message.type === 'print_order' && userDetailsStore.isAdmin()) {
+        // Handle print order notification
+        console.log('Received print_order message:', message.data);
+        const newNotification: Notification = {
+          _id: Date.now().toString(),
+          title: 'طلب جديد يحتاج للطباعة',
+          body: `طلب جديد رقم ${message.data.orderId} يحتاج للطباعة`,
+          type: 'print_order',
+          data: message.data,
+          isRead: false,
+          createdAt: message.data.timestamp || new Date().toISOString()
+        };
+        setNotifications(prev => [newNotification, ...prev]);
+      } else if (message.type === 'print_not_printed' && userDetailsStore.isAdmin()) {
+        // Handle print not printed notification
+        console.log('Received print_not_printed message:', message.data);
+        const newNotification: Notification = {
+          _id: Date.now().toString(),
+          title: 'طلب لم يتم طباعته',
+          body: `طلب رقم ${message.data.orderId} لم يتم طباعته بعد`,
+          type: 'print_not_printed',
+          data: message.data,
+          isRead: false,
+          createdAt: message.data.timestamp || new Date().toISOString()
+        };
+        setNotifications(prev => [newNotification, ...prev]);
       }
     }
   }, [lastJsonMessage]);
@@ -353,7 +379,6 @@ const useNotifications = (): UseNotificationsReturn => {
     await Promise.all([fetchNotifications(), fetchStats(), fetchUnviewedOrdersCount()]);
   }, [fetchNotifications, fetchStats, fetchUnviewedOrdersCount]);
 
-  // Initialize push notifications
   useEffect(() => {
     const initializeNotifications = async () => {
       try {
@@ -374,8 +399,15 @@ const useNotifications = (): UseNotificationsReturn => {
         console.error('Failed to register for push notifications:', error);
       }
     };
+    if(authStore.isLoggedIn() && userDetailsStore.userDetails?.customerId){
+      initializeNotifications();
+    }
+  }, [userDetailsStore.userDetails?.customerId]);
 
-    initializeNotifications();
+
+  // Initialize push notifications
+  useEffect(() => {
+
 
     // Set up notification listeners
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {

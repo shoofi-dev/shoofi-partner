@@ -150,7 +150,7 @@ const CartExtras = ({
                       {getName(topping)}
                       {area
                         ? ` (${area.name}${
-                            area.price && areaData.isFree ? ` +₪${area.price}` : ""
+                            area.price && !areaData.isFree ? ` +₪${area.price}` : ""
                           })`
                         : ""}
                     </Text>

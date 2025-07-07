@@ -59,7 +59,7 @@ const PizzaToppingGroup = ({ extra, value, onChange, freeToppingIds, freeCount }
                     styles.areaButtonText,
                     getSelectedArea(topping.id) === area.id && styles.selectedAreaButtonText
                   ]}>
-                    {area.name} {area.price && !isToppingFree(topping.id) ? `(+${area.price})` : ""}
+                    {area.name} {area.price > 0 && !isToppingFree(topping.id) ? `(+${area.price})` : ""}
                   </Text>
                 </TouchableOpacity>
               ))}

@@ -178,37 +178,7 @@ const App = () => {
     connectionStatus: notificationsConnectionStatus,
   } = useNotifications();
 
-  // const { webScoketURL } = _useWebSocketUrl();
-
-  // const { readyState, sendJsonMessage, lastJsonMessage } = useWebSocket(
-  //   webScoketURL,
-  //   {
-  //     share: true,
-  //     onOpen: (data) => {
-  //        console.log("connected", data);
-  //     },
-  //     onClose: () => {
-  //       console.log("closed websocket");
-  //     },
-  //     shouldReconnect: (closeEvent) => true,
-  //     queryParams: { customerId: userDetailsStore.userDetails?.customerId },
-  //   }
-  // );
-
-  // useEffect(() => {
-  //   if (userDetailsStore.userDetails?.customerId) {
-  //     // WebSocket will automatically connect once the customerId is available
-  //     console.log("WebSocket connection established.");
-  //   }
-  // }, [userDetailsStore.userDetails?.customerId, webScoketURL]);
-
-  // const connectionStatus = {
-  //   [ReadyState.CONNECTING]: "Connecting",
-  //   [ReadyState.OPEN]: "Open",
-  //   [ReadyState.CLOSING]: "Closing",
-  //   [ReadyState.CLOSED]: "Closed",
-  //   [ReadyState.UNINSTANTIATED]: "Uninstantiated",
-  // }[readyState];
+  // WebSocket connection is now handled by the useNotifications hook
 
   const repeatNotification = () => {
       schedulePushNotification({
@@ -231,31 +201,41 @@ const App = () => {
 
   // Notification handling is now managed by the useNotifications hook
 
-  // const listenToNewOrder = async () => {
-  //   if (
-  //     (lastJsonMessage && lastJsonMessage.type === "new order") ||
-  //     (lastJsonMessage && lastJsonMessage.type === "order viewed updated")
-  //   ) {
-  //     console.log("listenToNewOrder")
-  //     await ordersStore.getNotViewdOrders(userDetailsStore.isAdmin(ROLES.all));
-  //   }
-  //   if (
-  //     lastJsonMessage &&
-  //     (lastJsonMessage.type === "order viewed updated" ||
-  //       lastJsonMessage.type === "print not printed") &&
-  //     userDetailsStore.isAdmin()
-  //   ) {
-  //     if (userDetailsStore.isAdmin(ROLES.all) && userDetailsStore.isAdmin(ROLES.print) && !isPrinting) {
-  //       printNotPrinted();
-  //     }
-  //     if (
-  //       !storeDataStore.repeatNotificationInterval &&
-  //       lastJsonMessage.type !== "print not printed"
-  //     ) {
-  //       repeatNotification();
-  //     }
-  //   }
-  // };
+  // Handle print notifications from the new notification system
+  const handlePrintNotifications = async () => {
+    // Listen for WebSocket messages from the useNotifications hook
+    if (notifications && notifications.length > 0) {
+      const printNotifications = notifications.filter(
+        notification => 
+          notification.type === 'print_order' || 
+          notification.type === 'print_not_printed'
+      );
+
+      if (printNotifications.length > 0 && 
+          userDetailsStore.isAdmin(ROLES.all) && 
+          userDetailsStore.isAdmin(ROLES.print) && 
+          !isPrinting) {
+        console.log("Print notification received, triggering print");
+        printNotPrinted();
+      }
+
+      // Handle repeat notifications for new orders (not print notifications)
+      // const newOrderNotifications = notifications.filter(
+      //   notification => notification.type === 'new_order'
+      // );
+
+      // if (newOrderNotifications.length > 0 && 
+      //     !storeDataStore.repeatNotificationInterval) {
+      //   repeatNotification();
+      // }
+    }
+  };
+
+  // Listen for print notifications
+  useEffect(() => {
+    console.log("notifications", notifications)
+    handlePrintNotifications();
+  }, [notifications, userDetailsStore.userDetails?.customerId, isPrinting]);
 
   const getInvoiceSP = async (queue) => {
     const SPs = [];
@@ -352,9 +332,7 @@ const App = () => {
     }
   }, [printOrdersQueue]);
 
-  // useEffect(() => {
-  //   listenToNewOrder();
-  // }, [lastJsonMessage, userDetailsStore.userDetails]);
+  // WebSocket message handling is now done in the useNotifications hook
 
   const initPrinter = async () => {
     await EscPosPrinter.init({
