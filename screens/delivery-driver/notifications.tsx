@@ -23,6 +23,10 @@ interface Notification {
   isRead: boolean;
   createdAt: string;
   readAt?: string;
+  data?: {
+    orderId?: string;
+    bookId?: string;
+  };
 }
 
 const DeliveryDriverNotifications = observer(() => {
@@ -116,6 +120,15 @@ const DeliveryDriverNotifications = observer(() => {
                 onPress: async () => {
                   try {
                     await deliveryDriverStore.approveOrder(orderId, userDetailsStore.userDetails.customerId, bookId);
+                    
+                    // Refresh notifications to get updated count
+                    await loadNotifications(true);
+                    
+                    // Check if there's only one notification and navigate to dashboard
+                    if (notifications && notifications.length <= 1) {
+                      navigation.navigate('delivery-driver-dashboard' as never);
+                    }
+                    
                     Alert.alert('Order approved');
                   } catch (e) {
                     Alert.alert('Error', 'Failed to approve order');

@@ -81,8 +81,13 @@ const DeliveryDriverDashboard = observer(() => {
               }
               
               if (userDetailsStore.userDetails?.customerId) {
-                deliveryDriverStore.getOrders(userDetailsStore.userDetails.customerId);
+                await deliveryDriverStore.getOrders(userDetailsStore.userDetails.customerId);
               }
+              
+              // Check if there's only one notification left
+              // Since notifications are not stored in the store, we'll just log the action
+              console.log('Order action completed, navigation will be handled by notifications screen');
+              
               Alert.alert('Success', 'Order status updated successfully');
             } catch (error) {
               Alert.alert('Error', 'Failed to update order status');

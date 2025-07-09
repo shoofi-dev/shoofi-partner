@@ -35,7 +35,7 @@ const OrderSubmittedScreen = ({ route, onClose, isModal = false }) => {
     if (isModal && onClose) {
       const timer = setTimeout(() => {
         onClose();
-        navigation.navigate("active-orders");
+        navigation.navigate("MainTabs", { screen: "active-orders" });
       }, 5000);
       return () => clearTimeout(timer);
     }
@@ -46,7 +46,7 @@ const OrderSubmittedScreen = ({ route, onClose, isModal = false }) => {
     if(userDetailsStore.isAdmin()){
       navigation.navigate("homeScreen");
     }else{
-      navigation.navigate("active-orders");
+      navigation.navigate("MainTabs", { screen: "active-orders" });
     }
   };
 

@@ -43,7 +43,7 @@ const OrderDetailsScreen = observer(() => {
   const route = useRoute();
   const navigation = useNavigation();
   const { orderId } = route.params as { orderId: string };
-  const { deliveryDriverStore } = useContext(StoreContext);
+  const { deliveryDriverStore, userDetailsStore } = useContext(StoreContext);
   
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
@@ -69,6 +69,12 @@ const OrderDetailsScreen = observer(() => {
     try {
       await deliveryDriverStore.updateOrderStatus(orderId, status);
       fetchOrderDetails();
+      
+      // Check if there's only one notification and navigate to dashboard
+      // Since notifications are not stored in the store, we'll navigate based on the action
+      // This will be handled by the notifications screen when the user interacts with notifications
+      console.log('Order status updated, navigation will be handled by notifications screen');
+      
       Alert.alert('Success', 'Order status updated successfully');
     } catch (error) {
       Alert.alert('Error', 'Failed to update order status');

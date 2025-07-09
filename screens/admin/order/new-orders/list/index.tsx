@@ -691,7 +691,7 @@ const NewOrdersListScreen = ({ route }) => {
                       fontFamily: `${getCurrentLang()}-SemiBold`,
                     }}
                   >
-                    {t("مواصفات الكعكة")}:
+                    {t("note")}:
                   </Text>
                   <Text
                     style={{

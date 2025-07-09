@@ -130,7 +130,6 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
             // Multi select
             if (extra.type === "multi") {
               const opts = extra.options.filter((o: any) => value.includes(o.id));
-              console.log("extra", extra);
               return (
                 <View
                   key={extra.id}
@@ -227,7 +226,6 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
       // Multi select
       if (extra.type === "multi") {
         const opts = extra.options.filter((o) => value.includes(o.id));
-        console.log("extra", extra);
         return (
           <View
             key={extra.id}

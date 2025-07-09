@@ -607,6 +607,7 @@ const OrdersListScreen = ({ route }) => {
   const printOrder = (order) => {
     if (isLoading) return; // Prevent multiple clicks while loading
     setIsloading(true);
+    DeviceEventEmitter.emit("PRINT_NOT_PRINTED");
     ordersStore.updateOrderPrinted(order._id, false).then(() => {
       setIsloading(false);
     });
@@ -705,13 +706,13 @@ const OrdersListScreen = ({ route }) => {
         </View>
         {/* Right: Status Update Button */}
         <View style={{ flex: 1, alignItems: "center", justifyContent:"flex-end", flexDirection:"row" }}>
-        <View style={{marginRight:20 }}>
+        <TouchableOpacity onPress={() => printOrder(order)} style={{marginRight:20 }}>
               <Icon
                 icon="printer"
                 size={30}
                 style={{ color: themeStyle.SECONDARY_COLOR }}
               />
-            </View>
+            </TouchableOpacity>
           <View style={{ width: "50%" }}>
             {canceledStatuses.indexOf(order.status) === -1 && readyStatuses.indexOf(order.status) === -1 && pickedUpStatuses.indexOf(order.status) === -1 && (
               <Button

@@ -85,7 +85,6 @@ const CartExtras = ({
         }
         // Counter
         if (extra.type === "counter") {
-          console.log("extra", extra);
           return (
             <View
               key={extra.id}

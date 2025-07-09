@@ -118,7 +118,6 @@ export const MainStackNavigator = () => {
       <Stack.Screen name="about-us" component={AboutUsScreen} />
       <Stack.Screen name="contact-us" component={ContactUs} />
       <Stack.Screen name="order-history" component={OrderHistoryScreen} />
-      <Stack.Screen name="active-orders" component={ActiveOrdersScreen} />
       <Stack.Screen name="upload-images" component={uploadImages} />
       <Stack.Screen name="edit-translations" component={EditTranslationsScreen} />
       <Stack.Screen name="stock-management" component={StockManagementScreen} />

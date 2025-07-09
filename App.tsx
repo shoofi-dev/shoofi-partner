@@ -53,7 +53,7 @@ import { isLatestGreaterThanCurrent } from "./helpers/check-version";
 import moment from "moment";
 import "moment/locale/ar"; // without this line it didn't work
 import "moment/locale/he"; // without this line it didn't work
-import useWebSocket, { ReadyState } from "react-use-websocket";
+import useWebSocket from './hooks/use-websocket';
 import i18n, { setTranslations } from "./translations/i18n";
 import {
   schedulePushNotification,
@@ -71,7 +71,7 @@ import NewAddressBasedEventDialog from "./components/dialogs/new-address-based-e
 import { couponsStore } from "./stores/coupons";
 import { creditCardsStore } from "./stores/creditCards";
 import { deliveryDriverStore } from "./stores/delivery-driver";
-import useNotifications from "./hooks/use-notifications";
+// import useNotifications from "./hooks/use-notifications";
 // import { cacheImage } from "./components/custom-fast-image";
 
 moment.locale("en");
@@ -162,23 +162,63 @@ const App = () => {
   const [isOpenUpdateVersionDialog, setIsOpenUpdateVersionDialog] =
     useState(false);
 
-  // Use the notifications hook
+  // Add the WebSocket hook for direct message handling
   const {
-    notifications,
-    stats,
-    unreadCount,
-    unviewedOrdersCount,
-    totalUnreadCount,
-    isLoading: notificationsLoading,
-    error: notificationsError,
-    markAsRead,
-    markAllAsRead,
-    deleteNotification,
-    refreshNotifications,
-    connectionStatus: notificationsConnectionStatus,
-  } = useNotifications();
+    isConnected: wsConnected,
+    connectionStatus: wsStatus,
+    lastMessage: wsMessage,
+    error: wsError,
+    sendMessage,
+    reconnect,
+    getStats: getWebSocketStats
+  } = useWebSocket();
 
-  // WebSocket connection is now handled by the useNotifications hook
+  // Handle WebSocket messages directly
+  useEffect(() => {
+    if (wsMessage) {
+      console.log('WebSocket message received in App:', wsMessage);
+      
+      if (wsMessage.type === 'print_order' && userDetailsStore.isAdmin()) {
+        console.log('Print order received via WebSocket, triggering print');
+        // Trigger print immediately when WebSocket message is received
+        if (userDetailsStore.isAdmin(ROLES.all) && 
+            userDetailsStore.isAdmin(ROLES.print) && 
+            !isPrinting) {
+          console.log('Conditions met, calling printNotPrinted');
+          printNotPrinted();
+        } else {
+          console.log('Print conditions not met:', {
+            isAdmin: userDetailsStore.isAdmin(ROLES.all),
+            hasPrintRole: userDetailsStore.isAdmin(ROLES.print),
+            isPrinting
+          });
+        }
+      } else if (wsMessage.type === 'print_not_printed' && userDetailsStore.isAdmin()) {
+        console.log('Print not printed message received via WebSocket');
+        if (userDetailsStore.isAdmin(ROLES.all) && 
+            userDetailsStore.isAdmin(ROLES.print) 
+            ) {
+          printNotPrinted();
+        }
+      }
+    }
+  }, [wsMessage, userDetailsStore.userDetails?.customerId]);
+
+  // Use the notifications hook (keep this for other notifications)
+  // const {
+  //   notifications,
+  //   stats,
+  //   unreadCount,
+  //   unviewedOrdersCount,
+  //   totalUnreadCount,
+  //   isLoading: notificationsLoading,
+  //   error: notificationsError,
+  //   markAsRead,
+  //   markAllAsRead,
+  //   deleteNotification,
+  //   refreshNotifications,
+  //   connectionStatus: notificationsConnectionStatus,
+  // } = useNotifications();
 
   const repeatNotification = () => {
       schedulePushNotification({
@@ -197,45 +237,7 @@ const App = () => {
     storeDataStore.setRepeatNotificationInterval(tmpRepeatNotificationInterval);
   };
 
-  // Notification response handling is now managed by the useNotifications hook
-
-  // Notification handling is now managed by the useNotifications hook
-
-  // Handle print notifications from the new notification system
-  const handlePrintNotifications = async () => {
-    // Listen for WebSocket messages from the useNotifications hook
-    if (notifications && notifications.length > 0) {
-      const printNotifications = notifications.filter(
-        notification => 
-          notification.type === 'print_order' || 
-          notification.type === 'print_not_printed'
-      );
-
-      if (printNotifications.length > 0 && 
-          userDetailsStore.isAdmin(ROLES.all) && 
-          userDetailsStore.isAdmin(ROLES.print) && 
-          !isPrinting) {
-        console.log("Print notification received, triggering print");
-        printNotPrinted();
-      }
-
-      // Handle repeat notifications for new orders (not print notifications)
-      // const newOrderNotifications = notifications.filter(
-      //   notification => notification.type === 'new_order'
-      // );
-
-      // if (newOrderNotifications.length > 0 && 
-      //     !storeDataStore.repeatNotificationInterval) {
-      //   repeatNotification();
-      // }
-    }
-  };
-
-  // Listen for print notifications
-  useEffect(() => {
-    console.log("notifications", notifications)
-    handlePrintNotifications();
-  }, [notifications, userDetailsStore.userDetails?.customerId, isPrinting]);
+  // Print notifications are now handled directly via WebSocket messages
 
   const getInvoiceSP = async (queue) => {
     const SPs = [];
@@ -274,8 +276,8 @@ const App = () => {
   };
 
   const printNotPrinted = async () => {
-    
     setIsPrinting(true);
+    console.log("XXXX-----xxxx---PINT")
     try {
       ordersStore
         .getOrders(
@@ -303,11 +305,23 @@ const App = () => {
     }
   };
 
+  useEffect(() => {
+    const PrintNotPrintedEvent = DeviceEventEmitter.addListener(
+      `PRINT_NOT_PRINTED`,
+      printNotPrinted
+    );
+    return () => {
+      PrintNotPrintedEvent.remove();
+    };
+  }, []);
+
   const forLoop = async (queue) => {
     try {
       const orderInvoicesPS = await getInvoiceSP(queue);
+
       if (userDetailsStore.isAdmin(ROLES.all) && userDetailsStore.isAdmin(ROLES.print)) {
         const isPrinted = await testPrint(orderInvoicesPS, printer, storeDataStore.storeData?.isDisablePrinter);
+
         if (isPrinted) {
           for (let i = 0; i < queue.length; i++) {
             await ordersStore.updateOrderPrinted(queue[i]._id, true);
@@ -324,9 +338,9 @@ const App = () => {
 
   useEffect(() => {
     if (printOrdersQueue.length > 0) {
-      setTimeout(() => {
+       setTimeout(() => {
         forLoop(printOrdersQueue);
-      }, 1000);
+     }, 0);
     } else {
       setIsPrinting(false);
     }
@@ -360,6 +374,7 @@ const App = () => {
         initPrinter();
         printNotPrinted();
       }
+      console.log("rrrrrrr1", new Date())
       ordersStore.getNotViewdOrders(userDetailsStore.isAdmin(ROLES.all));
     }
   }, [appIsReady, userDetailsStore.userDetails?.phone, currentAppState]);
@@ -644,16 +659,16 @@ const App = () => {
   // const idPart2 = orderIdSplit[2];
 
   const errorHandler = (error: Error, stackTrace: string) => {
-    errorHandlerStore.sendClientError({
-      error: {
-        message: error?.message,
-        cause: error?.cause,
-        name: error?.name,
-      },
-      stackTrace,
-      customerId: userDetailsStore.userDetails?.customerId,
-      createdDate: moment().format(),
-    });
+    // errorHandlerStore.sendClientError({
+    //   error: {
+    //     message: error?.message,
+    //     cause: error?.cause,
+    //     name: error?.name,
+    //   },
+    //   stackTrace,
+    //   customerId: userDetailsStore.userDetails?.customerId,
+    //   createdDate: moment().format(),
+    // });
   };
   const CustomFallback = (props: { error: Error; resetError: Function }) => {
     props.resetError();
@@ -811,18 +826,28 @@ const App = () => {
             deliveryDriverStore: deliveryDriverStore,
             // Notifications data from the hook
             notifications: {
-              notifications,
-              stats,
-              unreadCount,
-              unviewedOrdersCount,
-              totalUnreadCount,
-              isLoading: notificationsLoading,
-              error: notificationsError,
-              markAsRead,
-              markAllAsRead,
-              deleteNotification,
-              refreshNotifications,
-              connectionStatus: notificationsConnectionStatus,
+              notifications: [],
+              stats: { total: 0, unread: 0, read: 0, byType: {} },
+              unreadCount: 0,
+              isLoading: false,
+              error: null,
+              markAsRead: async (notificationId: string) => {},
+              markAllAsRead: async () => {},
+              deleteNotification: async (notificationId: string) => {},
+              refreshNotifications: async () => {},
+              connectionStatus: 'Unknown',
+              unviewedOrdersCount: 0,
+              totalUnreadCount: 0
+            },
+            // WebSocket data for direct message handling
+            websocket: {
+              isConnected: wsConnected,
+              connectionStatus: wsStatus,
+              lastMessage: wsMessage,
+              error: wsError,
+              sendMessage,
+              reconnect,
+              getStats: getWebSocketStats
             }
           }}
         >

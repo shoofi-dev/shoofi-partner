@@ -48,5 +48,14 @@ export const StoreContext = createContext({
       deleteNotification: async (notificationId: string) => {},
       refreshNotifications: async () => {},
       connectionStatus: 'Unknown'
+    },
+    websocket: {
+      isConnected: false,
+      connectionStatus: 'Unknown',
+      lastMessage: null,
+      error: null,
+      sendMessage: (message: any) => {},
+      reconnect: () => {},
+      getStats: () => ({})
     }
 });

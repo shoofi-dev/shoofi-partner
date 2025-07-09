@@ -36,7 +36,9 @@ export async function testPrint(order: any, printer, isDisablePrinter = false) {
       let status = await printer.initialize();
       let statusx;
       statusx = await printOrder(order, status);
+
       await statusx.send();
+
       return true;
     }
 
