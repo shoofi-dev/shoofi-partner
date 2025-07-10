@@ -265,7 +265,7 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
           </View>
         </View>
 
-        {invoiceOrder?.order?.geo_positioning?.qrURI &&
+        {/* {invoiceOrder?.order?.geo_positioning?.qrURI &&
           !invoiceOrder?.order?.locationText && (
             <View
               style={{
@@ -287,10 +287,10 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
                 />
               </View>
             </View>
-          )}
+          )} */}
 
 
-        {invoiceOrder?.order?.locationText && (
+        {/* {invoiceOrder?.order?.locationText && (
           <View
             style={{
               marginTop: 10,
@@ -310,7 +310,7 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
               </Text>
             </View>
           </View>
-        )}
+        )} */}
 
       </View>
     )

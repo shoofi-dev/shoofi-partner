@@ -67,6 +67,7 @@ const printOrder = async (orders, status) => {
       resolve(status);
     });
   } catch (error) {
+    console.log("error", error);
     errorHandlerStore.sendClientError({
       error: {
         message: error?.message,

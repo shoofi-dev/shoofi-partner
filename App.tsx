@@ -239,68 +239,110 @@ const App = () => {
 
   // Print notifications are now handled directly via WebSocket messages
 
-  const getInvoiceSP = async (queue) => {
-    const SPs = [];
-    for (let i = 0; i < queue.length; i++) {
-      const pizzaCount = getPizzaCount(queue[i]?.order?.items);
-      const invoiceRefName = invoicesRef.current[queue[i].orderId + "name"];
-      const resultName = await captureRef(invoiceRefName, {
-        result: "data-uri",
-        width: pixels,
-        quality: 1,
-        format: "png",
+  // Helper function to ensure images are loaded
+  const ensureImagesLoaded = async () => {
+    try {
+      // Wait a bit for any pending image loads
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      // Force a layout pass
+      return new Promise(resolve => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(resolve);
+        });
       });
-      for (let i = 0; i < pizzaCount; i++) {
-        SPs.push(resultName);
-      }
+    } catch (error) {
+      console.log("Error ensuring images loaded:", error);
+    }
+  };
 
-      const invoiceRef = invoicesRef.current[queue[i].orderId];
+  const getInvoiceSP = async (queue) => {
+    try {
+      const SPs = [];
+      for (let i = 0; i < queue.length; i++) {
+        const invoiceRef = invoicesRef.current[queue[i].orderId];
+        
+        // Check if the ref exists
+        if (!invoiceRef) {
+          console.log(`Invoice ref not found for order ${queue[i].orderId}`);
+          continue;
+        }
+
+        // Ensure images are loaded and view is fully rendered
+        await ensureImagesLoaded();
+
+        try {
+          const result = await captureRef(invoiceRef, {
+            result: "data-uri",
+            width: pixels,
+            quality: 1,
+            format: "png",
+          });
+          SPs.push(result);
+        } catch (captureError) {
+          console.log(`Failed to capture invoice for order ${queue[i].orderId}:`, captureError);
+          
+          // Retry once with a longer delay
+          try {
+            await new Promise(resolve => setTimeout(resolve, 500));
+            const retryResult = await captureRef(invoiceRef, {
+              result: "data-uri",
+              width: pixels,
+              quality: 1,
+              format: "png",
+            });
+            SPs.push(retryResult);
+            console.log(`Successfully captured invoice on retry for order ${queue[i].orderId}`);
+          } catch (retryError) {
+            console.log(`Failed to capture invoice on retry for order ${queue[i].orderId}:`, retryError);
+            // Continue with other invoices even if this one fails
+          }
+        }
+      }
+      return SPs;
+    } catch (e) {
+      console.log("Error in getInvoiceSP:", e);
+      return [];
+    }
+  };
+  const printInvoice = async (invoiceRef) => {
+    try {
       const result = await captureRef(invoiceRef, {
         result: "data-uri",
         width: pixels,
         quality: 1,
         format: "png",
       });
-      SPs.push(result);
+      const isPrinted = await testPrint(result, printer);
+      return isPrinted;
+    } catch (error) {
+      console.log("Failed to print invoice:", error);
+      return false;
     }
-    return SPs;
-  };
-  const printInvoice = async (invoiceRef) => {
-    const result = await captureRef(invoiceRef, {
-      result: "data-uri",
-      width: pixels,
-      quality: 1,
-      format: "png",
-    });
-    const isPrinted = await testPrint(result, printer);
   };
 
   const printNotPrinted = async () => {
     setIsPrinting(true);
     console.log("XXXX-----xxxx---PINT")
     try {
-      ordersStore
-        .getOrders(
-          true,
-          ["1", "2", "3", "4", "5","6"],
-          null,
-          true,
-          null,
-          null,
-          true
-        )
-        .then(async (res) => {
-          const notPrintedOrderds = res;
-          if (notPrintedOrderds?.length > 0) {
-            setPrintOrdersQueue(notPrintedOrderds.slice(0, 5));
-          } else {
-            setIsPrinting(false);
-          }
-        })
-        .catch((err) => {
-          setIsPrinting(false);
-        });
-    } catch {
+      const res = await ordersStore.getOrders(
+        true,
+        ["1", "2", "3", "4", "5","6"],
+        null,
+        true,
+        null,
+        null,
+        true
+      );
+      
+      const notPrintedOrderds = res;
+      if (notPrintedOrderds?.length > 0) {
+        setPrintOrdersQueue(notPrintedOrderds.slice(0, 5));
+      } else {
+        setIsPrinting(false);
+      }
+    } catch (err) {
+      console.log("Error getting orders for printing:", err);
       setIsPrinting(false);
     }
   };
@@ -319,19 +361,29 @@ const App = () => {
     try {
       const orderInvoicesPS = await getInvoiceSP(queue);
 
+      // Only proceed if we have at least some invoices captured
+      if (orderInvoicesPS.length === 0) {
+        console.log("No invoices were successfully captured, skipping print");
+        setIsPrinting(false);
+        return;
+      }
+
       if (userDetailsStore.isAdmin(ROLES.all) && userDetailsStore.isAdmin(ROLES.print)) {
         const isPrinted = await testPrint(orderInvoicesPS, printer, storeDataStore.storeData?.isDisablePrinter);
 
         if (isPrinted) {
-          for (let i = 0; i < queue.length; i++) {
-            await ordersStore.updateOrderPrinted(queue[i]._id, true);
+          // Only mark orders as printed if we successfully captured their invoices
+          const successfulOrders = queue.slice(0, orderInvoicesPS.length);
+          for (let i = 0; i < successfulOrders.length; i++) {
+            await ordersStore.updateOrderPrinted(successfulOrders[i]._id, true);
           }
           setPrintOrdersQueue([]);
         }
         setIsPrinting(false);
         // printNotPrinted();
       }
-    } catch {
+    } catch (error) {
+      console.log("Error in forLoop:", error);
       setIsPrinting(false);
     }
   };
@@ -858,70 +910,27 @@ const App = () => {
             printOrdersQueue.map((invoice) => {
               return (
                 <ScrollView
-                  style={{ flex: 1, maxWidth: 820, alignSelf: "center" }}
+                  style={{ 
+                    flex: 1, 
+                    maxWidth: 820, 
+                    alignSelf: "center",
+                    position: "absolute",
+                    left: -9999, // Hide off-screen to prevent flickering
+                    opacity: 0
+                  }}
                   onContentSizeChange={(width, height) => {
                     setInvoiceScrollViewSize({ h: height, w: width });
                   }}
                   key={invoice.orderId}
                 >
                   <View
-                    ref={(el) =>
-                      (invoicesRef.current[invoice.orderId + "name"] = el)
-                    }
-                    style={{
-                      width: "100%",
-                      zIndex: 10,
-                      alignItems: "center",
-                      justifyContent: "center",
-                      borderColor: "black",
-                    }}
-                  >
-                    <View
-                      style={{
-                        marginBottom: 15,
-                        borderWidth: 5,
-                        width: "100%",
-                      }}
-                    >
-                      <Text style={{ alignSelf: "center", fontSize: 100 }}>
-                        {invoice.customerDetails.name}
-                      </Text>
-                    </View>
-                    <View
-                      style={{
-                        borderWidth: 5,
-                        marginBottom: 15,
-                        width: "100%",
-                      }}
-                    >
-                      <Text style={{ alignSelf: "center", fontSize: 100 }}>
-                        السعر: {getOrderTotalPrice(invoice)}
-                        {invoice.order?.payment_method &&
-                          invoice?.ccPaymentRefData?.data?.StatusCode == 1 &&
-                          " - א"}
-                      </Text>
-                    </View>
-
-                    <View
-                      style={{
-                        borderWidth: 5,
-                        width: "100%",
-                      }}
-                    >
-                      <Text style={{ alignSelf: "center", fontSize: 100 }}>
-                        {i18n.t(invoice.order.receipt_method)}
-                      </Text>
-                    </View>
-                  </View>
-                  <View style={{ height: 20 }}></View>
-                  <View
                     ref={(el) => (invoicesRef.current[invoice.orderId] = el)}
                     style={{
                       width: "100%",
-
                       flexDirection: "row",
                       zIndex: 10,
-                      height: "80%",
+                      height: "100%",
+                      backgroundColor: "white", // Ensure white background for printing
                     }}
                   >
                     <OrderInvoiceCMP invoiceOrder={invoice} />

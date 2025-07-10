@@ -11,7 +11,6 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
   const { languageStore } = useContext(StoreContext);
   const { isTablet, scale, } = useResponsive();
   const getToppingIcon = (area: any) => {
-    console.log("area", area);
     switch (area.id) {
       case "full":
         return <Icon icon="pizza-full" size={isTablet ? 30 : 20} color="black" />;

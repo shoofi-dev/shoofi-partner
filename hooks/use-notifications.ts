@@ -91,7 +91,7 @@ const useNotifications = (): UseNotificationsReturn => {
   useEffect(() => {
     if (lastMessage) {
       const message = lastMessage;
-      
+      console.log('=========message=========', message);
       if (message.type === 'notification') {
         // Add new notification to the list
         const newNotification: Notification = {

@@ -34,7 +34,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Button from "../../../../components/controls/button/button";
 import { testPrint } from "../../../../helpers/printer/print";
-import useWebSocket from "react-use-websocket";
+// import useWebSocket from "react-use-websocket";
 import { schedulePushNotificationDeliveryDelay } from "../../../../utils/notification";
 import { orderBy } from "lodash";
 import sizeTitleAdapter from "../../../../helpers/size-name-adapter";
@@ -296,6 +296,30 @@ const OrdersListScreen = ({ route }) => {
   //     setPageNumber(1);
   //   }
   // }, [lastJsonMessage]);
+  
+  // Use WebSocket connection from context instead of creating a new one
+  const { websocket } = useContext(StoreContext);
+  const {
+    isConnected: wsConnected,
+    connectionStatus: wsStatus,
+    lastMessage: wsMessage,
+    error: wsError,
+    sendMessage,
+    reconnect,
+    getStats: getWebSocketStats
+  } = websocket;
+
+  useEffect(() => {
+    if (wsMessage) {
+      console.log('WebSocket message received in App:', wsMessage);
+      
+      if (wsMessage.type === 'order_status_updated' || wsMessage.type === 'unviewed_orders_updated') {
+          setOrdersList([]);
+          getOrders(1);
+          setPageNumber(1);
+      } 
+    }
+  }, [wsMessage, userDetailsStore.userDetails?.customerId]);
 
   const { currentAppState } = _useAppCurrentState();
   useEffect(() => {

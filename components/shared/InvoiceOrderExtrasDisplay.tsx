@@ -9,7 +9,6 @@ import { getCurrentLang } from "../../translations/i18n";
 const InvoiceOrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
   const { languageStore } = useContext(StoreContext);
   const getToppingIcon = (area: any) => {
-    console.log("area", area);
     switch (area.id) {
       case "full":
         return <Icon icon="pizza-full" size={60} color="black" />;
@@ -108,7 +107,7 @@ const InvoiceOrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
           {/* Group Header */}
           {groupHeader && (
             <Text style={{ 
-              fontSize: 55, 
+              fontSize: 35, 
               fontWeight: "bold",
               marginBottom: 5,
               fontFamily: `${getCurrentLang()}-Bold`,
@@ -143,10 +142,10 @@ const InvoiceOrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
                       marginLeft: groupHeader ? 10 : 0,
                     }}
                   >
-                    {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: 45, color: "#888" }}>
+                    {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: 35, color: "#888" }}>
                       {languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}:{" "}
                     </Text>}
-                    <Text style={{ fontSize: 45, color: "#333" }}>
+                    <Text style={{ fontSize: 35, color: "#333" }}>
                       {languageStore.selectedLang === "ar" ? opt?.nameAR : opt?.nameHE}
                       {opt?.price ? ` (+₪${opt.price})` : ""}
                     </Text>
@@ -167,10 +166,10 @@ const InvoiceOrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
                       marginLeft: groupHeader ? 10 : 0,
                     }}
                   >
-                    {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: 45, color: "#888" }}>
+                    {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: 35, color: "#888" }}>
                       {languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}:{" "}
                     </Text>}
-                    <Text style={{ fontSize: 45, color: "#333" }}>
+                    <Text style={{ fontSize: 35, color: "#333" }}>
                       {opts
                         .map((o: any) => `${languageStore.selectedLang === "ar"
                           ? o.nameAR
@@ -193,10 +192,10 @@ const InvoiceOrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
                       marginLeft: groupHeader ? 10 : 0,
                     }}
                   >
-                    {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: 45, color: "#888" }}>
+                    {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: 35, color: "#888" }}>
                       {languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}:{" "}
                     </Text>}
-                    <Text style={{ fontSize: 45, color: "#333" }}>
+                    <Text style={{ fontSize: 35, color: "#333" }}>
                       {value}x{extra.price ? ` (+₪${extra.price})` : ""}
                     </Text>
                   </View>
@@ -212,8 +211,8 @@ const InvoiceOrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
               (a) => a.id === areaId
             );
             return (
-              <View key={areaId} style={{ marginBottom: 15, marginLeft: groupHeader ? 10 : 0 }}>
-                <View style={{ alignItems: "center", marginBottom: 15 }}>
+              <View key={areaId} style={{ marginBottom: 0, marginLeft: groupHeader ? 10 : 0 }}>
+                <View style={{ alignItems: "center", marginBottom: 5, flexDirection: "row" }}>
                   <View style={{ marginRight: 5 }}>{getToppingIcon(area)}</View>
                   {toppings.map(({ topping, areaData }, idx) => (
                     <View
@@ -224,7 +223,7 @@ const InvoiceOrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
                         marginRight: 10,
                       }}
                     >
-                      <Text style={{ fontSize: 45, color: "#333" }}>
+                      <Text style={{ fontSize: 35, color: "#333" }}>
                         {languageStore.selectedLang === "ar"
                           ? topping.nameAR
                           : topping.nameHE}
@@ -276,10 +275,10 @@ const InvoiceOrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
               marginBottom: 2,
             }}
           >
-              {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: 45, color: "#888" }}>
+              {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: 35, color: "#888" }}>
               {languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}:{" "}
             </Text>}
-            <Text style={{ fontSize: 45, color: "#333" }}>
+            <Text style={{ fontSize: 35, color: "#333" }}>
               {languageStore.selectedLang === "ar" ? opt?.nameAR : opt?.nameHE}
               {opt?.price ? ` (+₪${opt.price})` : ""}
             </Text>
@@ -299,10 +298,10 @@ const InvoiceOrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
               marginBottom: 2,
             }}
           >
-            {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: 45, color: "#888" }}>
+            {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: 35, color: "#888" }}>
               {languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}:{" "}
             </Text>}
-            <Text style={{ fontSize: 45, color: "#333" }}>
+            <Text style={{ fontSize: 35, color: "#333" }}>
               {opts
                 .map((o) => `${languageStore.selectedLang === "ar"
                   ? o.nameAR
@@ -324,10 +323,10 @@ const InvoiceOrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
               marginBottom: 2,
             }}
           >
-              {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: 45, color: "#888" }}>
+              {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: 35, color: "#888" }}>
               {languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}:{" "}
             </Text>}
-            <Text style={{ fontSize: 45, color: "#333" }}>
+            <Text style={{ fontSize: 35, color: "#333" }}>
               {value}x{extra.price ? ` (+₪${extra.price})` : ""}
             </Text>
           </View>
@@ -353,12 +352,12 @@ const InvoiceOrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
         (a) => a.id === areaId
       );
       return (
-        <View key={areaId} style={{ marginBottom: 15 }}>
+        <View key={areaId} style={{ marginBottom: 5,  }}>
           <View
             style={{
               alignItems: "center",
-              marginBottom: 15,
-             
+              marginBottom: 5,
+             flexDirection: "row"
             }}
           >
             <View style={{ marginRight: 5 }}>{getToppingIcon(area)}</View>
@@ -374,7 +373,7 @@ const InvoiceOrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
               >
                 <Text
                   style={{
-                    fontSize: 45,
+                    fontSize: 35,
                     color: "#333",
                   }}
                 >

@@ -18,6 +18,7 @@ import Animated from "react-native-reanimated";
 import { cdnUrl } from "../../../consts/shared";
 import { StoreContext } from "../../../stores";
 import BackButton from "../../../components/back-button";
+import { useTranslation } from "react-i18next";
 
 interface StoreHeaderCardProps {
   store: any;
@@ -45,6 +46,7 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
   const [activeSlide, setActiveSlide] = useState(0);
   const {  languageStore } =
   useContext(StoreContext);
+  const { t } = useTranslation();
   // Use store fields with fallbacks
   const storeImages =
     store?.cover_sliders?.length > 0
@@ -219,6 +221,17 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
               source={{ uri: cdnUrl + storeLogo }}
               style={styles.logo}
             />
+          </View>
+          <View style={{flexDirection: "row", alignItems: "center", marginTop: 10, marginLeft: 20}}>
+            <View style={styles.storeStatus}>
+              <Text style={[styles.storeStatusText, {color: store?.isOpen ? themeStyle.SUCCESS_COLOR : themeStyle.ERROR_COLOR}]}>{store?.isOpen ? t("open") : t("closed")}</Text>
+            </View>
+            <View style={{flexDirection: "row", alignItems: "center", marginTop: 10, marginLeft: 20}}>
+              <Text style={styles.storeStatusText}>{t("working-hours")}</Text>      
+              <Text style={styles.storeStatusText}>
+                {store?.workingHours ? `${store.workingHours.start} - ${store.workingHours.end}` : 'N/A'}
+              </Text>
+            </View>
           </View>
         </View>
       </Animated.View>
@@ -453,6 +466,19 @@ const styles = StyleSheet.create({
     height: 44,
     alignItems: "center",
     justifyContent: "center",
+  },
+  storeStatus: {
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    borderRadius: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    alignSelf: "flex-start",
+    marginTop: 10,
+    marginLeft: 20,
+  },
+  storeStatusText: {
+    fontSize: 14,
+    fontWeight: "bold",
   },
 });
 

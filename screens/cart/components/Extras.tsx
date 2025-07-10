@@ -136,7 +136,6 @@ const CartExtras = ({
                 const topping = extra.options.find((o) => o.id === toppingId);
                 if (!topping) return null;
                 const area = topping.areaOptions?.find((a) => a.id === areaData.areaId);
-                console.log("area", area);
                 return (
                   <View
                     key={toppingId}

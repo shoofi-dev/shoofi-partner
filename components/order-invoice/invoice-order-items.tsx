@@ -31,11 +31,11 @@ const InvoiceOrderItems = ({ orderItems }) => {
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
               <View style={{ flexBasis: "75%", flexDirection: "row", }}>
-              <Text style={{ fontSize: 65, textAlign: "left" }}>
+              <Text style={{ fontSize: 45, textAlign: "left" }}>
                   {`X${order.qty}`}
                 </Text>
                 <View style={{ width:20 }}></View>
-                <Text style={{ fontSize: 65, textAlign: "left" }} ellipsizeMode="tail" numberOfLines={1}>
+                <Text style={{ fontSize: 45, textAlign: "left" }} ellipsizeMode="tail" numberOfLines={1}>
                   {
                     `${
                       getCurrentLang() === "ar" ? order.nameAR : order.nameHE
@@ -45,7 +45,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
               </View>
 
               <View>
-                <Text style={{ fontSize: 65, textAlign: "left" }}>
+                <Text style={{ fontSize: 45, textAlign: "left" }}>
                   {`₪${order.price * order.qty}`}
                 </Text>
               </View>
@@ -107,7 +107,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
                 >
                   <View style={{}}>
                     <Text style={{ fontSize: 65, textAlign: "left" }}>
-                      {"مواصفات الكعكة"}:
+                      {"ملاحظة"}:
                     </Text>
                   </View>
                   <View>
