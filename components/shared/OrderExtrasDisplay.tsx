@@ -294,6 +294,7 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
               flexDirection: "row",
               alignItems: "center",
               marginBottom: 8,
+              flexWrap: "wrap",
             }}
           >
             <View style={{ marginRight: 5 }}>{getToppingIcon(area)}</View>

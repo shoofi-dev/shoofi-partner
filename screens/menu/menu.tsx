@@ -15,8 +15,7 @@ import AllCategoriesList, {
 } from "./components/AllCategoriesList";
 import Icon from "../../components/icon";
 import { useTranslation } from "react-i18next";
-import useWebSocket from "react-use-websocket";
-import { WS_URL } from "../../consts/api";
+
 import { ActivityIndicator } from "react-native-paper";
 import CategoryList from "./components/category/category-list";
 import StoreHeaderCard from "./components/StoreHeaderCard";
@@ -28,7 +27,7 @@ import Text from "../../components/controls/Text";
 import StorePlaceHolder from "../../components/placeholders/StorePlaceHolder";
 const HEADER_HEIGHT = 340;
 const SHIPPING_PICKER_CONTAINER_HEIGHT = 0;
-const STICKY_HEADER_HEIGHT = 90;
+const STICKY_HEADER_HEIGHT = 60;
 const SCROLLABLE_PART_HEIGHT = HEADER_HEIGHT + SHIPPING_PICKER_CONTAINER_HEIGHT;
 const categoryHeaderHeight = 35;
 const productHeight = 140;
@@ -47,15 +46,22 @@ const MenuScreen = () => {
 
   const { availableDrivers, loading: driversLoading } = useAvailableDrivers();
 
-  const { lastJsonMessage } = useWebSocket(WS_URL, { share: true });
+  const { websocket } = useContext(StoreContext);
+  const { lastMessage: wsMessage } = websocket;
 
   const [cartPrice, setCartPrice] = useState(0);
 
   useEffect(() => {
-    if (lastJsonMessage) {
-      menuStore.getMenu();
+    if (wsMessage) {
+      console.log('WebSocket message received in Menu:', wsMessage);
+      
+      // Only refresh menu for product-related updates
+      if (wsMessage.type === 'product_updated') {
+        console.log('Product updated, refreshing menu...');
+        menuStore.getMenu();
+      }
     }
-  }, [lastJsonMessage]);
+  }, [wsMessage]);
 
   const [categoryList, setCategoryList] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -317,7 +323,7 @@ const MenuScreen = () => {
           },
         ]}
       >
-        <View
+        {/* <View
           style={{ marginLeft: 15, flexDirection: "row", alignItems: "center" }}
         >
           <BackButton />
@@ -328,7 +334,7 @@ const MenuScreen = () => {
                 : storeDataStore.storeData.name_he}
             </Text>
           </View>
-        </View>
+        </View> */}
         <CategoryList
           style={{ width: "100%" }}
           categoryList={categoryList}

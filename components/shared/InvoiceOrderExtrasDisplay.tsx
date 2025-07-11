@@ -212,7 +212,7 @@ const InvoiceOrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
             );
             return (
               <View key={areaId} style={{ marginBottom: 0, marginLeft: groupHeader ? 10 : 0 }}>
-                <View style={{ alignItems: "center", marginBottom: 5, flexDirection: "row" }}>
+                <View style={{ alignItems: "center", marginBottom: 5, flexDirection: "row",flexWrap: "wrap" }}>
                   <View style={{ marginRight: 5 }}>{getToppingIcon(area)}</View>
                   {toppings.map(({ topping, areaData }, idx) => (
                     <View
@@ -357,7 +357,8 @@ const InvoiceOrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
             style={{
               alignItems: "center",
               marginBottom: 5,
-             flexDirection: "row"
+             flexDirection: "row",
+             flexWrap: "wrap"
             }}
           >
             <View style={{ marginRight: 5 }}>{getToppingIcon(area)}</View>

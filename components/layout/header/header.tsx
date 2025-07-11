@@ -31,7 +31,6 @@ export const hideHHeaderScreens = [
   "terms-and-conditions",
   "checkout-screen",
   "cart",
-  "menuScreen",
   "order-submitted",
   "AddressList",
   "credit-cards",
@@ -339,7 +338,7 @@ const Header = () => {
               ]}
             >
               <Icon
-                icon="cog"
+                icon="home"
                 size={35}
                 style={{ color: theme.PRIMARY_COLOR }}
               />

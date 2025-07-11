@@ -1057,9 +1057,10 @@ const NewOrdersListScreen = ({ route }) => {
                           fontFamily={`${getCurrentLang()}-Bold`}
                           borderRadious={19}
                           disabled={
-                            !selectedTime[order._id] &&
-                            !storeDataStore.storeData?.isOrderLaterSupport
+                            (!selectedTime[order._id] &&
+                            !storeDataStore.storeData?.isOrderLaterSupport) || isLoading
                           }
+                          isLoading={isLoading}
                         />
                       </View>
                     </View>

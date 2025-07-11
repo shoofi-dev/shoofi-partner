@@ -76,7 +76,7 @@ export const MainStackNavigator = () => {
       screenOptions={{
         cardStyle: { backgroundColor: 'rgba(255, 255, 255, 0.94)' },
         headerShown: false,
-        gestureEnabled: true,
+        gestureEnabled: false,
         transitionSpec: {
           open: TransitionSpecs.TransitionIOSSpec,
           close: TransitionSpecs.TransitionIOSSpec,

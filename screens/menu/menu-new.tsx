@@ -9,8 +9,7 @@ import Button from "../../components/controls/button/button";
 import AllCategoriesList from "./components/AllCategoriesList";
 import Icon from "../../components/icon";
 import { useTranslation } from "react-i18next";
-import useWebSocket from "react-use-websocket";
-import { WS_URL } from "../../consts/api";
+
 import { ActivityIndicator } from "react-native-paper";
 import CategoryList from "./components/category/category-list";
 import StoreHeaderCard from "./components/StoreHeaderCard";
@@ -32,13 +31,20 @@ const MenuScreen = () => {
 
   const { availableDrivers, loading: driversLoading } = useAvailableDrivers();
 
-  const { lastJsonMessage } = useWebSocket(WS_URL, { share: true });
+  const { websocket } = useContext(StoreContext);
+  const { lastMessage: wsMessage } = websocket;
 
   useEffect(() => {
-    if (lastJsonMessage) {
-      menuStore.getMenu();
+    if (wsMessage) {
+      console.log('WebSocket message received in Menu (new):', wsMessage);
+      
+      // Only refresh menu for product-related updates
+      if (wsMessage.type === 'product_updated') {
+        console.log('Product updated, refreshing menu...');
+        menuStore.getMenu();
+      }
     }
-  }, [lastJsonMessage]);
+  }, [wsMessage]);
 
   const [categoryList, setCategoryList] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);

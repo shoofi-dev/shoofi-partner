@@ -8,12 +8,10 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { StoreContext } from "../../../stores";
-import useWebSocket from "react-use-websocket";
 import StockProductsList from "./products-list";
 import DashedLine from "react-native-dashed-line";
 import Text from "../../../components/controls/Text";
 import themeStyle from "../../../styles/theme.style";
-import _useWebSocketUrl from "../../../hooks/use-web-socket-url";
 import { useResponsive } from "../../../hooks/useResponsive";
 const categoriesToShow = [1, 2, 3, 4, 5, 6, 7];
 
@@ -32,20 +30,22 @@ const StockManagementScreen = ({ route }) => {
     setCategoryList(categories);
   };
 
-  const { webScoketURL } = _useWebSocketUrl();
-
-  const { lastJsonMessage } = useWebSocket(webScoketURL, {
-    share: true,
-    shouldReconnect: (closeEvent) => true,
-  });
+  const { websocket } = useContext(StoreContext);
+  const { lastMessage: wsMessage } = websocket;
 
   useEffect(() => {
-    if (lastJsonMessage) {
-      menuStore.getMenu().then(() => {
-        getMenu();
-      });
+    if (wsMessage) {
+      console.log('WebSocket message received in Stock Management:', wsMessage);
+      
+      // Only refresh menu for product-related updates
+      if (wsMessage.type === 'product_updated') {
+        console.log('Product updated, refreshing stock management...');
+        menuStore.getMenu().then(() => {
+          getMenu();
+        });
+      }
     }
-  }, [lastJsonMessage]);
+  }, [wsMessage]);
 
   useEffect(() => {
     getMenu();

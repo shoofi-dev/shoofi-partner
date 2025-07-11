@@ -3,7 +3,6 @@ import React, { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View, ScrollView, ActivityIndicator } from "react-native";
 import { StoreContext } from "../../../stores";
-import useWebSocket from "react-use-websocket";
 import ProductsOrderList from "./products-list";
 import DashedLine from "react-native-dashed-line";
 import Text from "../../../components/controls/Text";
@@ -11,7 +10,6 @@ import MenuItem from "../../menu/components/menu-item";
 import Button from "../../../components/controls/button/button";
 import BirthdayCakes from "../../menu/components/product-item/birthday-cakes";
 import themeStyle from "../../../styles/theme.style";
-import _useWebSocketUrl from "../../../hooks/use-web-socket-url";
 
 const categoriesToShow = [1, 2, 3, 4, 5, 6, 7];
 
@@ -41,20 +39,22 @@ const ProductOrderScreen = ({ route }) => {
 
   };
 
-  const { webScoketURL } = _useWebSocketUrl();
-
-  const { lastJsonMessage } = useWebSocket(webScoketURL, {
-    share: true,
-    shouldReconnect: (closeEvent) => true,
-  });
+  const { websocket } = useContext(StoreContext);
+  const { lastMessage: wsMessage } = websocket;
 
   useEffect(() => {
-    if (lastJsonMessage) {
-      menuStore.getMenu().then(() => {
-        getMenu();
-      });
+    if (wsMessage) {
+      console.log('WebSocket message received in Products Order:', wsMessage);
+      
+      // Only refresh menu for product-related updates
+      if (wsMessage.type === 'product_updated') {
+        console.log('Product updated, refreshing products order...');
+        menuStore.getMenu().then(() => {
+          getMenu();
+        });
+      }
     }
-  }, [lastJsonMessage]);
+  }, [wsMessage]);
 
   useEffect(() => {
     getMenu();

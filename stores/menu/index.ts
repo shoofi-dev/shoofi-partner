@@ -103,6 +103,23 @@ class MenuStore {
     });
   };
 
+  updateProductIsHiddenFromServer = (data) => {
+    const body = data;
+    return axiosInstance
+      .post(`${MENU_API.ADMIN_UPDATE_IS_HIDDEN_PRODUCT_API}`, body)
+      .then(function (response) {
+        return true;
+      });
+  };
+
+  updateProductIsHidden = (data) => {
+    return new Promise((resolve) => {
+      this.updateProductIsHiddenFromServer(data).then((res) => {
+          resolve(true);
+      });
+    });
+  };
+
   updateProductIsInStoreByCategoryFromServer = (data) => {
     const body = data;
     return axiosInstance

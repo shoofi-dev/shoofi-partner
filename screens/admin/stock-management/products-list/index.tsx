@@ -19,13 +19,9 @@ const StockProductsList = ({ products, category, onLoadingChange }) => {
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
   const { isTablet } = useResponsive();
   useEffect(() => {
-    if (category.categoryId == "5") {
-      const filterdBirthday = filterBirthday();
-      setProductsList(filterdBirthday);
-    } else {
+ 
       setProductsList(products);
-    }
-  }, [selectedSubCategory, products]);
+  }, [products]);
 
 
   useEffect(() => {
@@ -52,18 +48,16 @@ const StockProductsList = ({ products, category, onLoadingChange }) => {
     onLoadingChange(false);
   };
 
-  const updateProductIsInStoreByCategory = async (isInStoreValue: boolean) => {
+  const updateProductIsInStoreByCategory = async (isInStoreValue: boolean,categoryId:string) => {
     console.log("isInStoreValue",isInStoreValue)
     onLoadingChange(true);
     let body = {
       isInStore: isInStoreValue,
-      categoryId: category.categoryId,
+      categoryId: categoryId,
       subCategoryId: null
     };
 
-    if(category.categoryId == "5"){
-      body.subCategoryId = selectedSubCategory;
-    }
+  
 
     await menuStore.updateProductIsInStoreByCategory(body);
     await menuStore.getMenu();
@@ -109,7 +103,7 @@ const StockProductsList = ({ products, category, onLoadingChange }) => {
           <Text
             style={{
               textAlign: "center",
-              fontSize: isTablet ? 28 : 16,
+              fontSize: isTablet ? 20 : 16,
               fontWeight: "bold",
               borderWidth: 1,
               padding: isTablet ? 10 : 5,
@@ -124,13 +118,13 @@ const StockProductsList = ({ products, category, onLoadingChange }) => {
         </View>
         <ScrollView>
           <View style={{ height: "100%", marginBottom: 60, marginTop: 20 }}>
-          {selectedSubCategory && <View style={{  alignSelf: "center", marginBottom:20, marginTop:10,width:400 }}>
+          {/* {selectedSubCategory && <View style={{  alignSelf: "center", marginBottom:20, marginTop:10,width:400 }}>
             <Button
               onClickFn={() => goBack()}
               text={t("back-to-menu")}
               fontSize={isTablet ? 24 : 16}
             />
-          </View>}
+          </View>} */}
 
             <View style={{ width: isTablet ? 200 : 100, marginBottom: 15, alignSelf: "center" }}>
               <Button
@@ -140,7 +134,7 @@ const StockProductsList = ({ products, category, onLoadingChange }) => {
                     : t("enable-all-products")
                 }
                 fontSize={isTablet ? 17 : 12}
-                onClickFn={()=>{updateProductIsInStoreByCategory(!isAtLeastOneProductInStore)}}
+                onClickFn={()=>{updateProductIsInStoreByCategory(!isAtLeastOneProductInStore,category._id)}}
                 fontFamily={`${getCurrentLang()}-Bold`}
                 borderRadious={19}
                 padding={isTablet ? 10 : 5}
@@ -163,7 +157,7 @@ const StockProductsList = ({ products, category, onLoadingChange }) => {
                   >
                     <View style={{}}>
                       <Text
-                        style={{ textAlign: "left", fontSize: isTablet ? 24 : 16,  }}
+                        style={{ textAlign: "left", fontSize: isTablet ? 18 : 16,  }}
                         type="number"
                       >
                         {languageStore.selectedLang === "ar"

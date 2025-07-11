@@ -1,10 +1,10 @@
 // // // // //PROD
-export const BASE_URL = "https://shoofi-api-95miq.ondigitalocean.app/api";
-export const WS_URL = "wss://shoofi-api-95miq.ondigitalocean.app";
+// export const BASE_URL = "https://shoofi-api-95miq.ondigitalocean.app/api";
+// export const WS_URL = "wss://shoofi-api-95miq.ondigitalocean.app";
 
 //DEV
-//  export const BASE_URL = "http://192.168.68.61:1111/api";
-//  export const WS_URL = "ws://192.168.68.61:1111";
+ export const BASE_URL = "http://192.168.68.71:1111/api";
+ export const WS_URL = "ws://192.168.68.71:1111";
 
 // export const BASE_URL = "http://192.168.0.100:1111/api";
 // export const WS_URL = "ws://192.168.0.100:1111";
@@ -65,6 +65,7 @@ export const MENU_API = {
     ADMIN_UPDATE_PRODUCTS_ORDER_TASTES_API : "admin/product/update/order",
     ADMIN_UPDATE_IS_IN_STORE_PRODUCT_API : "admin/product/update/isInStore",
     ADMIN_UPDATE_IS_IN_STORE_BY_CATEGORY_PRODUCT_API : "admin/product/update/isInStore/byCategory",
+    ADMIN_UPDATE_IS_HIDDEN_PRODUCT_API : "admin/product/update/isHidden",
     ADMIN_DELETE_PRODUCT_API : "admin/product/delete",
     ADMIN_GET_EXTRAS_API : "admin/product/extras",
     GET_IMAGES_BY_CATEGORY : "images",

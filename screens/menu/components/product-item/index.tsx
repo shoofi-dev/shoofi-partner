@@ -36,12 +36,14 @@ export type TProps = {
   item: any;
   onItemSelect: (item: any) => void;
   onDeleteProduct: (item: any) => void;
+  onProductUpdated?: (item: any) => void;
 };
 
 const ProductItem = ({
   item,
   onItemSelect,
   onDeleteProduct,
+  onProductUpdated,
 }: TProps) => {
   const { t } = useTranslation();
   const navigation = useNavigation(); 
@@ -51,12 +53,45 @@ const ProductItem = ({
     cartStore,
     ordersStore,
     storeDataStore,
+    menuStore,
   } = useContext(StoreContext);
   const { deviceType } = _useDeviceType();
 
   const onEditProduct = (item: any) => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    navigation.navigate("admin-add-product", { product: item });
+    (navigation as any).navigate("admin-add-product", { product: item });
+  };
+
+  const onToggleVisibility = async (item: any) => {
+    try {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await menuStore.updateProductIsHidden({
+        productId: item._id,
+        isHidden: !item.isHidden
+      });
+      // Update the item locally and notify parent component
+      const updatedItem = { ...item, isHidden: !item.isHidden };
+      onProductUpdated?.(updatedItem);
+    } catch (error) {
+      console.error('Error toggling product visibility:', error);
+      // You might want to show an error message to the user
+    }
+  };
+
+  const onToggleInStore = async (item: any) => {
+    try {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await menuStore.updateProductIsInStore({
+        productId: item._id,
+        isInStore: !item.isInStore
+      });
+      // Update the item locally and notify parent component
+      const updatedItem = { ...item, isInStore: !item.isInStore };
+      onProductUpdated?.(updatedItem);
+    } catch (error) {
+      console.error('Error toggling product in-store status:', error);
+      // You might want to show an error message to the user
+    }
   };
   // Memoize expensive calculations
   const isDisabled = useMemo(() => {
@@ -111,16 +146,31 @@ const ProductItem = ({
 
   return (
     <TouchableOpacity style={{}} >
-      <View style={styles.rowCard}>
+      <View style={[styles.rowCard, item.isHidden && styles.hiddenProduct]}>
       {/* Product Image on the right */}
       <View style={styles.rowImageWrapper}>
         <CustomFastImage source={{ uri: imageUrl }} style={styles.rowImage} />
       </View>
 {/* Text and price on the left */}
+<View style={{position:'absolute',top:10,left:0,right:10,bottom:0,}}>
+<View style={styles.statusIndicators}>
+          {item.isHidden && (
+            <Text style={styles.hiddenIndicator}>{t("hidden")}</Text>
+          )}
+         
+          {!item.isInStore && (
+             <View style={{ marginLeft: 10 }}>
+            <Text style={styles.notInStoreIndicator}>{t("not-in-store")}</Text>
+            </View>
+          )}
+        </View>
+</View>
       <View style={styles.rowTextContainer}>
+        
         <Text style={styles.rowProductName}>{productName}</Text>
         <Text style={styles.rowProductDesc} numberOfLines={3}>{productDescription}</Text>
         <Text style={styles.rowPriceText}>₪{price}</Text>
+  
       </View>
       {/* Add button */}
       <GlassBG style={styles.addButton}>
@@ -141,34 +191,38 @@ const ProductItem = ({
                 width: "100%",
                 justifyContent: "flex-end",
                 marginBottom: 10,
+                alignItems: "center",
+                marginTop:10,
               }}
             >
-              <View style={{ flexBasis: "20%", marginRight: 10 }}>
-                <Button
-                  bgColor={themeStyle.WARNING_COLOR}
-                  text={"تعديل"}
-                  fontSize={16}
-                  onClickFn={() => onEditProduct(item)}
-                  textPadding={0}
-                  marginH={0}
-                  textColor={themeStyle.WHITE_COLOR}
-                  icon="cart_icon"
-                  iconSize={15}
-                  iconMargin={5}
-                  padding={10}
-
-                />
+              <View style={{ marginRight: 10 }}>
+                <TouchableOpacity onPress={() => onEditProduct(item)} style={{ backgroundColor: themeStyle.WARNING_COLOR, padding: 10, borderRadius: 100 }}>
+                  <Icon icon="edit" size={25} color={themeStyle.WHITE_COLOR} />
+                </TouchableOpacity>
+        
+              </View>
+              {/* <View style={{ marginRight: 10 }}>
+                <TouchableOpacity onPress={() => onDeleteProduct(item)} style={{ backgroundColor: themeStyle.ERROR_COLOR, padding: 10, borderRadius: 100 }}>
+                  <Icon icon="trash" size={25} color={themeStyle.WHITE_COLOR} />
+                  </TouchableOpacity>
+                
+              </View> */}
+              <View style={{ marginRight: 10 }}>
+                <TouchableOpacity onPress={() => onToggleVisibility(item)} style={{ backgroundColor: item.isHidden ? themeStyle.SECONDARY_COLOR : themeStyle.SECONDARY_COLOR, padding: 10, borderRadius: 100 }}>
+                  <Icon icon={item.isHidden ? "eye" : "eye-off"} size={25} color={themeStyle.WHITE_COLOR} />
+                </TouchableOpacity> 
+                
               </View>
               <View style={{ flexBasis: "20%", marginRight: 10 }}>
                 <Button
-                  bgColor={"red"}
-                  text={t("delete")}
+                  bgColor={item.isInStore ? themeStyle.SUCCESS_COLOR : themeStyle.WARNING_COLOR}
+                  text={item.isInStore ? t("in-store") : t("not-in-store")}
                   fontSize={16}
-                  onClickFn={() => onDeleteProduct(item)}
+                  onClickFn={() => onToggleInStore(item)}
                   textPadding={0}
                   marginH={0}
                   textColor={themeStyle.WHITE_COLOR}
-                  icon="cart_icon"
+                  icon={item.isInStore ? "check-circle" : "x-circle"}
                   iconSize={15}
                   iconMargin={5}
                   padding={10}
@@ -274,5 +328,27 @@ const styles = StyleSheet.create({
     color: themeStyle.SECONDARY_COLOR,
     fontWeight: "bold",
     textAlign: "center",
+  },
+  hiddenProduct: {
+    opacity: 0.6,
+    backgroundColor: themeStyle.GRAY_20,
+  },
+  hiddenIndicator: {
+    fontSize: themeStyle.FONT_SIZE_XS,
+    fontWeight: "bold",
+    textAlign: "right",
+    marginTop: 2,
+  },
+  statusIndicators: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    marginTop: 2,
+  },
+  notInStoreIndicator: {
+    fontSize: themeStyle.FONT_SIZE_XS,
+    fontWeight: "bold",
+    textAlign: "right",
+    marginLeft: 8,
   },
 });

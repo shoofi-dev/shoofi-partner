@@ -105,9 +105,9 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
 
   const renderImageSection = () => (
     <View style={styles.imageContainer}>
-      <View style={{ position: "absolute", top: 15, left: 15, zIndex: 1000 }}>
+      {/* <View style={{ position: "absolute", top: 15, left: 15, zIndex: 1000 }}>
       <BackButton color={themeStyle.WHITE_COLOR}/>
-      </View>
+      </View> */}
       <Carousel
         loop
         width={screenWidth}
