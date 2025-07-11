@@ -42,7 +42,6 @@ class AddressStore {
       }
       const response: any = await axiosInstance.get(`${CUSTOMER_API.CONTROLLER}/${customerId}/${CUSTOMER_API.GET_ADDRESSES}`);
       runInAction(async () => {
-        console.log("responsexx", response);
         if (response?.length === 0) {
           const localAddresses = await getLocalAddresses(); 
           runInAction(() => {

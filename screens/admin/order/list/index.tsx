@@ -1185,7 +1185,7 @@ const OrdersListScreen = ({ route }) => {
                   <Text
                     style={{
                       fontSize: isTablet
-                        ? themeStyle.FONT_SIZE_XL
+                        ? themeStyle.FONT_SIZE_MD
                         : themeStyle.FONT_SIZE_SM,
                       fontFamily: `${getCurrentLang()}-SemiBold`,
                     }}
@@ -1195,7 +1195,7 @@ const OrdersListScreen = ({ route }) => {
                   <Text
                     style={{
                       fontSize: isTablet
-                        ? themeStyle.FONT_SIZE_XL
+                        ? themeStyle.FONT_SIZE_MD
                         : themeStyle.FONT_SIZE_SM,
                       fontFamily: `${getCurrentLang()}-SemiBold`,
                       textAlign: "left",

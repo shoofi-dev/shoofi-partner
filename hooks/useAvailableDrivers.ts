@@ -16,7 +16,6 @@ export function useAvailableDrivers({ isEnabled = true }: { isEnabled?: boolean 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [customerLocation, setCustomerLocation] = useState(null);
-  console.log("storeDataStore.storeData", storeDataStore.storeData);
   useEffect(() => {
     if (!storeDataStore.storeData || !isEnabled) return;
     const defaultAddress = addressStore.defaultAddress;
@@ -26,7 +25,6 @@ export function useAvailableDrivers({ isEnabled = true }: { isEnabled?: boolean 
       defaultAddress.location.coordinates
     ) {
       const [lng, lat] = defaultAddress.location.coordinates;
-      console.log("defaultAddress222@@", defaultAddress.location.coordinates);
       setCustomerLocation({ lat, lng });
       let storeLocation = undefined;
       if (storeDataStore.storeData?.location) {

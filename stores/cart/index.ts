@@ -340,7 +340,6 @@ class CartStore {
   };
 
   getCartData = async (order: any) => {
-    console.log("storeDataStore.storeData", storeDataStore.storeData);
     let finalOrder: TOrder = {
       payment_method: order.paymentMthod,
       receipt_method: order.shippingMethod,

@@ -51,7 +51,13 @@ export default function BackButton({ goTo, onClick, color = themeStyle.BLACK_COL
         onPress={() => {
           onBtnClick();
         }}
-        
+        style={{
+          width: 36,
+          height: 36,
+          alignItems: "center",
+          justifyContent: "center",
+          borderRadius: 50,
+        }}
       >
    <Icon icon="chevron_back" size={20} color={color} />
             {/* <Text style={{fontSize:20, color:themeStyle.BLACK_COLOR}}>{'>'}</Text> */}

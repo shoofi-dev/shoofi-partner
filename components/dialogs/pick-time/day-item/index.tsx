@@ -84,7 +84,6 @@ const OrderDayItem = ({
   }, [lastJsonMessage]);
 
   const checkIsBeforeDayAndAfterSeven = (hour) => {
-    console.log("storeDataStore.storeData", storeDataStore.storeData)
     var selectedDay = moment(
       moment(data?.selectedDate).format("MM/D/YYYY"),
       "MM/D/YYYY"
