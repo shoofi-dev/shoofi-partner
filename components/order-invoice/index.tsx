@@ -243,6 +243,52 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
             </View>
           </View>
         )}
+
+{invoiceOrder?.order?.receipt_method === SHIPPING_METHODS.shipping &&  <View
+          style={{
+            marginTop: 10,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            borderWidth: 5,
+            padding: 10,
+          }}
+        >
+          <View>
+            <Text style={{ fontSize: 65, textAlign: "left" }}>
+              {i18n.t("order-price")}
+            </Text>
+          </View>
+          <View style={{}}>
+            <Text style={{ fontSize: 65, textAlign: "center" }}>
+              {`₪${invoiceOrder?.orderPrice}`}
+            </Text>
+          </View>
+        </View>
+        }
+        {invoiceOrder?.order?.receipt_method === SHIPPING_METHODS.shipping && <View
+          style={{
+            marginTop: 10,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            borderWidth: 5,
+            padding: 10,
+          }}
+        >
+          <View>
+            <Text style={{ fontSize: 65, textAlign: "left" }}>
+              {i18n.t("delivery-price")}
+            </Text>
+          </View>
+          <View style={{}}>
+            <Text style={{ fontSize: 65, textAlign: "center" }}>
+              {`₪${invoiceOrder?.shippingPrice}`}
+            </Text>
+          </View>
+        </View>
+        }
+
         <View
           style={{
             marginTop: 10,

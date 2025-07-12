@@ -3,8 +3,8 @@
 // export const WS_URL = "wss://shoofi-api-95miq.ondigitalocean.app";
 
 //DEV
- export const BASE_URL = "http://192.168.68.71:1111/api";
- export const WS_URL = "ws://192.168.68.71:1111";
+ export const BASE_URL = "http://192.168.68.59:1111/api";
+ export const WS_URL = "ws://192.168.68.59:1111";
 
 // export const BASE_URL = "http://192.168.0.100:1111/api";
 // export const WS_URL = "ws://192.168.0.100:1111";
