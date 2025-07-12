@@ -51,6 +51,7 @@ import _useWebSocketUrl from "../../../../hooks/use-web-socket-url";
 import CustomFastImage from "../../../../components/custom-fast-image";
 import OrderExtrasDisplay from "../../../../components/shared/OrderExtrasDisplay";
 import { useResponsive } from "../../../../hooks/useResponsive";
+import DelayPicker from "../../../../components/dialogs/delay-picker";
 
 //1 -SENT 3 -COMPLETE 2-READY 4-CANCELLED 5-REJECTED
 export const inProgressStatuses = ["1"];
@@ -95,6 +96,8 @@ const OrdersListScreen = ({ route }) => {
   const [isPaginationLoading, setIsPaginationLoading] = useState(false);
   const [isStatusUpdateRefresh, setIsStatusUpdateRefresh] = useState(false);
   const [hasMoreData, setHasMoreData] = useState(true);
+  const [showDelayPicker, setShowDelayPicker] = useState(false);
+  const [selectedOrderForDelay, setSelectedOrderForDelay] = useState(null);
 
   const animation = useRef(new Animated.Value(0)).current;
   const contentHeight = useRef(1);
@@ -637,6 +640,35 @@ const OrdersListScreen = ({ route }) => {
     });
   };
 
+  const handleDelayOrder = (order) => {
+    if (isLoading) return; // Prevent multiple clicks while loading
+    setSelectedOrderForDelay(order);
+    setShowDelayPicker(true);
+  };
+
+  const handleDelayConfirm = async (delayMinutes: number) => {
+    if (!selectedOrderForDelay) return;
+    
+    setIsloading(true);
+    try {
+      await ordersStore.updateOrderDelay(selectedOrderForDelay._id, delayMinutes);
+      // Refresh the orders list
+      setIsStatusUpdateRefresh(true);
+      getOrders(1, true);
+      setPageNumber(1);
+    } catch (error) {
+      console.error('Failed to update order delay:', error);
+    } finally {
+      setIsloading(false);
+      setSelectedOrderForDelay(null);
+    }
+  };
+
+  const handleDelayCancel = () => {
+    setShowDelayPicker(false);
+    setSelectedOrderForDelay(null);
+  };
+
   const getOrderTotalPrice = (order) => {
     const oOrder = order.order;
     if (oOrder.receipt_method == SHIPPING_METHODS.shipping) {
@@ -652,7 +684,7 @@ const OrdersListScreen = ({ route }) => {
     const idPart1 = orderIdSplit[0];
     const idPart2 = orderIdSplit[2];
     return (
-      <View
+      <TouchableOpacity
         style={[
           styles.orderHeader,
           {
@@ -668,10 +700,11 @@ const OrdersListScreen = ({ route }) => {
             alignItems: "center",
           },
         ]}
+        onPress={() => toggleExpand(order, index)}
+
       >
         {/* Left: Expand/Collapse Button */}
-        <TouchableOpacity
-          onPress={() => toggleExpand(order, index)}
+        <View
           style={{ padding: 8 }}
         >
           <Icon
@@ -679,7 +712,7 @@ const OrdersListScreen = ({ route }) => {
             size={28}
             style={{ color: themeStyle.SECONDARY_COLOR }}
           />
-        </TouchableOpacity>
+        </View>
         {/* Center: Order Info */}
         <View
           style={{
@@ -737,23 +770,18 @@ const OrdersListScreen = ({ route }) => {
                 style={{ color: themeStyle.SECONDARY_COLOR }}
               />
             </TouchableOpacity>
-          <View style={{ width: "50%" }}>
+          <View style={{ width: "50%", }} >
             {canceledStatuses.indexOf(order.status) === -1 && readyStatuses.indexOf(order.status) === -1 && pickedUpStatuses.indexOf(order.status) === -1 && (
-              <Button
-                text={getNextStatusTextByStatus(order)}
-                fontSize={16}
-                onClickFn={() => updateOrderStatus(order)}
-                bgColor={getNextColorTextByStatus(order.status)}
-                textColor={themeStyle.WHITE_COLOR}
-                fontFamily={`${getCurrentLang()}-Bold`}
-                borderRadious={19}
-                padding={8}
-                disabled={isLoading}
-              />
+                 <TouchableOpacity onPress={() => updateOrderStatus(order)} style={{marginRight:20, backgroundColor:getNextColorTextByStatus(order.status), padding:8, borderRadius:20, alignItems:"center", justifyContent:"center", flexDirection:"row" }}>
+                  <Text style={{fontSize:16, color:themeStyle.WHITE_COLOR}}>
+                    {getNextStatusTextByStatus(order)}
+                  </Text>
+               </TouchableOpacity>
+     
             )}
           </View>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -879,38 +907,39 @@ const OrdersListScreen = ({ route }) => {
         </View>
 
         <View style={{ flexBasis: "55%" }}>
+          {/* Improved Action Buttons Row */}
           <View
             style={{
-              justifyContent: "space-around",
               flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginVertical: 10
             }}
           >
-            <View style={{ flexBasis: "45%" }}>
-              {canceledStatuses.indexOf(order.status) === -1 && readyStatuses.indexOf(order.status) === -1 && pickedUpStatuses.indexOf(order.status) === -1 && (
-                <View>
-                  <View style={{}}>
-                    <Button
-                      text={getNextStatusTextByStatus(order)}
-                      fontSize={
-                        isTablet
-                          ? themeStyle.FONT_SIZE_MD
-                          : themeStyle.FONT_SIZE_XS
-                      }
-                      onClickFn={() => updateOrderStatus(order)}
-                      bgColor={getNextColorTextByStatus(order.status)}
-                      textColor={themeStyle.WHITE_COLOR}
-                      fontFamily={`${getCurrentLang()}-Bold`}
-                      borderRadious={19}
-                      padding={isTablet ? 10 : 5}
-                      disabled={isLoading}
-                    />
-                  </View>
-                </View>
-              )}
-            </View>
-            <View style={{ flexBasis: "45%" }}>
+            {canceledStatuses.indexOf(order.status) === -1 && readyStatuses.indexOf(order.status) === -1 && pickedUpStatuses.indexOf(order.status) === -1 && (
+              <View style={{ flex: 1, marginHorizontal: 5, minWidth: 100, minHeight: 44 }}>
+                <Button
+                  text={getNextStatusTextByStatus(order)}
+                  icon="check-circle"
+                  fontSize={
+                    isTablet
+                      ? themeStyle.FONT_SIZE_MD
+                      : themeStyle.FONT_SIZE_XS
+                  }
+                  onClickFn={() => updateOrderStatus(order)}
+                  bgColor={getNextColorTextByStatus(order.status)}
+                  textColor={themeStyle.WHITE_COLOR}
+                  fontFamily={`${getCurrentLang()}-Bold`}
+                  borderRadious={19}
+                  padding={isTablet ? 10 : 5}
+                  disabled={isLoading}
+                />
+              </View>
+            )}
+            <View style={{ flex: 1, marginHorizontal: 5, minWidth: 100, minHeight: 44 }}>
               <Button
                 text={"طباعة"}
+                icon="printer"
                 fontSize={
                   isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_XS
                 }
@@ -919,11 +948,29 @@ const OrdersListScreen = ({ route }) => {
                 textColor={themeStyle.WHITE_COLOR}
                 fontFamily={`${getCurrentLang()}-Bold`}
                 borderRadious={19}
-                icon={"printer"}
                 padding={isTablet ? 10 : 5}
                 disabled={isLoading}
               />
             </View>
+            {/* Delay Button: Only show if not already delayed */}
+            {(!order.delayMinutes || order.delayMinutes === 0) && (
+              <View style={{ flex: 1, marginHorizontal: 5, minWidth: 100, minHeight: 44 }}>
+                <Button
+                  text={"تأخير"}
+                  icon="clock"
+                  fontSize={
+                    isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_XS
+                  }
+                  onClickFn={() => handleDelayOrder(order)}
+                  bgColor={themeStyle.WARNING_COLOR}
+                  textColor={themeStyle.WHITE_COLOR}
+                  fontFamily={`${getCurrentLang()}-Bold`}
+                  borderRadious={19}
+                  padding={isTablet ? 10 : 5}
+                  disabled={isLoading}
+                />
+              </View>
+            )}
           </View>
           <View
             style={{
@@ -2103,6 +2150,12 @@ const OrdersListScreen = ({ route }) => {
         text={"is-with-sms-to-client"}
         positiveText="with-sms"
         negativeText="without-sms"
+      />
+      <DelayPicker
+        isVisible={showDelayPicker}
+        onClose={handleDelayCancel}
+        onConfirm={handleDelayConfirm}
+        currentDelay={0}
       />
     </View>
   );

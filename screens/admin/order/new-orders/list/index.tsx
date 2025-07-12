@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { CameraRoll } from "@react-native-camera-roll/camera-roll";
 
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { observer } from "mobx-react";
 import { StoreContext } from "../../../../../stores";
 import themeStyle from "../../../../../styles/theme.style";
@@ -94,6 +94,8 @@ const NewOrdersListScreen = ({ route }) => {
   const [showImageDialog, setShowImageDialog] = useState(false);
   const [selectedImageShow, setSelectedImageShow] = useState("");
   const [selectedTime, setSelectedTime] = useState({});
+  const isProcessingRef = useRef(false);
+  const manuallyRemovedOrdersRef = useRef(new Set());
 
   const updateSelectedTime = (orderId, time) => {
     if (typeof time !== "object") {
@@ -131,18 +133,46 @@ const NewOrdersListScreen = ({ route }) => {
     readyMinutes,
     isOrderLaterSupport
   ) => {
+    // Prevent multiple calls while processing
+    if (isProcessingRef.current) {
+      return;
+    }
+    
+    isProcessingRef.current = true;
     setIsloading(true);
+    
+    // Immediately remove the order from local state for instant UI feedback
+    const updatedOrdersList = ordersList.filter(o => o.orderId !== order.orderId);
+    setOrdersList(updatedOrdersList);
+    
+    // Track this order as manually removed to avoid showing it again
+    manuallyRemovedOrdersRef.current.add(order.orderId);
+    
+    // Clear the selected time for this order
     delete selectedTime[order.id];
-    await ordersStore.updatOrderViewd(
-      order,
-      userDetailsStore.isAdmin(ROLES.all),
-      new Date(),
-      readyMinutes,
-      isOrderLaterSupport
-    );
-    setIsloading(false);
-    if (ordersList?.length === 1) {
-      navigation.navigate("admin-orders");
+    
+    try {
+      await ordersStore.updatOrderViewd(
+        order,
+        userDetailsStore.isAdmin(ROLES.all),
+        new Date(),
+        readyMinutes,
+        isOrderLaterSupport
+      );
+      
+      // Navigate if this was the last order
+      if (updatedOrdersList.length === 0) {
+        navigation.navigate("admin-orders");
+      }
+    } catch (error) {
+      console.error("Error updating order:", error);
+      // Restore the order to the list if the API call failed
+      setOrdersList([...updatedOrdersList, order]);
+      // Remove from manually removed set since we're restoring it
+      manuallyRemovedOrdersRef.current.delete(order.orderId);
+    } finally {
+      setIsloading(false);
+      isProcessingRef.current = false;
     }
   };
 
@@ -171,6 +201,7 @@ const NewOrdersListScreen = ({ route }) => {
 
   useEffect(() => {
     if (lastJsonMessage) {
+      // Always refetch to get new orders, but filter out manually removed ones
       setOrdersList([]);
       getOrders();
     }
@@ -184,8 +215,13 @@ const NewOrdersListScreen = ({ route }) => {
       ).map((id) => {
         return tmpOrdersArray.find((a) => a.orderId === id);
       });
-      //const list = [...ordersList, ...updatedOrderdList];
-      const orderdedList = orderBy(uniqueOrders, ["orderDate"], ["asc"]);
+      
+      // Filter out manually removed orders
+      const filteredOrders = uniqueOrders.filter(
+        order => !manuallyRemovedOrdersRef.current.has(order.orderId)
+      );
+      
+      const orderdedList = orderBy(filteredOrders, ["orderDate"], ["asc"]);
       setOrdersList(orderdedList);
       setIsloading(false);
     }
@@ -1058,7 +1094,7 @@ const NewOrdersListScreen = ({ route }) => {
                           borderRadious={19}
                           disabled={
                             (!selectedTime[order._id] &&
-                            !storeDataStore.storeData?.isOrderLaterSupport) || isLoading
+                            !storeDataStore.storeData?.isOrderLaterSupport) || isLoading || isProcessingRef.current
                           }
                           isLoading={isLoading}
                         />

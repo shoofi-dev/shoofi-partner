@@ -389,6 +389,23 @@ class OrdersStore {
     //this.getOrders(true,[status]);
   };
 
+  updateOrderDelayServer = async (orderId: string, delayMinutes: number) => {
+    const api = `${ORDER_API.CONTROLLER}/update-delay`;
+    const body = {
+      orderId,
+      delayMinutes,
+    };
+    return axiosInstance.post(api, body).then(function (response: any) {
+      return response;
+    });
+  };
+
+  updateOrderDelay = async (orderId: string, delayMinutes: number) => {
+    return this.updateOrderDelayServer(orderId, delayMinutes).then((res) => {
+      return res;
+    });
+  };
+
   isActiveOrders = () => {
     const founded = this.ordersList?.find((order) => {
       if (inProgressStatuses.indexOf(order.status) > -1) {

@@ -26,6 +26,10 @@ interface Notification {
   data?: {
     orderId?: string;
     bookId?: string;
+    customerName?: string;
+    customerPhone?: string;
+    storeName?: string;
+    pickupTime?: string;
   };
 }
 
@@ -214,6 +218,30 @@ const DeliveryDriverNotifications = observer(() => {
         )}
       </View>
       <Text style={styles.notificationMessage}>{notification.message}</Text>
+      
+      {/* Additional order information */}
+      {notification.data && notification.type === 'order' && (
+        <View style={styles.orderInfoContainer}>
+          {notification.data.storeName && (
+            <View style={styles.orderInfoRow}>
+              <Text style={styles.orderInfoLabel}>Restaurant:</Text>
+              <Text style={styles.orderInfoValue}>{notification.data.storeName}</Text>
+            </View>
+          )}
+          {notification.data.bookId && (
+            <View style={styles.orderInfoRow}>
+              <Text style={styles.orderInfoLabel}>Order ID:</Text>
+              <Text style={styles.orderInfoValue}>{notification.data.bookId}</Text>
+            </View>
+          )}
+          {notification.data.pickupTime && (
+            <View style={styles.orderInfoRow}>
+              <Text style={styles.orderInfoLabel}>Pickup Time:</Text>
+              <Text style={styles.orderInfoValue}>{formatDate(notification.data.pickupTime)}</Text>
+            </View>
+          )}
+        </View>
+      )}
     </TouchableOpacity>
   );
 
@@ -387,6 +415,29 @@ const styles = StyleSheet.create({
   loadingText: {
     fontSize: 14,
     color: colors.gray,
+  },
+  orderInfoContainer: {
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: colors.lightGray,
+  },
+  orderInfoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  orderInfoLabel: {
+    fontSize: 12,
+    color: colors.gray,
+    fontWeight: '500',
+  },
+  orderInfoValue: {
+    fontSize: 12,
+    color: colors.text,
+    fontWeight: '600',
+    textAlign: 'left',
   },
 });
 

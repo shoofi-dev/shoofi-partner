@@ -330,6 +330,7 @@ const useNotifications = (): UseNotificationsReturn => {
     const initializeNotifications = async () => {
       try {
         const token = await registerForPushNotificationsAsync();
+        console.log('token', token);
         if (token) {
           axiosInstance
           .post(
