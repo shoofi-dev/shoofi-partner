@@ -707,8 +707,6 @@ const App = () => {
     }
   }, [appIsReady]);
 
-  // const idPart1 = orderIdSplit[0];
-  // const idPart2 = orderIdSplit[2];
 
   const errorHandler = (error: Error, stackTrace: string) => {
     // errorHandlerStore.sendClientError({

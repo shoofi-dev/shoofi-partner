@@ -10,9 +10,6 @@ const OrderHeader = ({ order }) => {
     const { t } = useTranslation();
 
     const renderOrderDateRaw = (order) => {
-        const orderIdSplit = order.orderId.split("-");
-        const idPart1 = orderIdSplit[0];
-        const idPart2 = orderIdSplit[2];
         return (
           <View
             style={{
@@ -31,7 +28,7 @@ const OrderHeader = ({ order }) => {
               </View>
               <View>
                 <Text style={styles.dateRawText}>
-                  {idPart1}-{idPart2}{" "}
+                  {order.orderId}{" "}
                 </Text>
               </View>
             </View>

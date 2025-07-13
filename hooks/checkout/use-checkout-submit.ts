@@ -61,9 +61,8 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
     // Add applied coupon information if exists
     if (couponsStore.appliedCoupon) {
       order.appliedCoupon = {
-        code: couponsStore.appliedCoupon.coupon.code,
-        discountAmount: couponsStore.appliedCoupon.discountAmount,
-        couponId: couponsStore.appliedCoupon.coupon._id
+        coupon: couponsStore.appliedCoupon.coupon,
+        discountAmount: couponsStore.appliedCoupon.discountAmount
       };
     }
     

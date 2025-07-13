@@ -15,9 +15,7 @@ import OrderTimer from "./order-timer";
 const OrderHeader = ({ order }) => {
   const { t } = useTranslation();
   const oOrder = order.order;
-  const orderIdSplit = order.orderId.split("-");
-  const idPart1 = orderIdSplit[0];
-  const idPart2 = orderIdSplit[2];
+
   const { languageStore, shoofiAdminStore } = useContext(StoreContext);
 
   // Mock data for timer testing
@@ -29,9 +27,6 @@ const OrderHeader = ({ order }) => {
   };
 
   const renderOrderDateRaw = (order) => {
-    const orderIdSplit = order.orderId.split("-");
-    const idPart1 = orderIdSplit[0];
-    const idPart2 = orderIdSplit[2];
     return (
       <View
         style={{
@@ -49,7 +44,7 @@ const OrderHeader = ({ order }) => {
           </View>
           <View>
             <Text style={styles.dateRawText}>
-              {idPart1}-{idPart2}{" "}
+              {order.orderId}{" "}
             </Text>
           </View>
         </View>
@@ -89,7 +84,7 @@ const OrderHeader = ({ order }) => {
               <Text style={styles.subTitleInfo}>{t("order-number")}: </Text>
               <Text style={styles.subTitleInfo}>
                 {" "}
-                {idPart1}-{idPart2}
+                {order.orderId}
               </Text>
             </View>
           </View>

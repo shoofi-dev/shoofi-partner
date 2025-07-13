@@ -37,10 +37,7 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
   const { storeDataStore } = useContext(StoreContext);
 
   const getOrderId = (orderId) => {
-    const orderIdSplit = orderId.split("-");
-    const idPart1 = orderIdSplit[0];
-    const idPart2 = orderIdSplit[2];
-    return `${idPart1}-${idPart2}`;
+    return orderId;
   };
 
   const getOrderTotalPrice = (order) => {

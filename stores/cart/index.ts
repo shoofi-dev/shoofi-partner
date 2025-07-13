@@ -74,9 +74,30 @@ type TCart = {
   shippingPrice?: any;
   orderPrice?: any;
   appliedCoupon?: {
-    code: string;
+    coupon: {
+      _id: string;
+      code: string;
+      type: 'percentage' | 'fixed_amount' | 'free_delivery';
+      value: number;
+      maxDiscount?: number;
+      minOrderAmount?: number;
+      usageLimit: number;
+      usagePerUser: number;
+      start: string;
+      end: string;
+      applicableTo?: {
+        categories?: string[];
+        products?: string[];
+        stores?: string[];
+      };
+      isActive: boolean;
+      isCustomerSpecific?: boolean;
+      customerId?: string;
+      isAutoApply?: boolean;
+      createdAt?: string;
+      updatedAt?: string;
+    };
     discountAmount: number;
-    couponId: string;
   };
   paymentData?: any;  
   storeData?: any;

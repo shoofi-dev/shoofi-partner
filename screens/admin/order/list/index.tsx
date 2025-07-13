@@ -680,9 +680,7 @@ const OrdersListScreen = ({ route }) => {
   const renderOrderHeader = (order, index) => {
     const isExpanded =
       expandedOrders.indexOf(getProductIndexId(order, index)) === -1;
-    const orderIdSplit = order.orderId.split("-");
-    const idPart1 = orderIdSplit[0];
-    const idPart2 = orderIdSplit[2];
+
     return (
       <TouchableOpacity
         style={[
@@ -729,7 +727,7 @@ const OrdersListScreen = ({ route }) => {
               marginHorizontal: 8,
             }}
           >
-            #{idPart1}-{idPart2}
+            #{order.orderId}
           </Text>
           <Text
             style={{
@@ -787,9 +785,7 @@ const OrdersListScreen = ({ route }) => {
 
   const renderOrderTotalRaw = (order) => {
     const oOrder = order.order;
-    const orderIdSplit = order.orderId.split("-");
-    const idPart1 = orderIdSplit[0];
-    const idPart2 = orderIdSplit[2];
+
     return (
       <View
         style={{
@@ -885,7 +881,7 @@ const OrdersListScreen = ({ route }) => {
                 </View>
                 <View>
                   <Text style={styles.dateRawText}>
-                    {idPart1}-{idPart2}{" "}
+                    {order.orderId}{" "}
                   </Text>
                 </View>
               </View>
