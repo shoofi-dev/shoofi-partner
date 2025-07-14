@@ -2,17 +2,19 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { AppState, DeviceEventEmitter } from "react-native";
 import * as Device from "expo-device";
 import { StoreContext } from "../../stores";
-import { PLACE, SHIPPING_METHODS } from "../../consts/shared";
+import { PLACE, SHIPPING_METHODS, PAYMENT_METHODS } from "../../consts/shared";
 import { useNavigation } from "@react-navigation/native";
 import { DIALOG_EVENTS } from "../../consts/events";
 import { getCurrentLang } from "../../translations/i18n";
 import { useTranslation } from "react-i18next";
+import isStoreSupportAction from "../../helpers/is-store-support-action";
 
 export type TProps = {
   shippingMethod: any;
   addressLocation?: boolean;
   addressLocationText?: boolean;
   place?: any;
+  paymentMethod?: any;
 };
 const _useCheckoutValidate = () => {
   const { t } = useTranslation();
@@ -150,16 +152,142 @@ const _useCheckoutValidate = () => {
   };
   // VALIDATE SHIPPING ADDRESS - END
 
+  // VALIDATE SHIPPING METHOD - START
+  const validateShippingMethod = async (shippingMethod) => {
+    if (!shippingMethod) {
+      DeviceEventEmitter.emit(
+        DIALOG_EVENTS.OPEN_RECIPT_METHOD_BASED_EVENT_DIALOG,
+        {
+          data: {
+            text: "shipping-method-required",
+            icon: "shipping_icon",
+          },
+        }
+      );
+      return false;
+    }
+
+    // Check if shipping method is supported by store
+    let supportKey = "";
+    let errorKey = "";
+    switch (shippingMethod) {
+      case SHIPPING_METHODS.shipping:
+        supportKey = "delivery_support";
+        errorKey = "delivery-not-supported";
+        break;
+      case SHIPPING_METHODS.takAway:
+        supportKey = "takeaway_support";
+        errorKey = "takeaway-not-supported";
+        break;
+      case SHIPPING_METHODS.table:
+        // Table service might not need special validation
+        return true;
+      default:
+        DeviceEventEmitter.emit(
+          DIALOG_EVENTS.OPEN_RECIPT_METHOD_BASED_EVENT_DIALOG,
+          {
+            data: {
+              text: "shipping-method-not-supported",
+              icon: "shipping_icon",
+            },
+          }
+        );
+        return false;
+    }
+
+    if (supportKey) {
+      const isSupported = await isStoreSupportAction(supportKey);
+      if (!isSupported) {
+        DeviceEventEmitter.emit(
+          DIALOG_EVENTS.OPEN_RECIPT_METHOD_BASED_EVENT_DIALOG,
+          {
+            data: {
+              text: errorKey,
+              icon: "shipping_icon",
+            },
+          }
+        );
+        return false;
+      }
+    }
+
+    return true;
+  };
+  // VALIDATE SHIPPING METHOD - END
+
+  // VALIDATE PAYMENT METHOD - START
+  const validatePaymentMethod = async (paymentMethod) => {
+    if (!paymentMethod) {
+      DeviceEventEmitter.emit(
+        DIALOG_EVENTS.OPEN_RECIPT_METHOD_BASED_EVENT_DIALOG,
+        {
+          data: {
+            text: "payment-method-required",
+            icon: "payment_icon",
+          },
+        }
+      );
+      return false;
+    }
+
+    // Check if payment method is supported by store
+    let supportKey = "";
+    let errorKey = "";
+    switch (paymentMethod) {
+      case PAYMENT_METHODS.creditCard:
+        supportKey = "creditcard_support";
+        errorKey = "creditcard-not-supported";
+        break;
+      case PAYMENT_METHODS.cash:
+        supportKey = "cash_support";
+        errorKey = "cash-not-supported";
+        break;
+      default:
+        DeviceEventEmitter.emit(
+          DIALOG_EVENTS.OPEN_RECIPT_METHOD_BASED_EVENT_DIALOG,
+          {
+            data: {
+              text: "payment-method-not-supported",
+              icon: "payment_icon",
+            },
+          }
+        );
+        return false;
+    }
+
+    if (supportKey) {
+      const isSupported = await isStoreSupportAction(supportKey);
+      if (!isSupported) {
+        DeviceEventEmitter.emit(
+          DIALOG_EVENTS.OPEN_RECIPT_METHOD_BASED_EVENT_DIALOG,
+          {
+            data: {
+              text: errorKey,
+              icon: "payment_icon",
+            },
+          }
+        );
+        return false;
+      }
+    }
+
+    return true;
+  };
+  // VALIDATE PAYMENT METHOD - END
+
   const isCheckoutValid = async ({
     shippingMethod,
     addressLocation,
     addressLocationText,
     place,
+    paymentMethod,
   }: TProps) => {
+    // 1. Validate store availability
     const storeStatus = await isStoreAvailable();
-    console.log("storeStatus",storeStatus)
-    const isCustomErromMessage = await isErrCustomMessage(storeStatus);
-    if (isCustomErromMessage) {
+    console.log("storeStatus", storeStatus);
+    
+    const isCustomErrorMessage = await isErrCustomMessage(storeStatus);
+    if (isCustomErrorMessage) {
       return false;
     }
 
@@ -168,15 +296,28 @@ const _useCheckoutValidate = () => {
       return false;
     }
 
-    // const isValidShipping = await isValidShippingCheck(
-    //   shippingMethod,
-    //   addressLocation,
-    //   addressLocationText,
-    //   place
-    // );
-    // if (!isValidShipping) {
-    //   return false;
-    // }
+    // 2. Validate shipping method
+    const isValidShippingMethod = await validateShippingMethod(shippingMethod);
+    if (!isValidShippingMethod) {
+      return false;
+    }
+
+    // 3. Validate payment method
+    const isValidPaymentMethod = await validatePaymentMethod(paymentMethod);
+    if (!isValidPaymentMethod) {
+      return false;
+    }
+
+    // 4. Validate shipping address (if shipping method is delivery)
+    const isValidShipping = await isValidShippingCheck(
+      shippingMethod,
+      addressLocation,
+      addressLocationText,
+      place
+    );
+    if (!isValidShipping) {
+      return false;
+    }
     
     return true;
   };

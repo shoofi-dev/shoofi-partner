@@ -81,6 +81,7 @@ const ProductItem = ({
   const onToggleInStore = async (item: any) => {
     try {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      console.log("xx")
       await menuStore.updateProductIsInStore({
         productId: item._id,
         isInStore: !item.isInStore

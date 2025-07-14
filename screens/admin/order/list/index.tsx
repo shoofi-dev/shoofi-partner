@@ -52,6 +52,7 @@ import CustomFastImage from "../../../../components/custom-fast-image";
 import OrderExtrasDisplay from "../../../../components/shared/OrderExtrasDisplay";
 import { useResponsive } from "../../../../hooks/useResponsive";
 import DelayPicker from "../../../../components/dialogs/delay-picker";
+import DriverDetailsDialog from "../../../../components/dialogs/driver-details";
 
 //1 -SENT 3 -COMPLETE 2-READY 4-CANCELLED 5-REJECTED
 export const inProgressStatuses = ["1"];
@@ -98,6 +99,9 @@ const OrdersListScreen = ({ route }) => {
   const [hasMoreData, setHasMoreData] = useState(true);
   const [showDelayPicker, setShowDelayPicker] = useState(false);
   const [selectedOrderForDelay, setSelectedOrderForDelay] = useState(null);
+  const [showDriverDetailsDialog, setShowDriverDetailsDialog] = useState(false);
+  const [selectedOrderForDriverDetails, setSelectedOrderForDriverDetails] = useState(null);
+  const [driverDetails, setDriverDetails] = useState(null);
 
   const animation = useRef(new Animated.Value(0)).current;
   const contentHeight = useRef(1);
@@ -669,6 +673,28 @@ const OrdersListScreen = ({ route }) => {
     setSelectedOrderForDelay(null);
   };
 
+  const handleShowDriverDetails = async (order) => {
+    if (isLoading) return; // Prevent multiple clicks while loading
+    setIsloading(true);
+    try {
+      setSelectedOrderForDriverDetails(order);
+      const driverData = await ordersStore.getOrderDriverDetails(order._id);
+      setDriverDetails(driverData);
+      setShowDriverDetailsDialog(true);
+    } catch (error) {
+      console.error('Failed to fetch driver details:', error);
+      // Show error message or handle gracefully
+    } finally {
+      setIsloading(false);
+    }
+  };
+
+  const handleDriverDetailsDialogClose = () => {
+    setShowDriverDetailsDialog(false);
+    setSelectedOrderForDriverDetails(null);
+    setDriverDetails(null);
+  };
+
   const getOrderTotalPrice = (order) => {
     const oOrder = order.order;
     if (oOrder.receipt_method == SHIPPING_METHODS.shipping) {
@@ -748,13 +774,17 @@ const OrdersListScreen = ({ route }) => {
             {moment(order.orderDate).format("HH:mm")}
           </Text>
           {order.order.receipt_method == SHIPPING_METHODS.shipping && (
-            <View style={{ marginLeft: 10 }}>
+            <TouchableOpacity 
+              style={{ marginLeft: 10 }}
+              onPress={() => handleShowDriverDetails(order)}
+              disabled={isLoading}
+            >
               <Icon
                 icon="delivery-active"
                 size={30}
                 style={{ color: themeStyle.SECONDARY_COLOR }}
               />
-            </View>
+            </TouchableOpacity>
           )}
   
           
@@ -2105,11 +2135,16 @@ const OrdersListScreen = ({ route }) => {
                               alignItems: "center",
                             }}
                           >
-                            <Icon
-                              icon="delivery-active"
-                              size={isTablet ? 80 : 50}
-                              style={{ color: themeStyle.SECONDARY_COLOR }}
-                            />
+                            <TouchableOpacity
+                              onPress={() => handleShowDriverDetails(order)}
+                              disabled={isLoading}
+                            >
+                              <Icon
+                                icon="delivery-active"
+                                size={isTablet ? 80 : 50}
+                                style={{ color: themeStyle.SECONDARY_COLOR }}
+                              />
+                            </TouchableOpacity>
                             {/* <Button
                               text={"اطلب ارسالية"}
                               fontSize={17}
@@ -2152,6 +2187,11 @@ const OrdersListScreen = ({ route }) => {
         onClose={handleDelayCancel}
         onConfirm={handleDelayConfirm}
         currentDelay={0}
+      />
+      <DriverDetailsDialog
+        isOpen={showDriverDetailsDialog}
+        driverDetails={driverDetails}
+        handleAnswer={handleDriverDetailsDialogClose}
       />
     </View>
   );

@@ -226,6 +226,7 @@ const CheckoutScreen = ({ route }) => {
         addressLocation,
         addressLocationText,
         place,
+        paymentMethod: paymentMthod,
       });
 
       if (!isCheckoutValidRes) {

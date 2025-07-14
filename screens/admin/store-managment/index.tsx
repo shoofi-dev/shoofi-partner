@@ -79,7 +79,11 @@ const StoreManagementScreen = ({ route }) => {
 
   const onSave = async () => {
     setIsLoading(true);
-    await storeDataStore.updateStoreData({ data: storeData });
+    const storeDataTmp = {
+      ...storeData,
+      isOpen: !storeData.isStoreClose,
+    }
+    await storeDataStore.updateStoreData({ data: storeDataTmp });
     setIsLoading(false);
   };
 
@@ -379,7 +383,7 @@ const StoreManagementScreen = ({ route }) => {
                   />
                 </View>
               </View>
-              <View
+              {/* <View
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
@@ -396,7 +400,7 @@ const StoreManagementScreen = ({ route }) => {
                     value={storeData.delivery_support}
                   />
                 </View>
-              </View>
+              </View> */}
             </View>
           </View>
           

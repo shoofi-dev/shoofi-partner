@@ -151,6 +151,10 @@ const useWebSocket = (): UseWebSocketReturn => {
             error: null
           }));
         }
+
+        if (message.type === 'store_updated') {
+            storeDataStore.getStoreData();
+        }
       } catch (error) {
         console.error('Failed to parse WebSocket message:', error);
         statsRef.current.totalErrors++;

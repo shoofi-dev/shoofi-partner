@@ -433,6 +433,13 @@ class OrdersStore {
       return response.data || response;
     });
   };
+
+  getOrderDriverDetails = async (orderId: string) => {
+    const api = `/delivery/order/${orderId}/driver`;
+    return axiosInstance.get(api).then(function (response: any) {
+      return response.data || response;
+    });
+  };
 }
 
 export const ordersStore = new OrdersStore();
