@@ -19,7 +19,12 @@
           "color": "#ffffff",
           "sounds": [
             "./assets/sounds/buffalosound.wav",
-            "./assets/sounds/deliverysound.wav"
+            "./assets/sounds/deliverysound.wav",
+            "./assets/sounds/store.wav",
+            "./assets/sounds/storelate.wav",
+            "./assets/sounds/customer.wav",
+            "./assets/sounds/driver.wav",
+            "./assets/sounds/driverlate.wav"
           ]
         }
       ]

@@ -17,6 +17,11 @@
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		CDAB941BC66142DBB93E9D55 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA480E1E16614F69A57EEDE4 /* noop-file.swift */; };
 		CE8E87B61FA14096B3107870 /* deliverysound.wav in Resources */ = {isa = PBXBuildFile; fileRef = 738FACC672E740EF849DDC51 /* deliverysound.wav */; };
+		038C1EDA539E46CC9A4C7BFE /* store.wav in Resources */ = {isa = PBXBuildFile; fileRef = 076FD70F6BC74BBEABB80223 /* store.wav */; };
+		3A131B2D72C7404192BB6708 /* storelate.wav in Resources */ = {isa = PBXBuildFile; fileRef = 9AA53C4DBA9746618DC3ACB1 /* storelate.wav */; };
+		789DAB3D351D479B8AD68318 /* customer.wav in Resources */ = {isa = PBXBuildFile; fileRef = 71AC7818166041C786ACBAA5 /* customer.wav */; };
+		BA968E5280464727A8EC3484 /* driver.wav in Resources */ = {isa = PBXBuildFile; fileRef = 04D313D9F07E47F6B559DBCF /* driver.wav */; };
+		CE359C89F6A041DBA5B22631 /* driverlate.wav in Resources */ = {isa = PBXBuildFile; fileRef = 09C51C8E9D224E4C8853EB0D /* driverlate.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +42,11 @@
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-app/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		076FD70F6BC74BBEABB80223 /* store.wav */ = {isa = PBXFileReference; name = "store.wav"; path = "app/store.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		9AA53C4DBA9746618DC3ACB1 /* storelate.wav */ = {isa = PBXFileReference; name = "storelate.wav"; path = "app/storelate.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		71AC7818166041C786ACBAA5 /* customer.wav */ = {isa = PBXFileReference; name = "customer.wav"; path = "app/customer.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		04D313D9F07E47F6B559DBCF /* driver.wav */ = {isa = PBXFileReference; name = "driver.wav"; path = "app/driver.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		09C51C8E9D224E4C8853EB0D /* driverlate.wav */ = {isa = PBXFileReference; name = "driverlate.wav"; path = "app/driverlate.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +75,11 @@
 				AA480E1E16614F69A57EEDE4 /* noop-file.swift */,
 				439E19D9B1A646D08FAC4B4F /* buffalosound.wav */,
 				738FACC672E740EF849DDC51 /* deliverysound.wav */,
+				076FD70F6BC74BBEABB80223 /* store.wav */,
+				9AA53C4DBA9746618DC3ACB1 /* storelate.wav */,
+				71AC7818166041C786ACBAA5 /* customer.wav */,
+				04D313D9F07E47F6B559DBCF /* driver.wav */,
+				09C51C8E9D224E4C8853EB0D /* driverlate.wav */,
 			);
 			name = app;
 			sourceTree = "<group>";
@@ -208,6 +223,11 @@
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
 				A58D3060ECA949638B12EF2C /* buffalosound.wav in Resources */,
 				CE8E87B61FA14096B3107870 /* deliverysound.wav in Resources */,
+				038C1EDA539E46CC9A4C7BFE /* store.wav in Resources */,
+				3A131B2D72C7404192BB6708 /* storelate.wav in Resources */,
+				789DAB3D351D479B8AD68318 /* customer.wav in Resources */,
+				BA968E5280464727A8EC3484 /* driver.wav in Resources */,
+				CE359C89F6A041DBA5B22631 /* driverlate.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
