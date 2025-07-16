@@ -70,7 +70,11 @@ const StoreManagementScreen = ({ route }) => {
   }, [lastJsonMessage]);
 
   useEffect(() => {
-    setStoreData(storeDataStore.storeData);
+    if (storeDataStore.storeData && storeDataStore.storeData.isBusy === undefined) {
+      setStoreData({ ...storeDataStore.storeData, isBusy: false });
+    } else {
+      setStoreData(storeDataStore.storeData);
+    }
   }, [storeDataStore.storeData]);
 
   useEffect(() => {
@@ -183,6 +187,34 @@ const StoreManagementScreen = ({ route }) => {
                 <CheckBox
                   onChange={(e) => handleInputChange(!e, "isStoreClose")}
                   value={!storeData.isStoreClose}
+                />
+              </View>
+            </View>
+          </View>
+          <DashedLine
+            dashLength={5}
+            dashThickness={1}
+            dashGap={5}
+            dashColor={themeStyle.SECONDARY_COLOR}
+            style={{ marginTop: 15 }}
+          />
+          <View style={{ marginTop: 30 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                marginBottom: 20,
+                alignItems: "center",
+              }}
+            >
+              <View style={{}}>
+                <Text style={{ textAlign: "right", fontSize: isTablet ? 24 : 16, color: themeStyle.TEXT_PRIMARY_COLOR }}>
+                  * {t("مشغول")} :
+                </Text>
+              </View>
+              <View style={{ marginLeft: 20 }}>
+                <CheckBox
+                  onChange={(e) => handleInputChange(e, "isBusy")}
+                  value={storeData.isBusy || false}
                 />
               </View>
             </View>
@@ -403,6 +435,7 @@ const StoreManagementScreen = ({ route }) => {
               </View> */}
             </View>
           </View>
+
           
 
           <DashedLine

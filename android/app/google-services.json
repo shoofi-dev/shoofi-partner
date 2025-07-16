@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "202867785400",
-    "project_id": "shoofi",
-    "storage_bucket": "shoofi.appspot.com"
+    "project_number": "138109066819",
+    "project_id": "shoofi-partners",
+    "storage_bucket": "shoofi-partners.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:202867785400:android:5de48f627f468259f57e4d",
+        "mobilesdk_app_id": "1:138109066819:android:94b1f78bf9b50f9c633ef6",
         "android_client_info": {
           "package_name": "com.shoofi.partners"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDgSPiZkmiuZf6yFJlmeKpmm7BCBaMaGd4"
+          "current_key": "AIzaSyCmRTCHtBwMRt2vhQUGFjCQDfzRmiIkd5k"
         }
       ],
       "services": {
