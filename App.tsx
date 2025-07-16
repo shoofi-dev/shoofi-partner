@@ -152,10 +152,7 @@ const App = () => {
   const [invoiceOrder, setInvoiceOrder] = useState(null);
   const [printer, setPrinter] = useState(null);
   const [printOrdersQueue, setPrintOrdersQueue] = useState([]);
-  const [invoiceScrollViewSize, setInvoiceScrollViewSize] = useState({
-    w: 0,
-    h: 0,
-  });
+  const [invoiceScrollViewSizes, setInvoiceScrollViewSizes] = useState({});
 
   const [isOpenInternetConnectionDialog, setIsOpenInternetConnectionDialog] =
     useState(false);
@@ -248,7 +245,7 @@ const App = () => {
       // Force a layout pass
       return new Promise(resolve => {
         requestAnimationFrame(() => {
-          requestAnimationFrame(resolve);
+              requestAnimationFrame(resolve); // triple-frame to ensure layout pass
         });
       });
     } catch (error) {
@@ -268,15 +265,28 @@ const App = () => {
           continue;
         }
 
+        // Wait for ScrollView to measure its content
+        let attempts = 0;
+        const maxAttempts = 10;
+        while (attempts < maxAttempts && !invoiceScrollViewSizes[queue[i].orderId]?.h) {
+          console.log(`Waiting for invoice ${queue[i].orderId} height measurement, attempt ${attempts + 1}`);
+          await new Promise(resolve => setTimeout(resolve, 500));
+          attempts++;
+        }
+
         // Ensure images are loaded and view is fully rendered
         await ensureImagesLoaded();
-
+        const defaultHeight = 4000;
+        const currentInvoiceHeight = invoiceScrollViewSizes[queue[i].orderId]?.h || 0;
+        const dynamicHeight = currentInvoiceHeight > defaultHeight ? defaultHeight : (currentInvoiceHeight > 0 ? currentInvoiceHeight : defaultHeight);
         try {
           const result = await captureRef(invoiceRef, {
             result: "data-uri",
             width: pixels,
             quality: 1,
             format: "png",
+            height: dynamicHeight
+
           });
           SPs.push(result);
         } catch (captureError) {
@@ -284,12 +294,14 @@ const App = () => {
           
           // Retry once with a longer delay
           try {
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await new Promise(resolve => setTimeout(resolve, 3000));
             const retryResult = await captureRef(invoiceRef, {
               result: "data-uri",
               width: pixels,
               quality: 1,
               format: "png",
+              height: dynamicHeight 
+
             });
             SPs.push(retryResult);
             console.log(`Successfully captured invoice on retry for order ${queue[i].orderId}`);
@@ -312,6 +324,7 @@ const App = () => {
         width: pixels,
         quality: 1,
         format: "png",
+        height: 3000, // Fallback height for single invoice printing
       });
       const isPrinted = await testPrint(result, printer);
       return isPrinted;
@@ -395,6 +408,8 @@ const App = () => {
      }, 0);
     } else {
       setIsPrinting(false);
+      // Clear the invoice heights when print queue is empty
+      setInvoiceScrollViewSizes({});
     }
   }, [printOrdersQueue]);
 
@@ -908,32 +923,52 @@ const App = () => {
             printOrdersQueue.map((invoice) => {
               return (
                 <ScrollView
-                  style={{ 
-                    flex: 1, 
-                    maxWidth: 820, 
-                    alignSelf: "center",
-                    position: "absolute",
-                    left: -9999, // Hide off-screen to prevent flickering
-                    opacity: 0
+                style={{
+                  maxWidth: 820, 
+                  alignSelf: "center",
+                  position: "absolute",
+                  height: "100%",
+                  left: -9999, // Hide off-screen to prevent flickering
+                  opacity: 0// Make transparent instead of `display: none`
+                }}
+                key={invoice.orderId}
+                onContentSizeChange={(width, height) => {
+                  console.log(`onContentSizeChange for invoice ${invoice.orderId}:`, { width, height });
+                  setInvoiceScrollViewSizes(prev => {
+                    const newSizes = {
+                      ...prev,
+                      [invoice.orderId]: { h: height, w: width }
+                    };
+                    console.log('Updated invoiceScrollViewSizes:', newSizes);
+                    return newSizes;
+                  });
+                }}
+                onLayout={(event) => {
+                  const { width, height } = event.nativeEvent.layout;
+                  console.log(`onLayout for invoice ${invoice.orderId}:`, { width, height });
+                  setInvoiceScrollViewSizes(prev => {
+                    const newSizes = {
+                      ...prev,
+                      [invoice.orderId]: { h: height, w: width }
+                    };
+                    console.log('Updated invoiceScrollViewSizes from onLayout:', newSizes);
+                    return newSizes;
+                  });
+                }}
+              >
+                <View
+                                ref={(el) => (invoicesRef.current[invoice.orderId] = el)}
+                                style={{
+                    width: "100%",
+                    flexDirection: "row",
+                    zIndex: 10,
+                    height: "100%",
+                    backgroundColor: "white"
                   }}
-                  onContentSizeChange={(width, height) => {
-                    setInvoiceScrollViewSize({ h: height, w: width });
-                  }}
-                  key={invoice.orderId}
                 >
-                  <View
-                    ref={(el) => (invoicesRef.current[invoice.orderId] = el)}
-                    style={{
-                      width: "100%",
-                      flexDirection: "row",
-                      zIndex: 10,
-                      height: "100%",
-                      backgroundColor: "white", // Ensure white background for printing
-                    }}
-                  >
-                    <OrderInvoiceCMP invoiceOrder={invoice} />
-                  </View>
-                </ScrollView>
+                  <OrderInvoiceCMP invoiceOrder={invoice} />
+                </View>
+              </ScrollView>
               );
             })}
           <NewAddressBasedEventDialog />

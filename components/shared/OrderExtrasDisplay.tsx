@@ -17,7 +17,7 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
       case "half1":
         return <Icon icon="pizza-right" size={isTablet ? 30 : 20} color="black" />;
       case "half2":
-        return <Icon icon="pizza-right" size={isTablet ? 30 : 20} color="black" />;
+        return <Icon icon="pizza-left" size={isTablet ? 30 : 20} color="black" />;
       default:
         return null;
     }
@@ -65,8 +65,8 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
   const renderGroupedExtras = () => {
     return Object.entries(groupedExtras).map(([groupId, groupExtras]) => {
       // Find the group header
-      const groupHeader = (groupExtras as any[]).find((extra: any) => extra.isGroupHeader);
-      const groupExtrasWithoutHeader = (groupExtras as any[]).filter((extra: any) => !extra.isGroupHeader);
+      const groupHeader = (groupExtras as any[]).find((extra: any) => extra.isGroupHeader && extra.type !== "pizza-topping");
+      const groupExtrasWithoutHeader = (groupExtras as any[]).filter((extra: any) => !extra.isGroupHeader && extra.type !== "pizza-topping");
       
       // Check if any extras in this group have values
       const hasValues = groupExtrasWithoutHeader.some((extra: any) => {
@@ -274,64 +274,72 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
   };
 
   // Render grouped pizza toppings by areaId
-  const pizzaToppingSections = Object.entries(groupedByArea).map(
-    ([areaId, toppings]: [
-      string,
-      Array<{
-        topping: any;
-        areaData: { areaId: string; isFree: boolean };
-        extra: any;
-      }>
-    ]) => {
-      // Try to get area object from any topping's extra
-      const area = toppings[0]?.extra.options[0]?.areaOptions?.find(
-        (a) => a.id === areaId
-      );
-      return (
-        <View key={areaId} style={{ marginBottom: 15 }}>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              marginBottom: 8,
-              flexWrap: "wrap",
-            }}
-          >
-            <View style={{ marginRight: 5 }}>{getToppingIcon(area)}</View>
+  const pizzaToppingSections = Object.entries(groupedByArea)
+    .sort(([areaIdA], [areaIdB]) => {
+      // Sort order: "full" first, "half1" second, "half2" third
+      const order = { full: 0, half1: 1, half2: 2 };
+      const orderA = order[areaIdA] ?? 3; // Any other areaId goes last
+      const orderB = order[areaIdB] ?? 3;
+      return orderA - orderB;
+    })
+    .map(
+      ([areaId, toppings]: [
+        string,
+        Array<{
+          topping: any;
+          areaData: { areaId: string; isFree: boolean };
+          extra: any;
+        }>
+      ]) => {
+        // Try to get area object from any topping's extra
+        const area = toppings[0]?.extra.options[0]?.areaOptions?.find(
+          (a) => a.id === areaId
+        );
+        return (
+          <View key={areaId} style={{ marginBottom: 15 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: 8,
+                flexWrap: "wrap",
+              }}
+            >
+              <View style={{ marginRight: 5 }}>{getToppingIcon(area)}</View>
 
-            {toppings.map(({ topping, areaData }, idx) => (
-              <View
-                key={topping.id + idx}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginRight: 10,
-                }}
-              >
-                <Text
+              {toppings.map(({ topping, areaData }, idx) => (
+                <View
+                  key={topping.id + idx}
                   style={{
-                    fontSize: (isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_SM),
-                    color: "#333",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginRight: 10,
                   }}
                 >
-                  {languageStore.selectedLang === "ar"
-                    ? topping.nameAR
-                    : topping.nameHE}
-                  {!areaData.isFree &&
-                    (() => {
-                      const areaOption = topping.areaOptions?.find(
-                        (opt) => opt.id === areaData.areaId
-                      );
-                      return areaOption ? ` (+₪${areaOption.price || 0})` : "";
-                    })()}
-                </Text>
-              </View>
-            ))}
+                  <Text
+                    style={{
+                      fontSize: (isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_SM),
+                      color: "#333",
+                    }}
+                  >
+                    {languageStore.selectedLang === "ar"
+                      ? topping.nameAR
+                      : topping.nameHE}
+                    {!areaData.isFree &&
+                      (() => {
+                        const areaOption = topping.areaOptions?.find(
+                          (opt) => opt.id === areaData.areaId
+                        );
+                        return areaOption ? ` (+₪${areaOption.price || 0})` : "";
+                      })()}
+                  </Text>
+                </View>
+              ))}
+            </View>
           </View>
-        </View>
-      );
-    }
-  );
+        );
+      }
+    );
 
   return (
     <View style={{ marginTop: 5 }}>

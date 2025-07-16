@@ -63,8 +63,8 @@ const InvoiceOrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
   const renderGroupedExtras = () => {
     return Object.entries(groupedExtras).map(([groupId, groupExtras]) => {
       // Find the group header
-      const groupHeader = (groupExtras as any[]).find((extra: any) => extra.isGroupHeader);
-      const groupExtrasWithoutHeader = (groupExtras as any[]).filter((extra: any) => !extra.isGroupHeader);
+      const groupHeader = (groupExtras as any[]).find((extra: any) => extra.isGroupHeader && extra.type !== "pizza-topping");
+      const groupExtrasWithoutHeader = (groupExtras as any[]).filter((extra: any) => !extra.isGroupHeader  && extra.type !== "pizza-topping");
       
       // Check if any extras in this group have values
       const hasValues = groupExtrasWithoutHeader.some((extra: any) => {
@@ -75,32 +75,32 @@ const InvoiceOrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
 
       if (!hasValues) return null;
 
-      // Collect all pizza-topping selections from this group
-      const allGroupToppingSelections = [];
-      groupExtrasWithoutHeader.forEach((extra: any) => {
-        if (extra.type === "pizza-topping") {
-          const value = selectedExtras?.[extra.id];
-          if (!value) return;
-          Object.entries(value).forEach(([toppingId, areaData]) => {
-            const topping = extra.options.find((o) => o.id === toppingId);
-            if (!topping) return;
-            const typedAreaData = areaData as { areaId: string; isFree: boolean };
-            allGroupToppingSelections.push({
-              areaId: typedAreaData.areaId,
-              topping,
-              areaData: typedAreaData,
-              extra,
-            });
-          });
-        }
-      });
+      // // Collect all pizza-topping selections from this group
+      // const allGroupToppingSelections = [];
+      // groupExtrasWithoutHeader.forEach((extra: any) => {
+      //   if (extra.type === "pizza-topping") {
+      //     const value = selectedExtras?.[extra.id];
+      //     if (!value) return;
+      //     Object.entries(value).forEach(([toppingId, areaData]) => {
+      //       const topping = extra.options.find((o) => o.id === toppingId);
+      //       if (!topping) return;
+      //       const typedAreaData = areaData as { areaId: string; isFree: boolean };
+      //       allGroupToppingSelections.push({
+      //         areaId: typedAreaData.areaId,
+      //         topping,
+      //         areaData: typedAreaData,
+      //         extra,
+      //       });
+      //     });
+      //   }
+      // });
 
       // Group pizza-toppings by areaId
-      const groupedByArea = allGroupToppingSelections.reduce((acc, curr) => {
-        if (!acc[curr.areaId]) acc[curr.areaId] = [];
-        acc[curr.areaId].push(curr);
-        return acc;
-      }, {} as Record<string, Array<{ topping: any; areaData: { areaId: string; isFree: boolean }; extra: any }>>);
+      // const groupedByArea = allGroupToppingSelections.reduce((acc, curr) => {
+      //   if (!acc[curr.areaId]) acc[curr.areaId] = [];
+      //   acc[curr.areaId].push(curr);
+      //   return acc;
+      // }, {} as Record<string, Array<{ topping: any; areaData: { areaId: string; isFree: boolean }; extra: any }>>);
 
       return (
         <View key={groupId} style={{ marginBottom: 10 }}>
@@ -206,7 +206,7 @@ const InvoiceOrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
             })}
 
           {/* Pizza-toppings grouped by area */}
-          {Object.entries(groupedByArea).map(([areaId, toppings]: [string, Array<{ topping: any; areaData: { areaId: string; isFree: boolean }; extra: any }>]) => {
+          {/* {Object.entries(groupedByArea).map(([areaId, toppings]: [string, Array<{ topping: any; areaData: { areaId: string; isFree: boolean }; extra: any }>]) => {
             const area = toppings[0]?.extra.options[0]?.areaOptions?.find(
               (a) => a.id === areaId
             );
@@ -240,7 +240,7 @@ const InvoiceOrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
                 </View>
               </View>
             );
-          })}
+          })} */}
         </View>
       );
     });
@@ -338,64 +338,72 @@ const InvoiceOrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
   };
 
   // Render grouped pizza toppings by areaId
-  const pizzaToppingSections = Object.entries(groupedByArea).map(
-    ([areaId, toppings]: [
-      string,
-      Array<{
-        topping: any;
-        areaData: { areaId: string; isFree: boolean };
-        extra: any;
-      }>
-    ]) => {
-      // Try to get area object from any topping's extra
-      const area = toppings[0]?.extra.options[0]?.areaOptions?.find(
-        (a) => a.id === areaId
-      );
-      return (
-        <View key={areaId} style={{ marginBottom: 5,  }}>
-          <View
-            style={{
-              alignItems: "center",
-              marginBottom: 5,
-             flexDirection: "row",
-             flexWrap: "wrap"
-            }}
-          >
-            <View style={{ marginRight: 5 }}>{getToppingIcon(area)}</View>
+  const pizzaToppingSections = Object.entries(groupedByArea)
+    .sort(([areaIdA], [areaIdB]) => {
+      // Sort order: "full" first, "half1" second, "half2" third
+      const order = { full: 0, half1: 1, half2: 2 };
+      const orderA = order[areaIdA] ?? 3; // Any other areaId goes last
+      const orderB = order[areaIdB] ?? 3;
+      return orderA - orderB;
+    })
+    .map(
+      ([areaId, toppings]: [
+        string,
+        Array<{
+          topping: any;
+          areaData: { areaId: string; isFree: boolean };
+          extra: any;
+        }>
+      ]) => {
+        // Try to get area object from any topping's extra
+        const area = toppings[0]?.extra.options[0]?.areaOptions?.find(
+          (a) => a.id === areaId
+        );
+        return (
+          <View key={areaId} style={{ marginBottom: 5,  }}>
+            <View
+              style={{
+                alignItems: "center",
+                marginBottom: 5,
+               flexDirection: "row",
+               flexWrap: "wrap"
+              }}
+            >
+              <View style={{ marginRight: 5 }}>{getToppingIcon(area)}</View>
 
-            {toppings.map(({ topping, areaData }, idx) => (
-              <View
-                key={topping.id + idx}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginRight: 10,
-                }}
-              >
-                <Text
+              {toppings.map(({ topping, areaData }, idx) => (
+                <View
+                  key={topping.id + idx}
                   style={{
-                    fontSize: 35,
-                    color: "#333",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginRight: 10,
                   }}
                 >
-                  {languageStore.selectedLang === "ar"
-                    ? topping.nameAR
-                    : topping.nameHE}
-                  {!areaData.isFree &&
-                    (() => {
-                      const areaOption = topping.areaOptions?.find(
-                        (opt) => opt.id === areaData.areaId
-                      );
-                      return areaOption ? ` (+₪${areaOption.price || 0})` : "";
-                    })()}
-                </Text>
-              </View>
-            ))}
+                  <Text
+                    style={{
+                      fontSize: 35,
+                      color: "#333",
+                    }}
+                  >
+                    {languageStore.selectedLang === "ar"
+                      ? topping.nameAR
+                      : topping.nameHE}
+                    {!areaData.isFree &&
+                      (() => {
+                        const areaOption = topping.areaOptions?.find(
+                          (opt) => opt.id === areaData.areaId
+                        );
+                        return areaOption && areaOption.price > 0 ? ` (+₪${areaOption.price || 0})` : "";
+                      })()}
+                  </Text>
+                </View>
+              ))}
+            </View>
           </View>
-        </View>
-      );
-    }
-  );
+        );
+      }
+    );
 
   return (
     <View style={{ marginTop: 5 }}>

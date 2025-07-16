@@ -44,6 +44,10 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
     return order?.total;
   };
 
+  const getShippingPrice = (order) => {
+    return order.shippingPrice - (order.appliedCoupon?.coupon?.type === "free_delivery" ? order.appliedCoupon.discountAmount :  0)
+  }
+
   return (
     invoiceOrder && (
       <View style={{ width: "100%" }}>
@@ -280,7 +284,7 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
           </View>
           <View style={{}}>
             <Text style={{ fontSize: 65, textAlign: "center" }}>
-              {`₪${invoiceOrder?.shippingPrice}`}
+              {`₪${getShippingPrice(invoiceOrder)}`}
             </Text>
           </View>
         </View>

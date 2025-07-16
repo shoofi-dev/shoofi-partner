@@ -703,6 +703,10 @@ const OrdersListScreen = ({ route }) => {
     return order?.total;
   };
 
+  const getShippingPrice = (order) => {
+    return order.shippingPrice - (order.appliedCoupon?.coupon?.type === "free_delivery" ? order.appliedCoupon.discountAmount :  0)
+  }
+
   const renderOrderHeader = (order, index) => {
     const isExpanded =
       expandedOrders.indexOf(getProductIndexId(order, index)) === -1;
@@ -884,7 +888,7 @@ const OrdersListScreen = ({ route }) => {
                   </View>
                   <View>
                     <Text style={styles.totalPriceText}>
-                      ₪{order.shippingPrice}{" "}
+                      ₪{getShippingPrice(order)}{" "}
                       {order.isShippingPaid && " - مدفوع"}
                     </Text>
                   </View>
