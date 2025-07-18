@@ -73,7 +73,6 @@ import { creditCardsStore } from "./stores/creditCards";
 import { deliveryDriverStore } from "./stores/delivery-driver";
 // import useNotifications from "./hooks/use-notifications";
 // import { cacheImage } from "./components/custom-fast-image";
-
 moment.locale("en");
 
 // Keep the splash screen visible while we fetch resources
@@ -265,13 +264,11 @@ const App = () => {
           continue;
         }
 
-        // Wait for ScrollView to measure its content
-        let attempts = 0;
-        const maxAttempts = 10;
-        while (attempts < maxAttempts && !invoiceScrollViewSizes[queue[i].orderId]?.h) {
-          console.log(`Waiting for invoice ${queue[i].orderId} height measurement, attempt ${attempts + 1}`);
-          await new Promise(resolve => setTimeout(resolve, 500));
-          attempts++;
+        // Measurements should already be complete from forLoop
+        const currentHeight = invoiceScrollViewSizes[queue[i].orderId]?.h;
+        if (!currentHeight) {
+          console.log(`No height measurement found for order ${queue[i].orderId}, skipping`);
+          continue;
         }
 
         // Ensure images are loaded and view is fully rendered
@@ -370,7 +367,63 @@ const App = () => {
     };
   }, []);
 
-  const forLoop = async (queue) => {
+    const forLoop = useCallback(async (queue) => {
+    console.log("forLoop", queue)
+    
+    // Wait for all ScrollView measurements to complete
+    const waitForMeasurements = async () => {
+      const orderIds = queue.map(order => order.orderId);
+      let attempts = 0;
+      const maxAttempts = 30; // Increased for more time
+      
+      // First, wait a bit for ScrollView components to be rendered
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Check if ScrollView refs exist before waiting for measurements
+      const refsExist = orderIds.every(orderId => {
+        const refExists = invoicesRef.current[orderId];
+        if (!refExists) {
+          console.log(`ScrollView ref not found for order ${orderId}`);
+        }
+        return refExists;
+      });
+      
+      if (!refsExist) {
+        console.log("Some ScrollView refs are missing, waiting longer...");
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+      
+      while (attempts < maxAttempts) {
+        const allMeasured = orderIds.every(orderId => {
+          const hasMeasurement = invoiceScrollViewSizes[orderId]?.h > 0;
+          if (!hasMeasurement) {
+            console.log(`Still waiting for measurement of order ${orderId}`);
+          }
+          return hasMeasurement;
+        });
+        
+        if (allMeasured) {
+          console.log("All ScrollView measurements completed!");
+          return true;
+        }
+        
+        console.log(`Waiting for measurements, attempt ${attempts + 1}/${maxAttempts}`);
+        await new Promise(resolve => setTimeout(resolve, 300));
+        attempts++;
+      }
+      
+      console.log("Timeout waiting for measurements");
+      return false;
+    };
+    
+    const measurementsComplete = await waitForMeasurements();
+    if (!measurementsComplete) {
+      console.log("Failed to get all measurements, aborting print");
+      setIsPrinting(false);
+      printNotPrinted();
+      return;
+    }
+    
     try {
       const orderInvoicesPS = await getInvoiceSP(queue);
 
@@ -398,14 +451,15 @@ const App = () => {
     } catch (error) {
       console.log("Error in forLoop:", error);
       setIsPrinting(false);
+      setInvoiceScrollViewSizes({});
     }
-  };
+  }, [invoiceScrollViewSizes]);
 
   useEffect(() => {
     if (printOrdersQueue.length > 0) {
        setTimeout(() => {
         forLoop(printOrdersQueue);
-     }, 0);
+     }, 1000); // Reduced delay - ScrollView components render quickly
     } else {
       setIsPrinting(false);
       // Clear the invoice heights when print queue is empty
@@ -920,7 +974,7 @@ const App = () => {
             <RootNavigator />
           </View>
           {userDetailsStore.isAdmin(ROLES.all) &&
-            printOrdersQueue.map((invoice) => {
+            printOrdersQueue?.map((invoice) => {
               return (
                 <ScrollView
                 style={{
@@ -928,8 +982,8 @@ const App = () => {
                   alignSelf: "center",
                   position: "absolute",
                   height: "100%",
-                  left: -9999, // Hide off-screen to prevent flickering
-                  opacity: 0// Make transparent instead of `display: none`
+                  // left: -9999, // Hide off-screen to prevent flickering
+                  // opacity: 0// Make transparent instead of `display: none`
                 }}
                 key={invoice.orderId}
                 onContentSizeChange={(width, height) => {
@@ -943,18 +997,18 @@ const App = () => {
                     return newSizes;
                   });
                 }}
-                onLayout={(event) => {
-                  const { width, height } = event.nativeEvent.layout;
-                  console.log(`onLayout for invoice ${invoice.orderId}:`, { width, height });
-                  setInvoiceScrollViewSizes(prev => {
-                    const newSizes = {
-                      ...prev,
-                      [invoice.orderId]: { h: height, w: width }
-                    };
-                    console.log('Updated invoiceScrollViewSizes from onLayout:', newSizes);
-                    return newSizes;
-                  });
-                }}
+                // onLayout={(event) => {
+                //   const { width, height } = event.nativeEvent.layout;
+                //   console.log(`onLayout for invoice ${invoice.orderId}:`, { width, height });
+                //   setInvoiceScrollViewSizes(prev => {
+                //     const newSizes = {
+                //       ...prev,
+                //       [invoice.orderId]: { h: height, w: width }
+                //     };
+                //     console.log('Updated invoiceScrollViewSizes from onLayout:', newSizes);
+                //     return newSizes;
+                //   });
+                // }}
               >
                 <View
                                 ref={(el) => (invoicesRef.current[invoice.orderId] = el)}
