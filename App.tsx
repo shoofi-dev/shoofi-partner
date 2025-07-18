@@ -982,8 +982,8 @@ const App = () => {
                   alignSelf: "center",
                   position: "absolute",
                   height: "100%",
-                  // left: -9999, // Hide off-screen to prevent flickering
-                  // opacity: 0// Make transparent instead of `display: none`
+                   left: -9999, // Hide off-screen to prevent flickering
+                   opacity: 0// Make transparent instead of `display: none`
                 }}
                 key={invoice.orderId}
                 onContentSizeChange={(width, height) => {
