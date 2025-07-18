@@ -511,10 +511,10 @@ const OrdersListScreen = ({ route }) => {
       return "جاهزة";
     }
     if (deliveryStatuses.indexOf(order.status) > -1) {
-      return "استلم";
+      return "استلمت";
     }
     if (readyStatuses.indexOf(order.status) > -1) {
-      return "استلم";
+      return "استلمت";
     }
     if (pickedUpStatuses.indexOf(order.status) > -1) {
       return "الغاء";
@@ -706,7 +706,7 @@ const OrdersListScreen = ({ route }) => {
   const getShippingPrice = (order) => {
     return order.shippingPrice - (order.appliedCoupon?.coupon?.type === "free_delivery" ? order.appliedCoupon.discountAmount :  0)
   }
-
+  const isMobile = !isTablet;
   const renderOrderHeader = (order, index) => {
     const isExpanded =
       expandedOrders.indexOf(getProductIndexId(order, index)) === -1;
@@ -759,7 +759,7 @@ const OrdersListScreen = ({ route }) => {
           >
             #{order.orderId}
           </Text>
-          <Text
+          {!isMobile && <Text
             style={{
               fontFamily: `${getCurrentLang()}-Bold`,
               fontSize: 16,
@@ -767,7 +767,7 @@ const OrdersListScreen = ({ route }) => {
             }}
           >
             {order?.customerDetails?.phone}
-          </Text>
+          </Text>}
           <Text
             style={{
               fontFamily: `${getCurrentLang()}-Bold`,
@@ -795,17 +795,17 @@ const OrdersListScreen = ({ route }) => {
         </View>
         {/* Right: Status Update Button */}
         <View style={{ flex: 1, alignItems: "center", justifyContent:"flex-end", flexDirection:"row" }}>
-        <TouchableOpacity onPress={() => printOrder(order)} style={{marginRight:20 }}>
+        {!isMobile &&  <TouchableOpacity onPress={() => printOrder(order)} style={{marginRight:20 }}>
               <Icon
                 icon="printer"
                 size={30}
                 style={{ color: themeStyle.SECONDARY_COLOR }}
               />
-            </TouchableOpacity>
-          <View style={{ width: "50%", }} >
+            </TouchableOpacity>}
+          <View style={{ width: isMobile ? "60%" : "50%", }} >
             {canceledStatuses.indexOf(order.status) === -1 && readyStatuses.indexOf(order.status) === -1 && pickedUpStatuses.indexOf(order.status) === -1 && (
                  <TouchableOpacity onPress={() => updateOrderStatus(order)} style={{marginRight:20, backgroundColor:getNextColorTextByStatus(order.status), padding:8, borderRadius:20, alignItems:"center", justifyContent:"center", flexDirection:"row" }}>
-                  <Text style={{fontSize:16, color:themeStyle.WHITE_COLOR}}>
+                  <Text style={{fontSize:isTablet ? 16 : 12, color:themeStyle.WHITE_COLOR}}>
                     {getNextStatusTextByStatus(order)}
                   </Text>
                </TouchableOpacity>
@@ -847,7 +847,7 @@ const OrdersListScreen = ({ route }) => {
                     style={{
                       fontSize: isTablet
                         ? themeStyle.FONT_SIZE_MD
-                        : themeStyle.FONT_SIZE_SM,
+                        : themeStyle.FONT_SIZE_XS,
                       backgroundColor:
                         oOrder.payment_method === PAYMENT_METHODS.creditCard
                           ? "yellow"
@@ -936,18 +936,18 @@ const OrdersListScreen = ({ route }) => {
           )}
         </View>
 
-        <View style={{ flexBasis: "55%" }}>
+        <View style={{ flexBasis: isTablet ? "55%" : "55%" }}>
           {/* Improved Action Buttons Row */}
           <View
             style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
+              flexDirection: isTablet ? "row" : "column",
+              justifyContent: isTablet ? "space-between" : "flex-start",
               alignItems: "center",
               marginVertical: 10
             }}
           >
-            {canceledStatuses.indexOf(order.status) === -1 && readyStatuses.indexOf(order.status) === -1 && pickedUpStatuses.indexOf(order.status) === -1 && (
-              <View style={{ flex: 1, marginHorizontal: 5, minWidth: 100, minHeight: 44 }}>
+            {canceledStatuses.indexOf(order.status) === -1  && pickedUpStatuses.indexOf(order.status) === -1 && (
+              <View style={{ flex: 1, marginHorizontal: 5, minWidth: 100, minHeight: 44, width: isTablet ? undefined : "100%", marginBottom: isTablet ? 0 : 10 }}>
                 <Button
                   text={getNextStatusTextByStatus(order)}
                   icon="check-circle"
@@ -966,7 +966,7 @@ const OrdersListScreen = ({ route }) => {
                 />
               </View>
             )}
-            <View style={{ flex: 1, marginHorizontal: 5, minWidth: 100, minHeight: 44 }}>
+            <View style={{ flex: 1, marginHorizontal: 5, minWidth: 100, minHeight: 44, width: isTablet ? undefined : "100%", marginBottom: isTablet ? 0 : 10 }}>
               <Button
                 text={"طباعة"}
                 icon="printer"
@@ -984,7 +984,7 @@ const OrdersListScreen = ({ route }) => {
             </View>
             {/* Delay Button: Only show if not already delayed */}
             {(!order.delayMinutes || order.delayMinutes === 0) && (
-              <View style={{ flex: 1, marginHorizontal: 5, minWidth: 100, minHeight: 44 }}>
+              <View style={{ flex: 1, marginHorizontal: 5, minWidth: 100, minHeight: 44, width: isTablet ? undefined : "100%", marginBottom: isTablet ? 0 : 10 }}>
                 <Button
                   text={"تأخير"}
                   icon="clock"
@@ -1004,14 +1004,15 @@ const OrdersListScreen = ({ route }) => {
           </View>
           <View
             style={{
-              justifyContent: "space-around",
-              flexDirection: "row",
+              justifyContent: isTablet ? "space-around" : "flex-start",
+              flexDirection: isTablet ? "row" : "column",
               marginTop: 10,
+              alignItems: "center"
             }}
           >
             { inProgressStatuses.indexOf(order.status) === -1 &&
               pickedUpStatuses.indexOf(order.status) === -1 && (
-                <View style={{ flexBasis: "45%" }}>
+                <View style={{ flexBasis: isTablet ? "45%" : undefined, width: isTablet ? undefined : "100%", marginBottom: isTablet ? 0 : 10 }}>
                   <View>
                     <View style={{}}>
                       <Button
@@ -1033,7 +1034,7 @@ const OrdersListScreen = ({ route }) => {
                   </View>
                 </View>
               )}
-            <View style={{ flexBasis: "45%" }}>
+            <View style={{ flexBasis: isTablet ? "45%" : undefined, width: isTablet ? undefined : "100%" }}>
               {order.order.payment_method == PAYMENT_METHODS.creditCard && (
                 <View>
                   <View style={{}}>
@@ -2222,7 +2223,7 @@ const createStyles = (isTablet) =>
       color: themeStyle.TEXT_PRIMARY_COLOR,
     },
     totalPriceText: {
-      fontSize: isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_SM,
+      fontSize: isTablet ? themeStyle.FONT_SIZE_MD : themeStyle.FONT_SIZE_XS,
       fontFamily: `${getCurrentLang()}-SemiBold`,
       marginBottom: 15,
     },
