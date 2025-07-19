@@ -155,6 +155,12 @@ const useWebSocket = (): UseWebSocketReturn => {
         if (message.type === 'store_updated') {
             storeDataStore.getStoreData();
         }
+        if (message.type === 'ads_updated') {
+          // Handle ads updates - trigger refresh of ads data
+          console.log('Ads updated:', message.data);
+          // You can emit an event or call a callback to refresh ads
+          // For now, we'll just log it
+        }
       } catch (error) {
         console.error('Failed to parse WebSocket message:', error);
         statsRef.current.totalErrors++;

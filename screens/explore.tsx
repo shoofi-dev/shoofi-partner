@@ -65,7 +65,7 @@ const ExploreScreen = () => {
           //await shoofiAdminStore.getStoresListData({});
         }
         // Fetch ads
-        const adsRes: any = await axiosInstance.get("/ads/list");
+        const adsRes: any = await axiosInstance.get("/ads/valid"); // Use valid ads endpoint for customers
         // Map API response to Ad type for AdsCarousel
         const mappedAds: Ad[] = (adsRes || []).map((ad) => ({
           id: ad._id || ad.id,
@@ -73,6 +73,7 @@ const ExploreScreen = () => {
           products: [], // No products in the API response
           title: ad.titleHE || ad.title || "",
           subtitle: ad.descriptionHE || ad.subtitle || "",
+          appName: ad.appName || undefined, // Include store appName for navigation
         }));
         setAds(mappedAds);
       } catch (error) {

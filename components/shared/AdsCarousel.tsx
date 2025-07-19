@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
-import { View, Text, Image, ImageBackground, StyleSheet, Dimensions } from 'react-native';
+import React, { useState, useMemo, useContext, useCallback } from 'react';
+import { View, Text, Image, ImageBackground, StyleSheet, Dimensions, TouchableOpacity, Alert } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import { cdnUrl } from '../../consts/shared';
 import CustomFastImage from '../custom-fast-image';
 import { LinearGradient } from 'expo-linear-gradient';
+import { StoreContext } from '../../stores';
+import { useNavigation } from '@react-navigation/native';
+import { SHIPPING_METHODS } from '../../consts/shared';
 
 const { width } = Dimensions.get('window');
 const CARD_HEIGHT = 185;
@@ -15,6 +18,7 @@ export type Ad = {
   products: string[]; // array of product image uris
   title: string;
   subtitle: string;
+  appName?: string; // Store appName for navigation
 };
 
 type AdsCarouselProps = {
@@ -23,6 +27,34 @@ type AdsCarouselProps = {
 
 const AdsCarousel: React.FC<AdsCarouselProps> = ({ ads }) => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const navigation = useNavigation();
+  const { cartStore, menuStore, shoofiAdminStore } = useContext(StoreContext);
+
+  // Handle ad press - navigate to store if appName is provided
+  const handleAdPress = useCallback(async (ad: Ad) => {
+    if (ad.appName) {
+      try {
+        // Set shipping method to take away
+        await cartStore.setShippingMethod(SHIPPING_METHODS.takAway);
+        
+        // Clear current menu
+        menuStore.clearMenu();
+        
+        // Set the store database name
+        await shoofiAdminStore.setStoreDBName(ad.appName);
+        
+        // Navigate to menu screen
+        (navigation as any).navigate("menuScreen", { 
+          fromStoresList: Date.now(),
+          fromAd: true 
+        });
+      } catch (error) {
+        console.error("Error navigating to store from ad:", error);
+        Alert.alert("שגיאה", "שגיאה בניווט לחנות");
+      }
+    }
+    // If no appName, the ad is just informational and doesn't navigate anywhere
+  }, [cartStore, menuStore, shoofiAdminStore, navigation]);
 
   return (
     <View style={styles.carouselContainer}>
@@ -33,41 +65,49 @@ const AdsCarousel: React.FC<AdsCarouselProps> = ({ ads }) => {
         autoPlay={true}
         scrollAnimationDuration={1000}
         autoPlayInterval={3000}
-
         onSnapToItem={setActiveIndex}
         style={{ borderRadius: CARD_RADIUS }}
         renderItem={({ item }) => (
-          <ImageBackground
-            source={{ uri: cdnUrl + item.background }}
-            style={styles.card}
-            imageStyle={{ borderRadius: CARD_RADIUS }}
-            resizeMode="cover"
+          <TouchableOpacity
+            onPress={() => handleAdPress(item)}
+            activeOpacity={0.9}
+            style={styles.cardContainer}
           >
-            {/* Floating product images */}
-            <View style={styles.productsRow}>
-              {item.products.map((img, idx) => (
-                <CustomFastImage
-                  key={img + idx}
-                  source={{ uri: cdnUrl + img }}
-                  style={styles.productImg}
-                  resizeMode="cover"
-                  cacheKey={img.split(/[\\/]/).pop()}
-                />
-              ))}
-            </View>
-            {/* Text overlay with gradient */}
-            <LinearGradient
-              colors={["#00000000", "#232323"]}
-              start={{ x: 0.5, y: 0 }}
-              end={{ x: 0.5, y: 1 }}
-              style={styles.gradientOverlay}
+            <ImageBackground
+              source={{ uri: cdnUrl + item.background }}
+              style={styles.card}
+              imageStyle={{ borderRadius: CARD_RADIUS }}
+              resizeMode="cover"
             >
-              <View style={styles.textOverlay}>
-                <Text style={styles.title}>{item.title}</Text>
-                <Text style={styles.subtitle}>{item.subtitle}</Text>
+              {/* Floating product images */}
+              <View style={styles.productsRow}>
+                {item.products.map((img, idx) => (
+                  <CustomFastImage
+                    key={img + idx}
+                    source={{ uri: cdnUrl + img }}
+                    style={styles.productImg}
+                    resizeMode="cover"
+                    cacheKey={img.split(/[\\/]/).pop()}
+                  />
+                ))}
               </View>
-            </LinearGradient>
-          </ImageBackground>
+              {/* Text overlay with gradient */}
+              <LinearGradient
+                colors={["#00000000", "#232323"]}
+                start={{ x: 0.5, y: 0 }}
+                end={{ x: 0.5, y: 1 }}
+                style={styles.gradientOverlay}
+              >
+                <View style={styles.textOverlay}>
+                  <Text style={styles.title}>{item.title}</Text>
+                  <Text style={styles.subtitle}>{item.subtitle}</Text>
+                  {item.appName && (
+                    <Text style={styles.storeIndicator}>לחץ לבקר בחנות</Text>
+                  )}
+                </View>
+              </LinearGradient>
+            </ImageBackground>
+          </TouchableOpacity>
         )}
       />
       {/* Pagination dots */}
@@ -92,6 +132,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 8,
     marginBottom: 16,
+  },
+  cardContainer: {
+    width: width - 32,
+    height: CARD_HEIGHT,
+    borderRadius: CARD_RADIUS,
   },
   card: {
     width: width - 32,
@@ -155,6 +200,16 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
     textAlign: 'left',
+  },
+  storeIndicator: {
+    color: '#FFD700',
+    fontSize: 12,
+    fontWeight: 'bold',
+    textShadowColor: 'rgba(0,0,0,0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+    textAlign: 'left',
+    marginTop: 2,
   },
   dotsRow: {
     flexDirection: 'row',
